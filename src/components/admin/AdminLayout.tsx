@@ -13,6 +13,7 @@ import { FAQEditor } from './editors/FAQEditor';
 import { VisaChecklistEditor } from './editors/VisaChecklistEditor';
 import { BlogEditor } from './editors/BlogEditor';
 import { ApplicationsManager } from './editors/ApplicationsManager';
+import { VercitoLogo } from '../VercitoLogo';
 
 import {
   Sparkles,
@@ -87,17 +88,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
         <div className="space-y-6">
           {/* Brand Header */}
           <div className="hidden md:flex items-center gap-3 pb-4 border-b border-white/10">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] shadow-md font-bold">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="font-serif text-base font-extrabold text-white tracking-tight">
-                VERCITO CMS
-              </h1>
-              <p className="text-[10px] text-[#D4AF37] font-semibold uppercase tracking-wider">
-                Admin Control Center
-              </p>
-            </div>
+            <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
           </div>
 
           {/* Navigation Items */}

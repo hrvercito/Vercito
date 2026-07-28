@@ -5,7 +5,6 @@
 
 import React, { useState } from 'react';
 import {
-  GraduationCap,
   MapPin,
   Phone,
   Mail,
@@ -22,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { VercitoLogo } from './VercitoLogo';
 
 export const Footer: React.FC = () => {
   const { t, openSitemap } = useTranslation();
@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-[#071426] text-white pt-20 pb-12 border-t border-white/10 relative overflow-hidden">
+    <footer className="bg-[#071426] text-white pt-20 pb-12 border-t border-[#D4AF37]/20 relative overflow-hidden">
       {/* Background Ambient Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-[#D4AF37]/5 rounded-full blur-3xl pointer-events-none" />
 
@@ -45,21 +45,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-16 border-b border-white/10">
           {/* Brand & Vision (Col 1-4) */}
           <div className="lg:col-span-4 space-y-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#C5A028] p-0.5">
-                <div className="w-full h-full bg-[#0B1F3A] rounded-[10px] flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
-                </div>
-              </div>
-              <div>
-                <span className="font-serif text-2xl font-bold tracking-tight text-white">
-                  VERCITO
-                </span>
-                <p className="text-[10px] uppercase font-mono tracking-widest text-[#D4AF37]">
-                  {t('nav.tagline')}
-                </p>
-              </div>
-            </div>
+            <VercitoLogo variant="horizontal" size="md" isDarkBg={true} />
 
             <p className="text-xs text-slate-300 leading-relaxed font-light">
               {t('footer.aboutText')}

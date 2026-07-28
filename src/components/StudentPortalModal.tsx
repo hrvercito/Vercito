@@ -25,6 +25,7 @@ import {
   Paperclip
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { VercitoLogo } from './VercitoLogo';
 
 interface StudentPortalModalProps {
   isOpen: boolean;
@@ -183,20 +184,10 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
         {/* Header */}
         <div className="p-6 bg-gradient-to-r from-[#0B1F3A] via-[#122A4E] to-[#0B1F3A] text-white flex items-center justify-between border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#C5A028] p-0.5 shadow-md">
-              <div className="w-full h-full bg-[#0B1F3A] rounded-[10px] flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
-              </div>
-            </div>
-            <div>
-              <h3 className="font-serif text-xl font-bold text-white flex items-center gap-2">
-                <span>{t('portal.title')}</span>
-                <span className="text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] font-semibold border border-[#D4AF37]/30">
-                  LIVE PORTAL
-                </span>
-              </h3>
-              <p className="text-xs text-slate-300 mt-0.5">{t('portal.subtitle')}</p>
-            </div>
+            <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
+            <span className="text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] font-semibold border border-[#D4AF37]/30 hidden sm:inline-block">
+              LIVE PORTAL
+            </span>
           </div>
           <button
             onClick={onClose}

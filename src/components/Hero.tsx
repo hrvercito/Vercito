@@ -7,11 +7,12 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
-  Calculator,
   GraduationCap,
-  CheckCircle,
-  FileCheck2,
-  Building
+  Plane,
+  Compass,
+  CheckCircle2,
+  Building,
+  Globe2
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -23,7 +24,7 @@ interface HeroProps {
   onOpenApplication: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenApplication }) => {
+export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenAppointment, onOpenApplication }) => {
   const { language, t } = useTranslation();
   const { cmsData } = useCMS();
   const [quickCountry, setQuickCountry] = useState('Italy');
@@ -52,20 +53,44 @@ export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenApplication
 
   return (
     <section className="relative min-h-screen pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-[#0B1F3A] text-white">
-      {/* Background Lighting Effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-br from-[#D4AF37]/20 via-[#0B1F3A]/60 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Hero Image/Overlay */}
+      <div className="absolute inset-0 z-0 opacity-20 bg-cover bg-center pointer-events-none" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=2000')" }} />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F3A]/90 via-[#0B1F3A]/95 to-[#0B1F3A] z-0" />
 
-      {/* Grid Overlay */}
+      {/* Animated Orbiting Airplane Background Path */}
+      <div className="absolute inset-0 z-1 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            x: ['-10%', '110%'],
+            y: ['20%', '50%', '10%'],
+            rotate: [15, 25, 10]
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'linear'
+          }}
+          className="absolute top-12 left-0 flex items-center gap-2 opacity-60"
+        >
+          <div className="h-0.5 w-48 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+          <Plane className="w-8 h-8 text-[#D4AF37] transform rotate-45 drop-shadow-[0_0_12px_rgba(212,175,55,0.8)]" />
+        </motion.div>
+      </div>
+
+      {/* Background Glow Orbs */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-br from-[#D4AF37]/20 via-[#0B1F3A]/60 to-transparent rounded-full blur-3xl pointer-events-none z-0" />
+      <div className="absolute -bottom-20 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
+
+      {/* Grid Pattern */}
       <div
-        className="absolute inset-0 opacity-10 pointer-events-none"
+        className="absolute inset-0 opacity-10 pointer-events-none z-0"
         style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.4) 1px, transparent 0)`,
           backgroundSize: '32px 32px',
         }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Headline & CTA Buttons */}
           <motion.div
@@ -92,25 +117,25 @@ export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenApplication
               {subtitle}
             </p>
 
-            {/* Requirement 3: Two Clear CTA Buttons Stacked or Responsive */}
+            {/* CTA Buttons: APPLY NOW & OUR SERVICES matching Homepage Reference */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3.5 pt-2 max-w-md mx-auto lg:mx-0">
-              {/* Primary CTA: Start New Application */}
+              {/* Primary CTA: Apply Now */}
               <button
                 onClick={onOpenApplication}
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E2C044] to-[#C5A028] text-[#0B1F3A] font-extrabold text-sm shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E2C044] to-[#C5A028] text-[#0B1F3A] font-extrabold text-sm shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 <GraduationCap className="w-5 h-5" />
-                <span>{t('hero.startAppBtn')}</span>
+                <span>APPLY NOW</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* Secondary CTA: Budget & Cost Estimator */}
+              {/* Secondary CTA: Our Services */}
               <a
-                href="#cost-estimator"
-                className="w-full sm:w-auto px-7 py-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm border border-white/20 hover:border-[#D4AF37]/60 transition-all flex items-center justify-center gap-2 backdrop-blur-md"
+                href="#services"
+                className="w-full sm:w-auto px-7 py-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-sm border border-white/20 hover:border-[#D4AF37]/60 transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider"
               >
-                <Calculator className="w-4 h-4 text-[#D4AF37]" />
-                <span>{t('hero.costEstimatorBtn')}</span>
+                <Compass className="w-4 h-4 text-[#D4AF37]" />
+                <span>OUR SERVICES</span>
               </a>
             </div>
 
@@ -215,7 +240,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenApplication
 
                 <button
                   onClick={onOpenAIEvaluator}
-                  className="w-full py-3.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs hover:bg-[#E2C044] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20"
+                  className="w-full py-3.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs hover:bg-[#E2C044] transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>Analyze My Eligibility Now</span>
@@ -228,3 +253,4 @@ export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenApplication
     </section>
   );
 };
+

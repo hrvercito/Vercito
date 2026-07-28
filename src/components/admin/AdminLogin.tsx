@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../context/CMSContext';
 import { Lock, Mail, Key, ShieldCheck, ArrowRight, Sparkles, Globe } from 'lucide-react';
+import { VercitoLogo } from '../VercitoLogo';
 
 interface AdminLoginProps {
   onLoginSuccess?: () => void;
@@ -41,12 +42,10 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onReturn
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo / Header */}
-        <div className="text-center mb-8 space-y-3">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] shadow-xl shadow-[#D4AF37]/20 mb-2">
-            <ShieldCheck className="w-8 h-8" />
-          </div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight">
-            VERCITO CMS Portal
+        <div className="text-center mb-8 space-y-3 flex flex-col items-center">
+          <VercitoLogo variant="full" size="lg" isDarkBg={true} />
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight mt-3">
+            VERCITO Admin Portal
           </h1>
           <p className="text-xs sm:text-sm text-slate-300">
             Log in to manage website content, destinations, scholarships & reviews

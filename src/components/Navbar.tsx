@@ -23,6 +23,7 @@ import {
 import { Currency } from '../types';
 import { useTranslation } from '../i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { VercitoLogo } from './VercitoLogo';
 
 interface NavbarProps {
   currency: Currency;
@@ -56,6 +57,27 @@ export const Navbar: React.FC<NavbarProps> = ({
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const navLinks = [
+    { name: 'HOME', href: '#' },
+    { name: 'ABOUT US', href: '#process-steps' },
+    { name: 'DESTINATIONS', href: '#destinations' },
+    { name: 'SERVICES', href: '#services' },
+    { name: 'UNIVERSITIES', href: '#universities' },
+    { name: 'SCHOLARSHIPS', href: '#scholarships' },
+    { name: 'BLOG', href: '#blog' },
+    { name: 'CONTACT', href: '#contact' },
+  ];
+
+  const quickNavLinks = [
+    { name: t('nav.destinations'), href: '#destinations' },
+    { name: t('nav.services'), href: '#services' },
+    { name: t('nav.scholarships'), href: '#scholarships' },
+    { name: t('nav.universities'), href: '#universities' },
+    { name: t('nav.testimonials'), href: '#testimonials' },
+    { name: t('nav.visaChecklist'), href: '#doc-guide' },
+    { name: t('nav.faq'), href: '#faq' },
+  ];
 
   const primaryCards = [
     {
@@ -102,101 +124,86 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
   ];
 
-  const quickNavLinks = [
-    { name: t('nav.destinations'), href: '#destinations' },
-    { name: t('nav.services'), href: '#services' },
-    { name: t('nav.scholarships'), href: '#scholarships' },
-    { name: t('nav.universities'), href: '#universities' },
-    { name: t('nav.testimonials'), href: '#testimonials' },
-    { name: t('nav.visaChecklist'), href: '#doc-guide' },
-    { name: t('nav.faq'), href: '#faq' },
-  ];
-
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
             ? isDarkMode
-              ? 'bg-[#0B1F3A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl py-3'
-              : 'bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-lg py-3'
-            : 'bg-transparent py-4'
+              ? 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl py-2.5'
+              : 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-[#D4AF37]/30 shadow-xl py-2.5 text-white'
+            : 'bg-gradient-to-b from-[#0B1F3A]/90 to-transparent py-3 text-white'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
-            {/* Brand Logo */}
-            <a href="#" className="flex items-center gap-3 group focus:outline-none">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] via-[#F3E5AB] to-[#C5A028] p-0.5 shadow-md shadow-[#D4AF37]/20 group-hover:scale-105 transition-transform duration-300">
-                <div className="w-full h-full bg-[#0B1F3A] rounded-[10px] flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-serif text-2xl font-bold tracking-tight text-[#0B1F3A] dark:text-white">
-                    VERCITO
-                  </span>
-                  <span className="text-[10px] uppercase font-mono tracking-widest px-1.5 py-0.5 rounded bg-[#D4AF37]/20 text-[#0B1F3A] dark:text-[#D4AF37] font-semibold">
-                    GLOBAL
-                  </span>
-                </div>
-                <p className="text-[10px] font-medium tracking-wider text-slate-500 dark:text-slate-400 uppercase hidden sm:block">
-                  {t('nav.tagline')}
-                </p>
-              </div>
+            {/* Brand Logo using official Vercito Logo */}
+            <a href="#" className="flex items-center group focus:outline-none shrink-0">
+              <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
             </a>
 
+            {/* Desktop Navigation Menu Links matching Image 1 */}
+            <nav className="hidden xl:flex items-center gap-6">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-xs font-extrabold tracking-wider text-slate-100 hover:text-[#D4AF37] transition-colors relative py-1 group"
+                >
+                  <span>{link.name}</span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-300" />
+                </a>
+              ))}
+            </nav>
+
             {/* Header Actions */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Requirement 2: Two-button Language Toggle BN | EN */}
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              {/* Language Switcher */}
               <LanguageSwitcher />
 
               {/* Currency Selector */}
               <button
                 onClick={onToggleCurrency}
-                className="hidden sm:flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:border-[#D4AF37] dark:hover:border-[#D4AF37] transition-all bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-200"
+                className="hidden sm:flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white"
                 title="Toggle Currency (EUR / BDT)"
               >
                 <Globe2 className="w-3.5 h-3.5 text-[#D4AF37]" />
-                <span>{currency === 'EUR' ? 'EUR (€)' : 'BDT (৳)'}</span>
+                <span>{currency === 'EUR' ? 'EUR' : 'BDT'}</span>
               </button>
 
               {/* Theme Toggle */}
               <button
                 onClick={onToggleDarkMode}
-                className="p-2 rounded-xl border border-slate-200 dark:border-white/10 hover:border-[#D4AF37] dark:hover:border-[#D4AF37] transition-all bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-slate-200"
+                className="p-1.5 sm:p-2 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white"
                 title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
-                {isDarkMode ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-[#0B1F3A]" />}
+                {isDarkMode ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-white" />}
               </button>
 
-              {/* Student Portal Button (Desktop Quick Action) */}
+              {/* Student Portal Button */}
               <button
                 onClick={onOpenStudentPortal}
-                className="hidden md:flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-slate-900 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#0B1F3A] transition-all shadow-sm"
+                className="hidden lg:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl bg-white/10 border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0B1F3A] transition-all"
               >
                 <FolderKanban className="w-3.5 h-3.5" />
-                <span>{t('nav.studentPortal')}</span>
+                <span>Portal</span>
               </button>
 
-              {/* Primary Consultation CTA */}
+              {/* Apply Now Primary Button matching Image 1 */}
               <button
-                onClick={onOpenAppointment}
-                className="hidden lg:flex items-center gap-1.5 text-xs font-extrabold px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E2C044] to-[#C5A028] text-[#0B1F3A] shadow-lg shadow-[#D4AF37]/20 hover:scale-[1.02] transition-all active:scale-95"
+                onClick={onOpenApplication}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all"
               >
-                <Calendar className="w-3.5 h-3.5" />
-                <span>{t('nav.bookConsultation')}</span>
+                APPLY NOW
               </button>
 
-              {/* Requirement 1: Navigation Menu Toggle (Hamburger / Side Menu) */}
+              {/* Menu Drawer Toggle */}
               <button
                 onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-                className="flex items-center gap-2 p-2 px-3 rounded-xl bg-[#0B1F3A] text-[#D4AF37] font-bold text-xs hover:bg-slate-900 transition-colors border border-[#D4AF37]/30 shadow-md"
+                className="flex items-center gap-1.5 p-2 px-2.5 rounded-xl bg-white/10 text-[#D4AF37] font-bold text-xs hover:bg-white/20 transition-colors border border-white/20"
                 aria-label="Open Navigation Menu"
               >
-                <Menu className="w-5 h-5" />
-                <span className="hidden sm:inline uppercase tracking-wider text-[11px]">Menu</span>
+                <Menu className="w-4 h-4" />
               </button>
             </div>
           </div>

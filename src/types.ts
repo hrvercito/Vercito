@@ -5,6 +5,26 @@
 
 export type Currency = 'EUR' | 'BDT';
 
+export type UserRole = 'Student' | 'Counselor' | 'Admin';
+
+export type ProgramLevel = 
+  | "Bachelor's" 
+  | "Master's" 
+  | 'PhD' 
+  | 'Diploma' 
+  | 'Foundation' 
+  | 'Language Programs' 
+  | 'Preparatory Programs';
+
+export type EnglishRequirementTag = 
+  | 'IELTS Required' 
+  | 'IELTS Waived' 
+  | 'No IELTS' 
+  | 'MOI Accepted' 
+  | 'Duolingo Accepted' 
+  | 'PTE Accepted'
+  | 'TOEFL Accepted';
+
 export interface CountryDestination {
   id: string;
   name: string;
@@ -25,6 +45,16 @@ export interface CountryDestination {
   overview: string;
 }
 
+export interface UniversityReview {
+  id: string;
+  studentName: string;
+  studentCountry: string;
+  rating: number;
+  comment: string;
+  program: string;
+  year: string;
+}
+
 export interface UniversityPartner {
   id: string;
   name: string;
@@ -32,13 +62,46 @@ export interface UniversityPartner {
   city: string;
   logo: string;
   image: string;
-  ranking: number; // QS World Ranking or European Ranking
+  ranking: number; // QS World Ranking
+  theRanking?: number; // THE Ranking
   established: number;
   type: 'Public' | 'Private' | 'Polytechnic';
   featuredPrograms: string[];
-  tuitionFeePerYearEUR: number;
-  englishWaiverPossible: boolean;
+  tuitionFeePerYearEUR: number; // Master's default/average
+  tuitionFeeBachelorEUR?: number;
+  tuitionFeeMasterEUR?: number;
+  tuitionFeePhDEUR?: number;
   scholarshipsOffered: string[];
+  scholarshipAmount?: string;
+  applicationFeeEUR?: number;
+  livingCostMonthlyEUR?: number;
+  englishWaiverPossible: boolean;
+  intakes: string[];
+  applicationDeadline: string;
+  durationYears: string;
+  requiredDocuments: string[];
+  programLevels: ProgramLevel[];
+  englishRequirementTypes: EnglishRequirementTag[];
+  ieltsRequirement?: string;
+  bachelorPrograms?: string[];
+  masterPrograms?: string[];
+  phdPrograms?: string[];
+  foundationPrograms?: string[];
+  diplomaPrograms?: string[];
+  languagePrograms?: string[];
+  preparatoryPrograms?: string[];
+  internshipAvailable?: boolean;
+  partTimeWorkPermission?: string;
+  postStudyWorkVisa?: string;
+  officialWebsite?: string;
+  admissionEmail?: string;
+  videoUrl?: string;
+  mediaImages?: string[];
+  overview?: string;
+  admissionRequirements?: string[];
+  studentReviews?: UniversityReview[];
+  mapLocation?: { lat: number; lng: number; address: string };
+  enabled?: boolean;
 }
 
 export interface ServiceItem {
@@ -62,6 +125,8 @@ export interface Scholarship {
   description: string;
   eligiblePrograms: string[];
   isFullyFunded: boolean;
+  fundingType?: '100% Fully Funded' | 'Partial Tuition Grant' | 'Monthly Stipend' | 'Government Subsidy';
+  eligibilityCriteria?: string[];
 }
 
 export interface SuccessStory {
@@ -161,6 +226,7 @@ export interface OnlineApplication {
   fullName: string;
   email: string;
   phone: string;
+  passportNumber: string; // MANDATORY
   district: string;
   targetCountry: string;
   preferredUniversity: string;
@@ -170,3 +236,82 @@ export interface OnlineApplication {
   passportStatus: 'Available' | 'In Progress' | 'Not Yet Applied';
   additionalDetails?: string;
 }
+
+// Mandatory & Detailed Application Interface for Student Portal
+export interface DetailedApplication {
+  id: string;
+  studentEmail: string;
+  fullName: string;
+  phone: string;
+  passportNumber: string; // MANDATORY
+  passportExpiry: string;
+  nationality: string;
+  previousVisaRefusal: boolean;
+  visaRefusalDetails?: string;
+  preferredIntake: string;
+  preferredCountry: string;
+  preferredUniversity: string;
+  intendedProgram: string;
+  programLevel: ProgramLevel;
+  academicHistory: {
+    degree: string;
+    gpa: string;
+    passingYear: string;
+    institution: string;
+  }[];
+  englishTestDetails: {
+    testType: 'IELTS' | 'PTE' | 'Duolingo' | 'MOI' | 'None';
+    overallScore: string;
+    bandDetails?: string;
+  };
+  uploadedDocuments: {
+    id: string;
+    name: string;
+    category: 'Passport' | 'Academic Transcript' | 'Certificate' | 'Police Clearance' | 'Bank Solvency' | 'SOP/CV';
+    fileUrl: string;
+    uploadedAt: string;
+  }[];
+  status: 'Application Submitted' | 'Reviewing' | 'Missing Documents' | 'Offer Letter Issued' | 'Visa Processing' | 'Approved' | 'Rejected';
+  counselorAssigned?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentTransaction {
+  id: string;
+  studentEmail: string;
+  studentName: string;
+  amountBDT: number;
+  paymentMethod: 'bKash' | 'Nagad' | 'Rocket' | 'Bank Transfer';
+  transactionId: string;
+  receiptUrl?: string;
+  purpose: string; // e.g. "Application Fee", "Embassy Appointment Support", "CIMEA Verification"
+  status: 'Pending' | 'Verified' | 'Rejected';
+  date: string;
+  adminNotes?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderEmail: string;
+  senderName: string;
+  senderRole: UserRole | 'AutoReply';
+  text: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+  timestamp: string;
+  isRead: boolean;
+}
+
+export interface NotificationItem {
+  id: string;
+  targetEmail: string;
+  title: string;
+  message: string;
+  type: 'Application Submitted' | 'Payment Received' | 'Offer Letter' | 'Missing Documents' | 'Visa Update' | 'Interview Schedule';
+  channel: 'Email' | 'WhatsApp' | 'SMS';
+  date: string;
+  isRead: boolean;
+}
+

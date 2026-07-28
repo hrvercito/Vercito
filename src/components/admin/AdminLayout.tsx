@@ -12,6 +12,7 @@ import { TestimonialsEditor } from './editors/TestimonialsEditor';
 import { FAQEditor } from './editors/FAQEditor';
 import { VisaChecklistEditor } from './editors/VisaChecklistEditor';
 import { BlogEditor } from './editors/BlogEditor';
+import { ApplicationsManager } from './editors/ApplicationsManager';
 
 import {
   Sparkles,
@@ -21,6 +22,7 @@ import {
   HelpCircle,
   ShieldCheck,
   BookOpen,
+  FolderKanban,
   LogOut,
   ExternalLink,
   RotateCcw,
@@ -29,7 +31,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-type AdminSection = 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
+type AdminSection = 'applications' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
 
 interface AdminLayoutProps {
   onReturnToSite: () => void;
@@ -37,10 +39,11 @@ interface AdminLayoutProps {
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
   const { logoutAdmin, saveMessage, resetToDefaultCMS, isSaving } = useCMS();
-  const [activeSection, setActiveSection] = useState<AdminSection>('hero');
+  const [activeSection, setActiveSection] = useState<AdminSection>('applications');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
+    { id: 'applications' as AdminSection, label: 'Applications & Payments', icon: FolderKanban },
     { id: 'hero' as AdminSection, label: 'Hero Section', icon: Sparkles },
     { id: 'destinations' as AdminSection, label: 'Destinations & Universities', icon: Globe },
     { id: 'scholarships' as AdminSection, label: 'Scholarships', icon: Award },
@@ -169,6 +172,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
 
         {/* Active Editor Rendering */}
         <div className="bg-slate-800/80 rounded-3xl p-6 border border-white/10 shadow-2xl backdrop-blur-md">
+          {activeSection === 'applications' && <ApplicationsManager />}
           {activeSection === 'hero' && <HeroEditor />}
           {activeSection === 'destinations' && <DestinationsEditor />}
           {activeSection === 'scholarships' && <ScholarshipsEditor />}

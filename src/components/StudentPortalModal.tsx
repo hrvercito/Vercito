@@ -18,7 +18,11 @@ import {
   User,
   Phone,
   Mail,
-  GraduationCap
+  GraduationCap,
+  CreditCard,
+  MessageSquare,
+  Bot,
+  Paperclip
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
 
@@ -26,6 +30,14 @@ interface StudentPortalModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenAppointment?: () => void;
+}
+
+interface ChatMsg {
+  id: string;
+  sender: 'student' | 'counselor' | 'auto';
+  senderName: string;
+  text: string;
+  time: string;
 }
 
 interface DemoFileStatus {
@@ -90,10 +102,43 @@ const DEMO_RECORDS: Record<string, DemoFileStatus> = {
 
 export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, onClose }) => {
   const { t, language } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'track' | 'upload'>('track');
+  const [activeTab, setActiveTab] = useState<'track' | 'upload' | 'payments' | 'chat'>('track');
   const [searchId, setSearchId] = useState('VRC-2026-8891');
   const [fileRecord, setFileRecord] = useState<DemoFileStatus | null>(DEMO_RECORDS['VRC-2026-8891']);
   const [searchError, setSearchError] = useState('');
+
+  // Live Chat State
+  const [chatMessages, setChatMessages] = useState<ChatMsg[]>([
+    {
+      id: 'm1',
+      sender: 'auto',
+      senderName: 'VERCITO AI Counselor',
+      text: 'Assalamu Alaikum! Welcome to VERCITO Gulshan & European Admissions desk. How can I assist with your visa dossier today?',
+      time: '10:00 AM'
+    },
+    {
+      id: 'm2',
+      sender: 'student',
+      senderName: 'Tanvir Hossain',
+      text: 'Hello, is my Universitaly pre-enrollment summary verified by the embassy counselor?',
+      time: '10:02 AM'
+    },
+    {
+      id: 'm3',
+      sender: 'counselor',
+      senderName: 'Shahriar Kabir (Senior Counselor)',
+      text: 'Yes Tanvir! Your Universitaly application for Politecnico di Milano is approved. Next step is scheduling your VFS Dhaka appointment.',
+      time: '10:05 AM'
+    }
+  ]);
+  const [newChatText, setNewChatText] = useState('');
+
+  // Payment Submission State
+  const [payMethod, setPayMethod] = useState<'bKash' | 'Nagad' | 'Bank Transfer'>('bKash');
+  const [payTxnId, setPayTxnId] = useState('');
+  const [payAmount, setPayAmount] = useState('15000');
+  const [payPurpose, setPayPurpose] = useState('Universitaly Application Fee');
+  const [paySubmitted, setPaySubmitted] = useState(false);
 
   // Upload Form State
   const [uploadData, setUploadData] = useState({
@@ -165,26 +210,50 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
         <div className="flex border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 p-1">
           <button
             onClick={() => setActiveTab('track')}
-            className={`flex-1 py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'track'
                 ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Search className="w-4 h-4 text-[#D4AF37]" />
+            <Search className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>{t('portal.trackTab')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('upload')}
-            className={`flex-1 py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'upload'
                 ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            <Upload className="w-4 h-4 text-[#D4AF37]" />
+            <Upload className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>{t('portal.uploadTab')}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('payments')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === 'payments'
+                ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <CreditCard className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>Payments</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('chat')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === 'chat'
+                ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <MessageSquare className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>Counselor Chat</span>
           </button>
         </div>
 
@@ -312,7 +381,7 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
                 </div>
               )}
             </div>
-          ) : (
+          ) : activeTab === 'upload' ? (
             <div className="space-y-6">
               {uploadSuccess ? (
                 <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-4">
@@ -445,6 +514,188 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
                   </button>
                 </form>
               )}
+            </div>
+          ) : activeTab === 'payments' ? (
+            /* Payments Tab */
+            <div className="space-y-6">
+              {paySubmitted ? (
+                <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-3">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
+                  <h4 className="font-bold text-lg text-slate-900 dark:text-white">Payment Submission Received</h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                    Transaction ID <strong className="text-[#D4AF37]">{payTxnId}</strong> has been logged. Our finance team will verify with bKash/Bank and update your portal status within 2 hours.
+                  </p>
+                  <button
+                    onClick={() => setPaySubmitted(false)}
+                    className="px-5 py-2 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs"
+                  >
+                    Submit Another Payment
+                  </button>
+                </div>
+              ) : (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setPaySubmitted(true);
+                  }}
+                  className="space-y-4"
+                >
+                  <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-[#D4AF37]" />
+                      <span>bKash / Nagad / Bank Transfer Submission</span>
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Merchant bKash Number: <strong className="text-[#D4AF37]">01711-889911</strong> (Make Payment option)
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Payment Method</label>
+                      <select
+                        value={payMethod}
+                        onChange={(e) => setPayMethod(e.target.value as any)}
+                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                      >
+                        <option value="bKash">bKash Merchant</option>
+                        <option value="Nagad">Nagad Merchant</option>
+                        <option value="Bank Transfer">Eastern Bank Ltd (EBL Dhaka)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Transaction ID (TxnID) *</label>
+                      <input
+                        required
+                        type="text"
+                        value={payTxnId}
+                        onChange={(e) => setPayTxnId(e.target.value)}
+                        placeholder="e.g. BK8923419023"
+                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Amount Paid (BDT)</label>
+                      <input
+                        required
+                        type="number"
+                        value={payAmount}
+                        onChange={(e) => setPayAmount(e.target.value)}
+                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Payment Purpose</label>
+                      <input
+                        required
+                        type="text"
+                        value={payPurpose}
+                        onChange={(e) => setPayPurpose(e.target.value)}
+                        placeholder="e.g. Pre-enrollment Fee"
+                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Upload Payment Slip / Screenshot (Optional)</label>
+                    <div className="border border-dashed border-slate-300 dark:border-white/20 rounded-xl p-4 text-center bg-slate-50 dark:bg-slate-900/30">
+                      <Paperclip className="w-5 h-5 text-[#D4AF37] mx-auto mb-1" />
+                      <p className="text-xs text-slate-600 dark:text-slate-300">Click to upload screenshot</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] font-extrabold text-sm shadow-md flex items-center justify-center gap-2"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Submit Payment Verification Claim</span>
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : (
+            /* Live Chat Tab */
+            <div className="space-y-4">
+              <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
+                  <Bot className="w-4 h-4 text-[#D4AF37]" />
+                  <span>VERCITO Gulshan Desk (Active)</span>
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-500 text-[10px] font-bold">
+                  Online
+                </span>
+              </div>
+
+              {/* Chat Log */}
+              <div className="h-64 overflow-y-auto p-4 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-slate-200 dark:border-white/10 space-y-3">
+                {chatMessages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col ${msg.sender === 'student' ? 'items-end' : 'items-start'}`}
+                  >
+                    <span className="text-[10px] text-slate-400 mb-0.5">{msg.senderName} • {msg.time}</span>
+                    <div
+                      className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
+                        msg.sender === 'student'
+                          ? 'bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] font-semibold rounded-br-none'
+                          : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-bl-none shadow-sm'
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chat Input */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!newChatText.trim()) return;
+                  const studentMsg: ChatMsg = {
+                    id: Date.now().toString(),
+                    sender: 'student',
+                    senderName: 'Tanvir Hossain',
+                    text: newChatText,
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  };
+                  setChatMessages([...chatMessages, studentMsg]);
+                  setNewChatText('');
+
+                  setTimeout(() => {
+                    const replyMsg: ChatMsg = {
+                      id: (Date.now() + 1).toString(),
+                      sender: 'counselor',
+                      senderName: 'Shahriar Kabir (Counselor)',
+                      text: 'Thank you for your message! Our Gulshan team has logged your query and will assist you shortly.',
+                      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    setChatMessages((prev) => [...prev, replyMsg]);
+                  }, 1200);
+                }}
+                className="flex gap-2"
+              >
+                <input
+                  type="text"
+                  value={newChatText}
+                  onChange={(e) => setNewChatText(e.target.value)}
+                  placeholder="Type message for your European Counselor..."
+                  className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-3 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs shadow-md hover:scale-[1.02] transition-transform"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
             </div>
           )}
         </div>

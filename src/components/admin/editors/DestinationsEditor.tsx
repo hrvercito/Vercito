@@ -86,7 +86,7 @@ export const DestinationsEditor: React.FC = () => {
       name: 'New Partner University',
       country: 'Italy',
       city: 'Rome',
-      logo: 'https://images.unsplash.com/photo-1592280771190-3e292355726d?auto=format&fit=crop&q=80&w=200',
+      logo: '🏛️',
       image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800',
       ranking: 150,
       established: 1850,
@@ -95,6 +95,13 @@ export const DestinationsEditor: React.FC = () => {
       tuitionFeePerYearEUR: 1000,
       englishWaiverPossible: true,
       scholarshipsOffered: ['100% Regional DSU Grant', 'Merit Waiver'],
+      intakes: ['September', 'February'],
+      applicationDeadline: 'May 31, 2026',
+      durationYears: '2 Years',
+      requiredDocuments: ['Passport', 'Transcripts', 'SOP', 'LORs'],
+      programLevels: ["Master's", "Bachelor's"],
+      englishRequirementTypes: ['MOI Accepted', 'IELTS Waived'],
+      overview: 'Modern university offering high-quality English-taught courses.',
     };
     setEditingUni(newUni);
     setIsAddingNew(true);

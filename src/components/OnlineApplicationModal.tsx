@@ -26,6 +26,7 @@ export const OnlineApplicationModal: React.FC<OnlineApplicationModalProps> = ({
     fullName: '',
     email: '',
     phone: '',
+    passportNumber: '',
     district: 'Dhaka',
     targetCountry: initialCountry,
     preferredUniversity: initialUniversity,
@@ -112,6 +113,20 @@ export const OnlineApplicationModal: React.FC<OnlineApplicationModalProps> = ({
                     value={appData.phone}
                     onChange={(e) => setAppData({ ...appData, phone: e.target.value })}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs focus:outline-none focus:border-[#D4AF37]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                    Passport Number * (Mandatory)
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. A01234567"
+                    value={appData.passportNumber}
+                    onChange={(e) => setAppData({ ...appData, passportNumber: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-mono uppercase focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
 

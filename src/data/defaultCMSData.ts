@@ -12,6 +12,7 @@ import {
   DOCUMENT_CHECKLIST,
   BLOG_POSTS,
 } from './mockData';
+import { UNIVERSITIES_DATABASE } from './universitiesDatabase';
 import {
   CountryDestination,
   UniversityPartner,
@@ -122,7 +123,17 @@ export const DEFAULT_CMS_DATA: CMSData = {
     analyzeBtnEn: 'Analyze My Eligibility',
   },
   destinations: COUNTRY_DESTINATIONS,
-  universities: UNIVERSITY_PARTNERS,
+  universities: (() => {
+    // Map existing db items by ID
+    const map = new Map<string, UniversityPartner>();
+    UNIVERSITIES_DATABASE.forEach(u => map.set(u.id, u));
+    UNIVERSITY_PARTNERS.forEach(u => {
+      if (!map.has(u.id)) {
+        map.set(u.id, u);
+      }
+    });
+    return Array.from(map.values());
+  })(),
   scholarships: SCHOLARSHIPS,
   testimonials: SUCCESS_STORIES,
   faqs: FAQS,

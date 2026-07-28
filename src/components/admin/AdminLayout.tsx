@@ -13,6 +13,7 @@ import { FAQEditor } from './editors/FAQEditor';
 import { VisaChecklistEditor } from './editors/VisaChecklistEditor';
 import { BlogEditor } from './editors/BlogEditor';
 import { ApplicationsManager } from './editors/ApplicationsManager';
+import { PaymentsManager } from './editors/PaymentsManager';
 import { VercitoLogo } from '../VercitoLogo';
 
 import {
@@ -24,6 +25,7 @@ import {
   ShieldCheck,
   BookOpen,
   FolderKanban,
+  CreditCard,
   LogOut,
   ExternalLink,
   RotateCcw,
@@ -32,7 +34,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 
-type AdminSection = 'applications' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
+type AdminSection = 'applications' | 'payments' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
 
 interface AdminLayoutProps {
   onReturnToSite: () => void;
@@ -44,7 +46,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'applications' as AdminSection, label: 'Applications & Payments', icon: FolderKanban },
+    { id: 'applications' as AdminSection, label: 'Applications Received', icon: FolderKanban },
+    { id: 'payments' as AdminSection, label: 'SSLCommerz Payments', icon: CreditCard },
     { id: 'hero' as AdminSection, label: 'Hero Section', icon: Sparkles },
     { id: 'destinations' as AdminSection, label: 'Destinations & Universities', icon: Globe },
     { id: 'scholarships' as AdminSection, label: 'Scholarships', icon: Award },
@@ -164,6 +167,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
         {/* Active Editor Rendering */}
         <div className="bg-slate-800/80 rounded-3xl p-6 border border-white/10 shadow-2xl backdrop-blur-md">
           {activeSection === 'applications' && <ApplicationsManager />}
+          {activeSection === 'payments' && <PaymentsManager />}
           {activeSection === 'hero' && <HeroEditor />}
           {activeSection === 'destinations' && <DestinationsEditor />}
           {activeSection === 'scholarships' && <ScholarshipsEditor />}

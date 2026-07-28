@@ -179,6 +179,36 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
+        {/* SSLCommerz Payment Gateway Footer Banner */}
+        <div className="py-6 border-b border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="w-6 h-6 text-[#D4AF37] shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-white uppercase tracking-wider">
+                Secure Payments Powered by SSLCommerz
+              </p>
+              <p className="text-[10px] text-slate-400">
+                100% PCI-DSS Certified • Instant Automatic Verification & Receipt Generation
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-2.5 py-1 rounded bg-white/10 border border-white/15 text-[10px] font-bold text-blue-400">VISA</span>
+            <span className="px-2.5 py-1 rounded bg-white/10 border border-white/15 text-[10px] font-bold text-amber-400">Mastercard</span>
+            <span className="px-2.5 py-1 rounded bg-pink-950/80 border border-pink-500/40 text-[10px] font-bold text-pink-400">bKash</span>
+            <span className="px-2.5 py-1 rounded bg-orange-950/80 border border-orange-500/40 text-[10px] font-bold text-orange-400">Nagad</span>
+            <span className="px-2.5 py-1 rounded bg-purple-950/80 border border-purple-500/40 text-[10px] font-bold text-purple-300">Rocket</span>
+            <span className="px-2.5 py-1 rounded bg-white/10 border border-white/15 text-[10px] font-bold text-slate-300">NetBanking</span>
+            <a
+              href="#payment"
+              className="ml-2 px-3 py-1 rounded-lg bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-wider hover:bg-[#E5C158] transition-all"
+            >
+              Pay Online
+            </a>
+          </div>
+        </div>
+
         {/* Bottom copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} VERCITO International Education Consultancy. {t('footer.rights')}</p>

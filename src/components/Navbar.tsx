@@ -65,6 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { name: 'SERVICES', href: '#services' },
     { name: 'UNIVERSITIES', href: '#universities' },
     { name: 'SCHOLARSHIPS', href: '#scholarships' },
+    { name: 'PAY ONLINE', href: '#payment' },
     { name: 'BLOG', href: '#blog' },
     { name: 'CONTACT', href: '#contact' },
   ];
@@ -74,6 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { name: t('nav.services'), href: '#services' },
     { name: t('nav.scholarships'), href: '#scholarships' },
     { name: t('nav.universities'), href: '#universities' },
+    { name: 'Pay Fee Online', href: '#payment' },
     { name: t('nav.testimonials'), href: '#testimonials' },
     { name: t('nav.visaChecklist'), href: '#doc-guide' },
     { name: t('nav.faq'), href: '#faq' },

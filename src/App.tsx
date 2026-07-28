@@ -19,6 +19,7 @@ import { SuccessStories } from './components/SuccessStories';
 import { VisaChecklistTool } from './components/VisaChecklistTool';
 import { BlogSection } from './components/BlogSection';
 import { FAQSection } from './components/FAQSection';
+import { PaymentSection } from './components/PaymentSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 
@@ -185,6 +186,9 @@ export function AppContent() {
 
         {/* Corporate Brand Identity Showcase & Collateral Suite */}
         <BrandIdentityShowcase />
+
+        {/* Secure SSLCommerz Payment Gateway Section */}
+        <PaymentSection currency={currency} />
 
         {/* Direct Contact & Gulshan/Chittagong Office Booking */}
         <ContactSection onOpenAppointment={() => setIsAppointmentOpen(true)} />

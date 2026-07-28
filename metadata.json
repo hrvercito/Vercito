@@ -1,0 +1,6 @@
+{
+  "name": "VERCITO",
+  "description": "Premium European Higher Education Consultancy for Bangladeshi Students - Shaping Futures Beyond Borders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

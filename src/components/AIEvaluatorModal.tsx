@@ -22,6 +22,7 @@ import {
 import { ProfileEvaluationInput, ProfileEvaluationResult } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { evaluateProfileWithGemini, chatWithGeminiCounselor, getGeminiApiKey } from '../lib/gemini';
+import { CountrySelect } from './CountrySelect';
 
 interface AIEvaluatorModalProps {
   isOpen: boolean;
@@ -303,22 +304,11 @@ export const AIEvaluatorModal: React.FC<AIEvaluatorModalProps> = ({
                       </select>
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-medium text-slate-300 mb-1">Preferred Country</label>
-                      <select
-                        value={formData.preferredCountry}
-                        onChange={(e) => setFormData({ ...formData, preferredCountry: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0B1F3A] border border-white/15 text-xs text-white focus:outline-none focus:border-[#D4AF37]"
-                      >
-                        <option value="Italy">Italy (DSU Scholarship - €0 Tuition)</option>
-                        <option value="Germany">Germany (Tuition-Free Public Unis)</option>
-                        <option value="France">France (Sorbonne & Campus France)</option>
-                        <option value="Hungary">Hungary (Stipendium Grant)</option>
-                        <option value="Spain">Spain (Barcelona & Madrid)</option>
-                        <option value="Portugal">Portugal (Fast PR Pathway)</option>
-                        <option value="Poland">Poland (Low Living Expenses)</option>
-                      </select>
-                    </div>
+                    <CountrySelect
+                      value={formData.preferredCountry}
+                      onChange={(country) => setFormData({ ...formData, preferredCountry: country })}
+                      label="Target Country"
+                    />
 
                     <div>
                       <label className="block text-xs font-medium text-slate-300 mb-1">Intended Field of Study</label>

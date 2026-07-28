@@ -8,6 +8,7 @@ import { Send, X, CheckCircle2, Upload, Sparkles, Building2 } from 'lucide-react
 import confetti from 'canvas-confetti';
 import { motion } from 'motion/react';
 import { OnlineApplication } from '../types';
+import { CountrySelect } from './CountrySelect';
 
 interface OnlineApplicationModalProps {
   isOpen: boolean;
@@ -158,23 +159,11 @@ export const OnlineApplicationModal: React.FC<OnlineApplicationModalProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Country
-                  </label>
-                  <select
-                    value={appData.targetCountry}
-                    onChange={(e) => setAppData({ ...appData, targetCountry: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 text-xs focus:outline-none focus:border-[#D4AF37]"
-                  >
-                    <option value="Italy">Italy (DSU Grant)</option>
-                    <option value="Germany">Germany (Public Tuition-Free)</option>
-                    <option value="France">France (Sorbonne & Campus France)</option>
-                    <option value="Hungary">Hungary (Stipendium Grant)</option>
-                    <option value="Spain">Spain</option>
-                    <option value="Portugal">Portugal</option>
-                  </select>
-                </div>
+                <CountrySelect
+                  value={appData.targetCountry}
+                  onChange={(country) => setAppData({ ...appData, targetCountry: country })}
+                  label="Target Country"
+                />
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">

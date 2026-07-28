@@ -14,8 +14,10 @@ import {
   RefreshCw,
   ExternalLink,
   Download,
-  AlertCircle
+  AlertCircle,
+  FileText
 } from 'lucide-react';
+import { downloadPaymentReceipt, PaymentReceiptData } from '../../../lib/pdfReceiptGenerator';
 
 interface PaymentItem {
   id: string;
@@ -35,11 +37,14 @@ interface PaymentItem {
   cardIssuer?: string;
   createdAt: string;
   updatedAt: string;
+  invoiceNumber?: string;
 }
 
 export const PaymentsManager: React.FC = () => {
   const [payments, setPayments] = useState<PaymentItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
@@ -69,6 +74,19 @@ export const PaymentsManager: React.FC = () => {
   useEffect(() => {
     fetchPayments();
   }, []);
+
+  const handleDownloadReceipt = async (pay: PaymentItem) => {
+    setDownloadingId(pay.tran_id);
+    setPdfError(null);
+    try {
+      await downloadPaymentReceipt(pay);
+    } catch (err: any) {
+      console.error('Error downloading receipt in admin:', err);
+      setPdfError(`Failed to generate PDF for ${pay.tran_id}`);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const handleVerifyTransaction = async (tran_id: string) => {
     setVerifyingId(tran_id);
@@ -282,13 +300,27 @@ export const PaymentsManager: React.FC = () => {
                     </td>
 
                     <td className="p-4 text-right">
-                      <button
-                        onClick={() => handleVerifyTransaction(pay.tran_id)}
-                        disabled={verifyingId === pay.tran_id}
-                        className="px-3 py-1.5 rounded-lg bg-[#0B1F3A] dark:bg-white/10 text-[#D4AF37] dark:text-white hover:bg-[#122E58] dark:hover:bg-white/20 font-bold text-[11px] transition-all border border-[#D4AF37]/30"
-                      >
-                        {verifyingId === pay.tran_id ? 'Verifying...' : 'SSLCommerz Verify'}
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        {pay.status === 'SUCCESS' && (
+                          <button
+                            onClick={() => handleDownloadReceipt(pay)}
+                            disabled={downloadingId === pay.tran_id}
+                            className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold text-[11px] flex items-center gap-1 border border-emerald-500/30 transition-all shrink-0"
+                            title="Download Official PDF Receipt"
+                          >
+                            <Download className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>{downloadingId === pay.tran_id ? 'Rendering...' : 'Receipt PDF'}</span>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => handleVerifyTransaction(pay.tran_id)}
+                          disabled={verifyingId === pay.tran_id}
+                          className="px-2.5 py-1.5 rounded-lg bg-[#0B1F3A] dark:bg-white/10 text-[#D4AF37] dark:text-white hover:bg-[#122E58] dark:hover:bg-white/20 font-bold text-[11px] transition-all border border-[#D4AF37]/30 shrink-0"
+                        >
+                          {verifyingId === pay.tran_id ? 'Verifying...' : 'SSLCommerz Verify'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -345,12 +377,25 @@ export const PaymentsManager: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setSelectedVerificationModal(null)}
-              className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs uppercase"
-            >
-              Close Certificate
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  const p = payments.find(x => x.tran_id === selectedVerificationModal.sslcommerzValidation?.tran_id);
+                  if (p) handleDownloadReceipt(p);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs uppercase flex items-center justify-center gap-2 hover:bg-[#e5be42]"
+              >
+                <Download className="w-4 h-4 text-[#0B1F3A]" />
+                <span>Download PDF Receipt</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedVerificationModal(null)}
+                className="px-5 py-2.5 rounded-xl bg-white/10 text-white font-bold text-xs uppercase hover:bg-white/20 border border-white/10"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

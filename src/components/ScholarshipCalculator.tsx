@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Award, Sparkles, CheckCircle2, ChevronRight, Calculator, FileText, Send } from 'lucide-react';
 import { Currency } from '../types';
 import { useCMS } from '../context/CMSContext';
+import { CountrySelect } from './CountrySelect';
 
 interface ScholarshipCalculatorProps {
   currency: Currency;
@@ -104,23 +105,11 @@ export const ScholarshipCalculator: React.FC<ScholarshipCalculatorProps> = ({
               </div>
             </div>
 
-            {/* Country Selector */}
-            <div className="space-y-2">
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-200">
-                Preferred Country:
-              </label>
-              <select
-                value={targetCountry}
-                onChange={(e) => setTargetCountry(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37]"
-              >
-                <option value="All">All European Destinations</option>
-                <option value="Italy">Italy (DSU Regional Grant)</option>
-                <option value="Germany">Germany (DAAD Grant)</option>
-                <option value="Hungary">Hungary (Stipendium Grant)</option>
-                <option value="France">France (Eiffel Grant)</option>
-              </select>
-            </div>
+            <CountrySelect
+              value={targetCountry}
+              onChange={setTargetCountry}
+              label="Preferred Country"
+            />
 
             {/* Assessment Note */}
             <div className="p-4 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-xs text-slate-800 dark:text-slate-200 space-y-1">

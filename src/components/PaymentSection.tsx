@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck,
   Lock,
@@ -18,9 +18,12 @@ import {
   X,
   AlertCircle,
   QrCode,
-  Loader2
+  Loader2,
+  History,
+  FileText
 } from 'lucide-react';
 import { Currency } from '../types';
+import { downloadPaymentReceipt, PaymentReceiptData } from '../lib/pdfReceiptGenerator';
 
 interface PaymentSectionProps {
   currency?: Currency;
@@ -73,9 +76,15 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
   const [studentPhone, setStudentPhone] = useState('');
   const [invoiceNote, setInvoiceNote] = useState('');
 
-  // Execution States
+  // Execution & PDF States
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
+  // Payment History State (Persisted in localStorage)
+  const [paymentHistory, setPaymentHistory] = useState<PaymentReceiptData[]>([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // Active Gateway Modal State
   const [gatewayModalData, setGatewayModalData] = useState<{
@@ -88,7 +97,58 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
   } | null>(null);
 
   // Completed Payment Receipt Modal
-  const [receiptData, setReceiptData] = useState<any | null>(null);
+  const [receiptData, setReceiptData] = useState<PaymentReceiptData | null>(null);
+
+  // Load payment history on mount & handle URL callback redirects
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('vercito_student_payments');
+      if (saved) {
+        setPaymentHistory(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error('Error loading payment history:', e);
+    }
+
+    // Check if coming back from redirect callback `#payment-status?tran_id=...&status=SUCCESS`
+    const hash = window.location.hash;
+    if (hash && hash.includes('payment-status')) {
+      const params = new URLSearchParams(hash.split('?')[1] || '');
+      const tran_id = params.get('tran_id');
+      const status = params.get('status');
+
+      if (tran_id && status === 'SUCCESS') {
+        fetch(`/api/payment/status/${tran_id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.payment) {
+              handlePaymentSuccess(data.payment);
+            }
+          })
+          .catch((err) => console.error('Error fetching callback payment status:', err));
+      }
+    }
+  }, []);
+
+  // Save successful payment to local history & state
+  const handlePaymentSuccess = (payment: PaymentReceiptData) => {
+    setReceiptData(payment);
+    setPaymentHistory((prev) => {
+      const exists = prev.some((p) => p.tran_id === payment.tran_id);
+      const updated = exists
+        ? prev.map((p) => (p.tran_id === payment.tran_id ? payment : p))
+        : [payment, ...prev];
+      try {
+        localStorage.setItem('vercito_student_payments', JSON.stringify(updated));
+      } catch (e) {
+        console.error('Error saving to local storage:', e);
+      }
+      return updated;
+    });
+
+    // Auto generate receipt PDF
+    triggerReceiptDownload(payment);
+  };
 
   // Get active payable amount
   const getPayableAmountBDT = (): number => {
@@ -102,6 +162,22 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
 
   const activeAmountBDT = getPayableAmountBDT();
   const activeAmountEUR = Math.round(activeAmountBDT / 132);
+
+  // Trigger PDF Generation & Download
+  const triggerReceiptDownload = async (payment: PaymentReceiptData) => {
+    setIsGeneratingPdf(true);
+    setPdfError(null);
+    try {
+      await downloadPaymentReceipt(payment);
+    } catch (err: any) {
+      console.error('Failed to generate PDF receipt:', err);
+      setPdfError(
+        'Unable to render PDF receipt. Please check browser pop-up permissions or try downloading again from Payment History.'
+      );
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   // Handle Pay Now click -> Calls backend SSLCommerz Init
   const handleInitiatePayment = async (e: React.FormEvent) => {
@@ -191,8 +267,8 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
 
       const data = await res.json();
       if (data.success && data.payment) {
-        setReceiptData(data.payment);
         setGatewayModalData(null);
+        handlePaymentSuccess(data.payment);
       } else {
         alert(data.message || 'Payment processing failed.');
       }
@@ -225,12 +301,24 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
             Pay application fees, evaluation deposits, and legalization charges safely using Bangladeshi Mobile Banking, International Bank Cards, or NetBanking.
           </p>
 
-          {/* Prompt required text */}
-          <div className="pt-2 flex items-center justify-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
-            <span className="text-sm font-extrabold tracking-wide text-white uppercase bg-[#0B1F3A] px-4 py-1.5 rounded-xl border border-[#D4AF37]/40 shadow-inner">
-              Secure Payments Powered by SSLCommerz
-            </span>
+          {/* Prompt required text & Payment History Button */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <div className="inline-flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
+              <span className="text-sm font-extrabold tracking-wide text-white uppercase bg-[#0B1F3A] px-4 py-1.5 rounded-xl border border-[#D4AF37]/40 shadow-inner">
+                Secure Payments Powered by SSLCommerz
+              </span>
+            </div>
+
+            {paymentHistory.length > 0 && (
+              <button
+                onClick={() => setShowHistoryModal(true)}
+                className="px-4 py-1.5 rounded-xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs flex items-center gap-2 transition-all"
+              >
+                <History className="w-4 h-4" />
+                <span>My Receipts ({paymentHistory.length})</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -724,18 +812,117 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => window.print()}
-                className="flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/20"
+                onClick={() => triggerReceiptDownload(receiptData)}
+                disabled={isGeneratingPdf}
+                className="flex-1 py-3 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs flex items-center justify-center gap-2 hover:bg-[#e5be42] transition-all disabled:opacity-50"
               >
-                <Download className="w-4 h-4 text-[#D4AF37]" />
-                <span>Download Official Receipt</span>
+                {isGeneratingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Generating PDF...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4 text-[#0B1F3A]" />
+                    <span>Download Official Receipt</span>
+                  </>
+                )}
               </button>
 
               <button
                 onClick={() => setReceiptData(null)}
-                className="flex-1 py-3 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs uppercase tracking-wider hover:bg-[#E5C158]"
+                className="py-3 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/10"
               >
-                Done
+                Close
+              </button>
+            </div>
+
+            {pdfError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+                <span>{pdfError}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Payment History Drawer Modal */}
+      {showHistoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="w-full max-w-2xl bg-[#0B1F3A] rounded-2xl border border-[#D4AF37]/50 shadow-2xl p-6 space-y-6 relative text-white">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center gap-2">
+                <History className="w-5 h-5 text-[#D4AF37]" />
+                <h3 className="font-serif text-xl font-bold">Your Official Payment Receipts</h3>
+              </div>
+
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {paymentHistory.length === 0 ? (
+              <div className="py-12 text-center text-slate-400 text-sm space-y-2">
+                <FileText className="w-10 h-10 mx-auto text-slate-500 mb-2" />
+                <p>No past payment receipts found on this device.</p>
+                <p className="text-xs text-slate-500">
+                  Receipts generated for completed SSLCommerz payments will appear here automatically.
+                </p>
+              </div>
+            ) : (
+              <div className="max-h-96 overflow-y-auto space-y-3 pr-1">
+                {paymentHistory.map((item) => (
+                  <div
+                    key={item.tran_id}
+                    className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-[#D4AF37]/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-mono text-xs text-[#D4AF37] font-bold">{item.tran_id}</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                          SUCCESS
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-sm text-white">{item.purpose}</h4>
+                      <div className="text-xs text-slate-400 mt-1 space-x-3">
+                        <span>Paid by: {item.studentName}</span>
+                        <span>•</span>
+                        <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 justify-between sm:justify-end border-t sm:border-t-0 border-white/10 pt-3 sm:pt-0">
+                      <div className="text-right">
+                        <span className="font-serif font-black text-base text-[#D4AF37] block">
+                          ৳{item.amount.toLocaleString()} BDT
+                        </span>
+                        <span className="text-[10px] text-slate-400 block">{item.paymentMethod || 'SSLCommerz'}</span>
+                      </div>
+
+                      <button
+                        onClick={() => triggerReceiptDownload(item)}
+                        disabled={isGeneratingPdf}
+                        className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 border border-white/15 shrink-0"
+                      >
+                        <Download className="w-3.5 h-3.5 text-[#D4AF37]" />
+                        <span>Receipt PDF</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="pt-2 text-right">
+              <button
+                onClick={() => setShowHistoryModal(false)}
+                className="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs uppercase"
+              >
+                Close History
               </button>
             </div>
           </div>

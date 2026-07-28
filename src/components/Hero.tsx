@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { useCMS } from '../context/CMSContext';
+import { CountrySelect } from './CountrySelect';
 
 interface HeroProps {
   onOpenAIEvaluator: () => void;
@@ -182,23 +182,11 @@ export const Hero: React.FC<HeroProps> = ({ onOpenAIEvaluator, onOpenAppointment
                   </p>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Target Country
-                  </label>
-                  <select
-                    value={quickCountry}
-                    onChange={(e) => setQuickCountry(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-white/15 text-xs text-white focus:outline-none focus:border-[#D4AF37]"
-                  >
-                    <option value="Italy">🇮🇹 Italy (DSU 100% Grant + €7,000 Living Stipend)</option>
-                    <option value="Germany">🇩🇪 Germany (Tuition-Free Public Universities)</option>
-                    <option value="USA">🇺🇸 USA (State Universities & STEM OPT)</option>
-                    <option value="Finland">🇫🇮 Finland (EU Excellence Grants)</option>
-                    <option value="Hungary">🇭🇺 Hungary (Stipendium Full Scholarship)</option>
-                    <option value="France">🇫🇷 France (Campus France & Housing Grant)</option>
-                  </select>
-                </div>
+                <CountrySelect
+                  value={quickCountry}
+                  onChange={setQuickCountry}
+                  label="Target Country"
+                />
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">

@@ -4,12 +4,14 @@
  */
 
 import React, { useState } from 'react';
-import { BLOG_POSTS } from '../data/mockData';
 import { BlogPost } from '../types';
 import { BookOpen, Search, Clock, ArrowRight, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCMS } from '../context/CMSContext';
 
 export const BlogSection: React.FC = () => {
+  const { cmsData } = useCMS();
+  const BLOG_POSTS = cmsData.blogs;
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [search, setSearch] = useState<string>('');

@@ -6,6 +6,10 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { VisaProcessSteps } from './components/VisaProcessSteps';
+import { DocumentGuideSection } from './components/DocumentGuideSection';
+import { CampusGallerySection } from './components/CampusGallerySection';
+import { CourseSelectionStepper } from './components/CourseSelectionStepper';
 import { StudyDestinations } from './components/StudyDestinations';
 import { ServicesSection } from './components/ServicesSection';
 import { ScholarshipCalculator } from './components/ScholarshipCalculator';
@@ -21,16 +25,26 @@ import { Footer } from './components/Footer';
 import { AIEvaluatorModal } from './components/AIEvaluatorModal';
 import { AppointmentBookingModal } from './components/AppointmentBookingModal';
 import { OnlineApplicationModal } from './components/OnlineApplicationModal';
+import { StudentPortalModal } from './components/StudentPortalModal';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { AIAssistantWidget } from './components/AIAssistantWidget';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { LanguageBanner } from './components/LanguageBanner';
 import { SitemapModal } from './components/SitemapModal';
 
+import { CMSProvider, useCMS } from './context/CMSContext';
+import { AdminLogin } from './components/admin/AdminLogin';
+import { AdminLayout } from './components/admin/AdminLayout';
+
 import { BrandIdentityShowcase } from './components/BrandIdentityShowcase';
 import { Currency } from './types';
 
 export function AppContent() {
+  const { isAdminAuthenticated } = useCMS();
+  const [isAdminView, setIsAdminView] = useState<boolean>(() => {
+    return window.location.hash === '#admin' || window.location.pathname.startsWith('/admin');
+  });
+
   const [isDark, setIsDark] = useState<boolean>(() => {
     return localStorage.getItem('vercito_theme') === 'dark';
   });
@@ -40,9 +54,18 @@ export function AppContent() {
   const [isAIEvaluatorOpen, setIsAIEvaluatorOpen] = useState(false);
   const [isAppointmentOpen, setIsAppointmentOpen] = useState(false);
   const [isApplicationOpen, setIsApplicationOpen] = useState(false);
+  const [isStudentPortalOpen, setIsStudentPortalOpen] = useState(false);
 
   const [selectedCountryForApp, setSelectedCountryForApp] = useState('Italy');
   const [selectedUniForApp, setSelectedUniForApp] = useState('Politecnico di Milano');
+
+  useEffect(() => {
+    const checkHash = () => {
+      setIsAdminView(window.location.hash === '#admin' || window.location.pathname.startsWith('/admin'));
+    };
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
 
   useEffect(() => {
     if (isDark) {
@@ -57,10 +80,24 @@ export function AppContent() {
   const toggleTheme = () => setIsDark(!isDark);
   const toggleCurrency = () => setCurrency(currency === 'EUR' ? 'BDT' : 'EUR');
 
-  const handleOpenApplicationWithUni = (uniName: string) => {
+  const handleOpenApplicationWithUni = (uniName: string, country?: string) => {
+    if (country) setSelectedCountryForApp(country);
     setSelectedUniForApp(uniName);
     setIsApplicationOpen(true);
   };
+
+  const returnToSite = () => {
+    window.location.hash = '';
+    setIsAdminView(false);
+  };
+
+  // If in Admin mode
+  if (isAdminView) {
+    if (isAdminAuthenticated) {
+      return <AdminLayout onReturnToSite={returnToSite} />;
+    }
+    return <AdminLogin onLoginSuccess={() => setIsAdminView(true)} onReturnToSite={returnToSite} />;
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B1F3A] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#D4AF37] selection:text-[#0B1F3A]">
@@ -73,16 +110,35 @@ export function AppContent() {
         onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
         onOpenAppointment={() => setIsAppointmentOpen(true)}
         onOpenApplication={() => setIsApplicationOpen(true)}
+        onOpenStudentPortal={() => setIsStudentPortalOpen(true)}
       />
 
       <main>
-        {/* Animated Hero Section with Quick Eligibility Widget */}
+        {/* Requirement 3: Animated Hero Section with Two Clear Stacked CTAs */}
         <Hero
           onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
           onOpenAppointment={() => setIsAppointmentOpen(true)}
+          onOpenApplication={() => setIsApplicationOpen(true)}
         />
 
-        {/* Study Destinations (Italy, Germany, France, Hungary, Spain, Portugal, Greece, Malta, Netherlands, Poland) */}
+        {/* Requirement 4: Visa Processing Steps Section */}
+        <VisaProcessSteps
+          onOpenAppointment={() => setIsAppointmentOpen(true)}
+        />
+
+        {/* Requirement 7: University/Course Selection & Budget Stepper */}
+        <CourseSelectionStepper
+          currency={currency}
+          onOpenApplicationWithUni={handleOpenApplicationWithUni}
+        />
+
+        {/* Requirement 5: Document Guide Section with Expandable Details */}
+        <DocumentGuideSection />
+
+        {/* Requirement 6: Campus / Student Life Gallery Section */}
+        <CampusGallerySection />
+
+        {/* Study Destinations (Italy, Germany, France, Hungary, USA, Spain, etc.) */}
         <StudyDestinations
           currency={currency}
           onSelectCountryForApplication={(countryName) => {
@@ -113,8 +169,10 @@ export function AppContent() {
         {/* 6-Step Student Journey Timeline */}
         <StudentJourney onOpenAppointment={() => setIsAppointmentOpen(true)} />
 
-        {/* Success Stories & Verified Testimonials */}
-        <SuccessStories />
+        {/* Requirement 8: Success Stories & Testimonials with Visa Granted Badge & End CTA */}
+        <SuccessStories
+          onOpenApplication={() => setIsApplicationOpen(true)}
+        />
 
         {/* Visa Process & Document Checklist Tool */}
         <VisaChecklistTool />
@@ -122,7 +180,7 @@ export function AppContent() {
         {/* Knowledge Base & Country Guides Blog */}
         <BlogSection />
 
-        {/* Frequently Asked Questions */}
+        {/* Requirement 9: FAQ Accordion Collapsed by Default */}
         <FAQSection />
 
         {/* Corporate Brand Identity Showcase & Collateral Suite */}
@@ -132,7 +190,7 @@ export function AppContent() {
         <ContactSection onOpenAppointment={() => setIsAppointmentOpen(true)} />
       </main>
 
-      {/* Footer */}
+      {/* Requirement 10: Footer with Company Info, Quick Links & Admin Console Link */}
       <Footer />
 
       {/* Floating Language Detection Suggestion Banner */}
@@ -168,15 +226,22 @@ export function AppContent() {
         initialCountry={selectedCountryForApp}
         initialUniversity={selectedUniForApp}
       />
+
+      <StudentPortalModal
+        isOpen={isStudentPortalOpen}
+        onClose={() => setIsStudentPortalOpen(false)}
+      />
     </div>
   );
 }
 
 export function App() {
   return (
-    <LanguageProvider>
-      <AppContent />
-    </LanguageProvider>
+    <CMSProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </CMSProvider>
   );
 }
 

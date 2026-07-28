@@ -5,11 +5,15 @@
 
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const CMS_FILE_PATH = path.join(process.cwd(), "cms-data.json");
+const ADMIN_TOKEN = "vercito_admin_session_token_2026_verified";
 
 async function startServer() {
   const app = express();
@@ -36,6 +40,71 @@ async function startServer() {
   // Health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", app: "VERCITO Backend" });
+  });
+
+  // Admin Login Endpoint
+  app.post("/api/admin/login", (req, res) => {
+    const { email, password } = req.body;
+    // Accept standard admin email & password (or process.env override)
+    const validEmail = process.env.ADMIN_EMAIL || "hr.vercito@gmail.com";
+    const validEmailAlt = "admin@vercito.com";
+    const validPass = process.env.ADMIN_PASSWORD || "vercito2026!";
+
+    if ((email === validEmail || email === validEmailAlt) && password === validPass) {
+      return res.json({
+        success: true,
+        token: ADMIN_TOKEN,
+        user: {
+          email,
+          name: "VERCITO Admin",
+          role: "Administrator",
+        },
+      });
+    }
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid email or password. Please try again.",
+    });
+  });
+
+  // Admin Token Verification
+  app.get("/api/admin/verify", (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader === `Bearer ${ADMIN_TOKEN}`) {
+      return res.json({ valid: true });
+    }
+    return res.status(401).json({ valid: false });
+  });
+
+  // GET CMS Data Endpoint
+  app.get("/api/cms/content", (req, res) => {
+    try {
+      if (fs.existsSync(CMS_FILE_PATH)) {
+        const fileData = fs.readFileSync(CMS_FILE_PATH, "utf-8");
+        return res.json(JSON.parse(fileData));
+      }
+      return res.json({ exists: false, message: "No custom CMS data on disk yet" });
+    } catch (err) {
+      console.error("Error reading CMS content file:", err);
+      return res.status(500).json({ error: "Failed to read CMS data" });
+    }
+  });
+
+  // POST CMS Data Endpoint (Save Content)
+  app.post("/api/cms/content", (req, res) => {
+    try {
+      const cmsData = req.body;
+      if (!cmsData || typeof cmsData !== "object") {
+        return res.status(400).json({ error: "Invalid CMS data payload" });
+      }
+
+      fs.writeFileSync(CMS_FILE_PATH, JSON.stringify(cmsData, null, 2), "utf-8");
+      return res.json({ success: true, message: "CMS content saved successfully to disk!" });
+    } catch (err) {
+      console.error("Error writing CMS content file:", err);
+      return res.status(500).json({ error: "Failed to save CMS data" });
+    }
   });
 
   // AI Profile Evaluator API

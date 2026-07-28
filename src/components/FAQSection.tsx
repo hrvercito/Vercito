@@ -4,14 +4,19 @@
  */
 
 import React, { useState } from 'react';
-import { FAQS } from '../data/mockData';
 import { HelpCircle, Search, ChevronDown, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 
 export const FAQSection: React.FC = () => {
+  const { cmsData } = useCMS();
+  const { t } = useTranslation();
+  const FAQS = cmsData.faqs;
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [search, setSearch] = useState<string>('');
-  const [openFaqId, setOpenFaqId] = useState<string | null>('faq-1');
+  // Requirement 9: Collapsed by default (openFaqId = null)
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
   const categories = ['All', 'Admissions', 'Scholarships', 'Visa & Embassy', 'Finances', 'General'];
 
@@ -24,19 +29,19 @@ export const FAQSection: React.FC = () => {
   });
 
   return (
-    <section id="faq" className="py-24 bg-slate-50 dark:bg-[#071426] transition-colors">
+    <section id="faq" className="py-24 bg-slate-50 dark:bg-[#071426] transition-colors border-t border-slate-200 dark:border-white/10">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Got Questions? We Have Clear Answers</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 text-[#0B1F3A] dark:text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
+            <HelpCircle className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>{t('faq.tag')}</span>
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
-            Frequently Asked Questions
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
+            {t('faq.title')}
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-light leading-relaxed">
-            Everything you need to know about European university admissions, Italian DSU scholarships, German blocked accounts, and embassy visa filings from Bangladesh.
+            {t('faq.subtitle')}
           </p>
         </div>
 
@@ -46,10 +51,10 @@ export const FAQSection: React.FC = () => {
             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search FAQ keywords (e.g. IELTS, DSU, Blocked account, Bank balance)..."
+              placeholder="Search FAQ keywords (e.g. IELTS, DSU grant, Blocked account, MOFA, Bank balance)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-2xl text-xs bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37] shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-xs sm:text-sm bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37] shadow-sm"
             />
           </div>
 
@@ -58,10 +63,10 @@ export const FAQSection: React.FC = () => {
               <button
                 key={c}
                 onClick={() => setActiveCategory(c)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                   activeCategory === c
-                    ? 'bg-[#0B1F3A] dark:bg-[#D4AF37] text-[#D4AF37] dark:text-[#0B1F3A] shadow-md'
-                    : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10'
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] shadow-md font-extrabold'
+                    : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-[#D4AF37]'
                 }`}
               >
                 {c}
@@ -70,14 +75,14 @@ export const FAQSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Accordion List */}
+        {/* Accordion List (Collapsed by Default) */}
         <div className="space-y-4">
           {filteredFaqs.map((faq) => {
             const isOpen = openFaqId === faq.id;
             return (
               <div
                 key={faq.id}
-                className="rounded-2xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm transition-all"
+                className="rounded-2xl bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 overflow-hidden shadow-sm hover:border-[#D4AF37]/40 transition-all"
               >
                 <button
                   onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
@@ -100,7 +105,7 @@ export const FAQSection: React.FC = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.2 }}
                     >
                       <div className="px-6 pb-6 pt-1 border-t border-slate-100 dark:border-white/5 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-light">
                         {faq.answer}

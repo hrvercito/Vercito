@@ -4,8 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { COUNTRY_DESTINATIONS } from '../data/mockData';
 import { CountryDestination, Currency } from '../types';
+import { useCMS } from '../context/CMSContext';
 import {
   Globe2,
   Euro,
@@ -32,6 +32,8 @@ export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
   onSelectCountryForApplication,
   onOpenAIEvaluator,
 }) => {
+  const { cmsData } = useCMS();
+  const COUNTRY_DESTINATIONS = cmsData.destinations;
   const [selectedCountry, setSelectedCountry] = useState<CountryDestination | null>(null);
   const [filterScholarship, setFilterScholarship] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');

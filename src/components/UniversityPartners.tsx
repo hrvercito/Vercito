@@ -4,9 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { UNIVERSITY_PARTNERS } from '../data/mockData';
 import { Building2, Search, GraduationCap, Award, ChevronRight, ExternalLink } from 'lucide-react';
 import { Currency } from '../types';
+import { useCMS } from '../context/CMSContext';
 
 interface UniversityPartnersProps {
   currency: Currency;
@@ -17,6 +17,8 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
   currency,
   onSelectUniversityForApplication,
 }) => {
+  const { cmsData } = useCMS();
+  const UNIVERSITY_PARTNERS = cmsData.universities;
   const [search, setSearch] = useState('');
   const [selectedCountryFilter, setSelectedCountryFilter] = useState('All');
 

@@ -169,8 +169,8 @@ export const Footer: React.FC = () => {
               </form>
             )}
 
-            {/* Sitemap Modal Button */}
-            <div className="pt-2">
+            {/* Sitemap & Admin CMS Buttons */}
+            <div className="pt-2 space-y-2">
               <button
                 onClick={openSitemap}
                 className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-mono border border-white/10 transition-all"
@@ -178,6 +178,17 @@ export const Footer: React.FC = () => {
                 <FileCode2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>SEO Multilingual Sitemap</span>
               </button>
+
+              <a
+                href="#admin"
+                onClick={() => {
+                  window.location.hash = 'admin';
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#D4AF37] text-xs font-semibold border border-[#D4AF37]/30 transition-all"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>Admin Panel / CMS</span>
+              </a>
             </div>
           </div>
         </div>

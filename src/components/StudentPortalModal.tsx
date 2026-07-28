@@ -1,0 +1,454 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState } from 'react';
+import {
+  X,
+  Search,
+  Upload,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Building2,
+  Send,
+  AlertCircle,
+  ShieldCheck,
+  User,
+  Phone,
+  Mail,
+  GraduationCap
+} from 'lucide-react';
+import { useTranslation } from '../i18n/LanguageContext';
+
+interface StudentPortalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenAppointment?: () => void;
+}
+
+interface DemoFileStatus {
+  id: string;
+  studentName: string;
+  country: string;
+  university: string;
+  program: string;
+  submittedDate: string;
+  currentStepIndex: number;
+  steps: { title: string; desc: string; completed: boolean; current?: boolean }[];
+  documents: { name: string; status: 'Approved' | 'Pending' | 'Required'; date: string }[];
+}
+
+const DEMO_RECORDS: Record<string, DemoFileStatus> = {
+  'VRC-2026-8891': {
+    id: 'VRC-2026-8891',
+    studentName: 'Tanvir Hossain',
+    country: 'Italy',
+    university: 'Politecnico di Milano',
+    program: 'M.Sc. Computer Science',
+    submittedDate: '15 Jan 2026',
+    currentStepIndex: 2,
+    steps: [
+      { title: 'Profile Audit & File Evaluation', desc: 'Academic transcripts and CGPA verified', completed: true },
+      { title: 'Document Legalization & MOFA Attestation', desc: 'Ministry of Foreign Affairs attestation done', completed: true },
+      { title: 'University Pre-Enrollment Submission', desc: 'Pre-enrollment submitted on Universitaly portal', completed: true, current: true },
+      { title: 'Embassy Appointment & Bank Solvency Check', desc: 'VFS appointment scheduling in progress', completed: false },
+      { title: 'Visa Grant & Travel Briefing', desc: 'Final visa issuance and departure checklist', completed: false },
+    ],
+    documents: [
+      { name: 'S.S.C & H.S.C Board Certificates', status: 'Approved', date: '16 Jan 2026' },
+      { name: 'Bachelor Degree Transcript & Certificate', status: 'Approved', date: '18 Jan 2026' },
+      { name: 'Bank Solvency & 6-Month Statement', status: 'Approved', date: '22 Jan 2026' },
+      { name: 'Police Clearance Certificate (MOFA)', status: 'Approved', date: '25 Jan 2026' },
+      { name: 'Medical Certificate', status: 'Pending', date: 'Awaiting Audit' },
+    ]
+  },
+  'VRC-2026-5420': {
+    id: 'VRC-2026-5420',
+    studentName: 'Nusrat Jahan',
+    country: 'Germany',
+    university: 'TU Munich (TUM)',
+    program: 'B.Sc. Data Engineering',
+    submittedDate: '02 Feb 2026',
+    currentStepIndex: 3,
+    steps: [
+      { title: 'Profile Audit & File Evaluation', desc: 'High school grades and uni-assist pre-check', completed: true },
+      { title: 'Document Legalization & MOFA Attestation', desc: 'Notary & German Embassy verification', completed: true },
+      { title: 'University Pre-Enrollment Submission', desc: 'Direct offer letter issued by TUM', completed: true },
+      { title: 'Embassy Appointment & Bank Solvency Check', desc: 'Blocked Account (€11,208) verified', completed: true, current: true },
+      { title: 'Visa Grant & Travel Briefing', desc: 'Passport submitted at German Embassy Dhaka', completed: false },
+    ],
+    documents: [
+      { name: 'H.S.C Board & Marksheet', status: 'Approved', date: '04 Feb 2026' },
+      { name: 'IELTS Academic Scorecard (7.5)', status: 'Approved', date: '05 Feb 2026' },
+      { name: 'Fintiba / Expatrio Blocked Account Confirmation', status: 'Approved', date: '12 Feb 2026' },
+      { name: 'Motivation Letter (SOP)', status: 'Approved', date: '15 Feb 2026' },
+    ]
+  }
+};
+
+export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, onClose }) => {
+  const { t, language } = useTranslation();
+  const [activeTab, setActiveTab] = useState<'track' | 'upload'>('track');
+  const [searchId, setSearchId] = useState('VRC-2026-8891');
+  const [fileRecord, setFileRecord] = useState<DemoFileStatus | null>(DEMO_RECORDS['VRC-2026-8891']);
+  const [searchError, setSearchError] = useState('');
+
+  // Upload Form State
+  const [uploadData, setUploadData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    targetCountry: 'Italy',
+    fileType: 'Academic Transcripts',
+    notes: '',
+  });
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const [newAssignedId, setNewAssignedId] = useState('');
+
+  if (!isOpen) return null;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = searchId.trim().toUpperCase();
+    if (DEMO_RECORDS[cleaned]) {
+      setFileRecord(DEMO_RECORDS[cleaned]);
+      setSearchError('');
+    } else {
+      setSearchError(
+        language === 'bn'
+          ? 'কোনো ফাইল রেকর্ড পাওয়া যায়নি। অনুগ্রহ করে VRC-2026-8891 অথবা VRC-2026-5420 দিয়ে চেষ্টা করুন।'
+          : 'No file record found for this ID. Try searching with demo ID: VRC-2026-8891 or VRC-2026-5420.'
+      );
+      setFileRecord(null);
+    }
+  };
+
+  const handleUploadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const generatedId = `VRC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    setNewAssignedId(generatedId);
+    setUploadSuccess(true);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-3xl bg-white dark:bg-[#0B1F3A] rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden text-slate-900 dark:text-slate-100 my-8">
+        {/* Header */}
+        <div className="p-6 bg-gradient-to-r from-[#0B1F3A] via-[#122A4E] to-[#0B1F3A] text-white flex items-center justify-between border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#C5A028] p-0.5 shadow-md">
+              <div className="w-full h-full bg-[#0B1F3A] rounded-[10px] flex items-center justify-center">
+                <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
+              </div>
+            </div>
+            <div>
+              <h3 className="font-serif text-xl font-bold text-white flex items-center gap-2">
+                <span>{t('portal.title')}</span>
+                <span className="text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] font-semibold border border-[#D4AF37]/30">
+                  LIVE PORTAL
+                </span>
+              </h3>
+              <p className="text-xs text-slate-300 mt-0.5">{t('portal.subtitle')}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/50 p-1">
+          <button
+            onClick={() => setActiveTab('track')}
+            className={`flex-1 py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'track'
+                ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Search className="w-4 h-4 text-[#D4AF37]" />
+            <span>{t('portal.trackTab')}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('upload')}
+            className={`flex-1 py-3 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'upload'
+                ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Upload className="w-4 h-4 text-[#D4AF37]" />
+            <span>{t('portal.uploadTab')}</span>
+          </button>
+        </div>
+
+        {/* Body Content */}
+        <div className="p-6 max-h-[75vh] overflow-y-auto">
+          {activeTab === 'track' ? (
+            <div className="space-y-6">
+              {/* Search Bar */}
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchId}
+                    onChange={(e) => setSearchId(e.target.value)}
+                    placeholder={t('portal.trackPlaceholder')}
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-mono focus:outline-none focus:border-[#D4AF37]"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] font-bold text-xs sm:text-sm shadow-md hover:scale-[1.02] transition-transform active:scale-95"
+                >
+                  {t('portal.trackBtn')}
+                </button>
+              </form>
+
+              {searchError && (
+                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{searchError}</span>
+                </div>
+              )}
+
+              {fileRecord && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  {/* File Overview Summary Card */}
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-md bg-[#D4AF37]/20 text-[#0B1F3A] dark:text-[#D4AF37]">
+                          {fileRecord.id}
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          Submitted: {fileRecord.submittedDate}
+                        </span>
+                      </div>
+                      <h4 className="text-lg font-bold mt-1 text-slate-900 dark:text-white">
+                        {fileRecord.studentName}
+                      </h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1.5 mt-0.5">
+                        <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                        <span>{fileRecord.university} ({fileRecord.country})</span>
+                        <span className="text-slate-400">•</span>
+                        <span>{fileRecord.program}</span>
+                      </p>
+                    </div>
+
+                    <div className="text-right sm:border-l sm:border-slate-200 dark:sm:border-white/10 sm:pl-5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                        File Status
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 mt-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                        <Clock className="w-3.5 h-3.5 animate-pulse" />
+                        Stage {fileRecord.currentStepIndex + 1} of {fileRecord.steps.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Visual Stepper Timeline */}
+                  <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <span>Live Visa & Admission Process Steps</span>
+                    </h5>
+
+                    <div className="relative space-y-4 before:absolute before:left-3.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
+                      {fileRecord.steps.map((st, idx) => (
+                        <div key={idx} className="relative flex items-start gap-4 pl-1">
+                          <div
+                            className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10 transition-colors ${
+                              st.completed
+                                ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                                : st.current
+                                ? 'bg-[#D4AF37] text-[#0B1F3A] font-bold ring-4 ring-[#D4AF37]/30'
+                                : 'bg-slate-200 dark:bg-slate-800 text-slate-400'
+                            }`}
+                          >
+                            {st.completed ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-xs">{idx + 1}</span>}
+                          </div>
+                          <div>
+                            <h6 className={`text-sm font-bold ${st.current ? 'text-[#D4AF37]' : st.completed ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                              {st.title}
+                            </h6>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{st.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Document Audit Checklist */}
+                  <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-[#D4AF37]" />
+                      <span>Submitted Document File Status</span>
+                    </h5>
+                    <div className="divide-y divide-slate-200 dark:divide-white/10">
+                      {fileRecord.documents.map((doc, idx) => (
+                        <div key={idx} className="py-2.5 flex items-center justify-between text-xs">
+                          <span className="font-medium text-slate-700 dark:text-slate-200">{doc.name}</span>
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                              doc.status === 'Approved'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                            }`}
+                          >
+                            {doc.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {uploadSuccess ? (
+                <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-4">
+                  <div className="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {language === 'bn' ? 'ফাইল সফলভাবে জমা হয়েছে!' : 'File Uploaded Successfully!'}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto">
+                    {language === 'bn'
+                      ? 'আপনার ফাইল রেজিস্টার করা হয়েছে। আমাদের ডকুমেন্ট স্পেশালিস্ট পরবর্তী ১২ ঘন্টার মধ্যে আপনার ফাইলটি যাচাই করবেন।'
+                      : 'Your file has been registered. Our document specialist will audit your file within 12 hours.'}
+                  </p>
+                  <div className="p-3 bg-white dark:bg-slate-900 rounded-xl inline-block border border-slate-200 dark:border-white/10 font-mono text-sm font-bold text-[#D4AF37]">
+                    Ref ID: {newAssignedId}
+                  </div>
+                  <div>
+                    <button
+                      onClick={() => {
+                        setUploadSuccess(false);
+                        setSearchId(newAssignedId);
+                        setActiveTab('track');
+                      }}
+                      className="px-6 py-2.5 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs shadow-md"
+                    >
+                      {language === 'bn' ? 'ফাইল ট্র্যাকিংয়ে যান' : 'Go to File Tracking'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleUploadSubmit} className="space-y-4">
+                  <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-white/10">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <Upload className="w-4 h-4 text-[#D4AF37]" />
+                      <span>{t('portal.uploadTitle')}</span>
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      {t('portal.uploadDesc')}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Student Full Name *</label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                        <input
+                          required
+                          type="text"
+                          value={uploadData.name}
+                          onChange={(e) => setUploadData({ ...uploadData, name: e.target.value })}
+                          placeholder="e.g. Tanvir Hossain"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Phone Number (WhatsApp) *</label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                        <input
+                          required
+                          type="tel"
+                          value={uploadData.phone}
+                          onChange={(e) => setUploadData({ ...uploadData, phone: e.target.value })}
+                          placeholder="+880 1711-000000"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Email Address *</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                        <input
+                          required
+                          type="email"
+                          value={uploadData.email}
+                          onChange={(e) => setUploadData({ ...uploadData, email: e.target.value })}
+                          placeholder="student@gmail.com"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold mb-1">Target Country *</label>
+                      <select
+                        value={uploadData.targetCountry}
+                        onChange={(e) => setUploadData({ ...uploadData, targetCountry: e.target.value })}
+                        className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-[#D4AF37]"
+                      >
+                        <option value="Italy">Italy (EU)</option>
+                        <option value="Germany">Germany (EU)</option>
+                        <option value="USA">United States of America</option>
+                        <option value="Finland">Finland (EU)</option>
+                        <option value="Hungary">Hungary (EU)</option>
+                        <option value="France">France (EU)</option>
+                        <option value="Poland">Poland (EU)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* File Upload Box */}
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Upload Document PDF / Zip *</label>
+                    <div className="border-2 border-dashed border-slate-300 dark:border-white/20 rounded-2xl p-6 text-center hover:border-[#D4AF37] transition-colors bg-slate-50 dark:bg-slate-900/30 cursor-pointer">
+                      <Upload className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        Click or drag & drop transcripts, passport or bank statement
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Supported formats: PDF, JPG, PNG (Max 15MB)
+                      </p>
+                      <input type="file" className="hidden" id="file-upload-input" />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E2C044] to-[#C5A028] text-[#0B1F3A] font-extrabold text-sm shadow-lg shadow-[#D4AF37]/20 hover:scale-[1.01] transition-transform flex items-center justify-center gap-2"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Submit File for Evaluation</span>
+                  </button>
+                </form>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

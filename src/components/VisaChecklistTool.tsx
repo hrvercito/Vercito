@@ -4,10 +4,12 @@
  */
 
 import React, { useState } from 'react';
-import { DOCUMENT_CHECKLIST } from '../data/mockData';
 import { ShieldCheck, CheckSquare, Square, Printer, Info, Download, AlertCircle } from 'lucide-react';
+import { useCMS } from '../context/CMSContext';
 
 export const VisaChecklistTool: React.FC = () => {
+  const { cmsData } = useCMS();
+  const DOCUMENT_CHECKLIST = cmsData.visaChecklist;
   const [selectedCountry, setSelectedCountry] = useState<string>('Italy');
   const [checkedIds, setCheckedIds] = useState<string[]>(['doc-1', 'doc-2']);
 

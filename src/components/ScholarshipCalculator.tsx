@@ -4,9 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { SCHOLARSHIPS } from '../data/mockData';
 import { Award, Sparkles, CheckCircle2, ChevronRight, Calculator, FileText, Send } from 'lucide-react';
 import { Currency } from '../types';
+import { useCMS } from '../context/CMSContext';
 
 interface ScholarshipCalculatorProps {
   currency: Currency;
@@ -19,6 +19,8 @@ export const ScholarshipCalculator: React.FC<ScholarshipCalculatorProps> = ({
   onOpenAppointment,
   onOpenApplication,
 }) => {
+  const { cmsData } = useCMS();
+  const SCHOLARSHIPS = cmsData.scholarships;
   const [cgpa, setCgpa] = useState<number>(3.3);
   const [ielts, setIelts] = useState<number>(6.5);
   const [targetCountry, setTargetCountry] = useState<string>('Italy');

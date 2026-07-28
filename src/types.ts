@@ -68,12 +68,16 @@ export interface SuccessStory {
   id: string;
   studentName: string;
   homeCity: string; // e.g. "Dhaka, Bangladesh"
+  homeCityBn?: string;
   university: string;
   country: string;
   degree: string;
+  degreeBn?: string;
   scholarshipWon?: string;
+  scholarshipWonBn?: string;
   photo: string;
   quote: string;
+  quoteBn?: string;
   visaApprovalYear: number;
   fieldOfStudy: string;
   ieltsScore?: string;

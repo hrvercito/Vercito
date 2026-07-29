@@ -80,7 +80,7 @@ export const Hero: React.FC<HeroProps> = ({
   ];
 
   return (
-    <section className="relative min-h-[92vh] pt-28 pb-16 md:pt-36 md:pb-20 overflow-hidden bg-[#071B36] text-white flex flex-col justify-between">
+    <section className="relative min-h-[85vh] lg:min-h-[90vh] pt-20 sm:pt-24 lg:pt-28 pb-0 overflow-hidden bg-[#071B36] text-white flex flex-col justify-between">
       {/* 1. Background Image - London Sunset with Student */}
       <div className="absolute inset-0 z-0">
         <img
@@ -107,15 +107,15 @@ export const Hero: React.FC<HeroProps> = ({
             repeat: Infinity,
             ease: 'linear',
           }}
-          className="absolute top-14 left-0 flex items-center gap-2 opacity-80"
+          className="absolute top-12 sm:top-16 left-0 flex items-center gap-2 opacity-80"
         >
-          <div className="h-0.5 w-64 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
-          <Plane className="w-7 h-7 text-[#D4AF37] transform rotate-45 drop-shadow-[0_0_15px_rgba(212,175,55,0.9)]" />
+          <div className="h-0.5 w-48 sm:w-64 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+          <Plane className="w-6 h-6 sm:w-7 sm:h-7 text-[#D4AF37] transform rotate-45 drop-shadow-[0_0_15px_rgba(212,175,55,0.9)]" />
         </motion.div>
       </div>
 
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto pt-4 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-auto py-6 sm:py-8 lg:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 xl:gap-12 items-center">
           
           {/* ========================================= */}
           {/* LEFT COLUMN: HEADLINE, DESCRIPTION & BUTTONS */}
@@ -124,37 +124,37 @@ export const Hero: React.FC<HeroProps> = ({
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 space-y-6 text-left"
+            className="lg:col-span-7 space-y-4 sm:space-y-5 text-left"
           >
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/60 border border-[#D4AF37]/70 text-[#D4AF37] text-xs font-semibold tracking-wide backdrop-blur-md shadow-md">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-slate-900/60 border border-[#D4AF37]/70 text-[#D4AF37] text-[11px] sm:text-xs font-semibold tracking-wide backdrop-blur-md shadow-md">
               <Plane className="w-3.5 h-3.5 text-[#D4AF37]" />
               <span>Europe & USA Higher Education & Student Visa Specialist</span>
             </div>
 
             {/* Headline matching Reference Image */}
             <div className="space-y-0.5">
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
                 Your Future, <br />
                 Our Guidance.
               </h1>
-              <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#D4AF37] leading-[1.08] pt-1">
+              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-[#D4AF37] leading-[1.1] pt-0.5 sm:pt-1">
                 Worldwide <br />
                 Opportunities.
               </h1>
             </div>
 
             {/* Description matching Reference Image */}
-            <p className="text-slate-200 text-sm sm:text-base font-normal leading-relaxed max-w-xl">
+            <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal leading-relaxed max-w-xl">
               We help students achieve their dreams of studying abroad and build a successful global career through expert admission guidance, scholarship assistance, university selection, visa processing, and continuous student support.
             </p>
 
             {/* CTA Buttons matching Reference Image */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-4 pt-2 max-w-md">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4 pt-1 sm:pt-2 max-w-md">
               {/* Primary Button */}
               <button
                 onClick={onOpenApplication}
-                className="px-8 py-4 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2.5 uppercase tracking-wider"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
               >
                 <GraduationCap className="w-4 h-4 text-[#041122]" />
                 <span>APPLY NOW</span>
@@ -164,7 +164,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Secondary Button */}
               <a
                 href="#services"
-                className="px-7 py-4 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2.5 backdrop-blur-md uppercase tracking-wider shadow-lg"
+                className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider shadow-lg"
               >
                 <Compass className="w-4 h-4 text-[#D4AF37]" />
                 <span>OUR SERVICES</span>
@@ -181,18 +181,18 @@ export const Hero: React.FC<HeroProps> = ({
             transition={{ duration: 0.8, delay: 0.2 }}
             className="lg:col-span-5"
           >
-            <div className="p-6 sm:p-7 rounded-2xl bg-[#091D38]/95 border border-slate-700/80 shadow-2xl backdrop-blur-xl relative">
+            <div className="p-5 sm:p-6 lg:p-6 rounded-2xl bg-[#091D38]/95 border border-slate-700/80 shadow-2xl backdrop-blur-xl relative">
               {/* Protruding Instant Check Badge on Top Right */}
-              <div className="absolute -top-3 right-6 px-3.5 py-1 rounded-md bg-[#D4AF37] text-[#071B36] text-[11px] font-extrabold uppercase tracking-wider shadow-md">
+              <div className="absolute -top-3 right-5 px-3 py-0.5 rounded-md bg-[#D4AF37] text-[#071B36] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider shadow-md">
                 {widgetBadge || 'INSTANT CHECK'}
               </div>
 
-              <div className="space-y-4 pt-1">
+              <div className="space-y-3.5 pt-1">
                 <div>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white leading-tight">
+                  <h3 className="font-serif text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
                     {widgetTitle || 'Check Admission Eligibility'}
                   </h3>
-                  <p className="text-xs text-slate-300 font-normal mt-1">
+                  <p className="text-[11px] sm:text-xs text-slate-300 font-normal mt-0.5">
                     Check immediate admission & scholarship eligibility in 1 minute.
                   </p>
                 </div>
@@ -206,16 +206,16 @@ export const Hero: React.FC<HeroProps> = ({
 
                 {/* Degree Level Segmented Control */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">
                     Degree Level
                   </label>
-                  <div className="grid grid-cols-3 gap-2 p-1 bg-[#051329] rounded-xl border border-slate-800">
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#051329] rounded-xl border border-slate-800">
                     {['Bachelors', 'Masters', 'PhD'].map((degree) => (
                       <button
                         key={degree}
                         type="button"
                         onClick={() => setQuickDegree(degree)}
-                        className={`py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+                        className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
                           quickDegree === degree
                             ? 'bg-[#D4AF37] text-[#071B36] shadow-md font-extrabold'
                             : 'text-slate-300 hover:text-white'
@@ -229,13 +229,13 @@ export const Hero: React.FC<HeroProps> = ({
 
                 {/* IELTS / English Score Select */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">
                     IELTS / English Score
                   </label>
                   <select
                     value={quickIelts}
                     onChange={(e) => setQuickIelts(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#051329] border border-slate-700 text-xs text-white focus:outline-none focus:border-[#D4AF37] transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#051329] border border-slate-700 text-xs text-white focus:outline-none focus:border-[#D4AF37] transition-all font-medium"
                   >
                     <option value="7.5">IELTS 7.0 - 8.0 (High Band Direct Admission)</option>
                     <option value="6.5">IELTS 6.0 - 6.5 (Standard Direct Entry)</option>
@@ -247,7 +247,7 @@ export const Hero: React.FC<HeroProps> = ({
                 {/* Analyze Button */}
                 <button
                   onClick={onOpenAIEvaluator}
-                  className="w-full py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-2 active:scale-98"
+                  className="w-full py-3 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-1 active:scale-98"
                 >
                   <Sparkles className="w-4 h-4 text-[#071B36]" />
                   <span>ANALYZE MY ELIGIBILITY NOW</span>
@@ -262,51 +262,51 @@ export const Hero: React.FC<HeroProps> = ({
       {/* ========================================= */}
       {/* BOTTOM STATISTICS BAR MATCHING REFERENCE */}
       {/* ========================================= */}
-      <div className="relative z-20 w-full bg-[#041122]/90 border-t border-white/10 py-4 backdrop-blur-md">
+      <div className="relative z-20 w-full bg-[#041122]/90 border-t border-white/10 py-3.5 sm:py-4 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 items-center text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
             
             {/* Stat 1 */}
             <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Users className="w-5 h-5 text-[#D4AF37]" />
+              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div>
-                <p className="font-serif text-2xl font-extrabold text-white">98.8%</p>
-                <p className="text-xs text-slate-300 font-medium">Visa Success Rate</p>
+                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">98.8%</p>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Visa Success Rate</p>
               </div>
             </div>
 
             {/* Stat 2 */}
             <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Award className="w-5 h-5 text-[#D4AF37]" />
+              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div>
-                <p className="font-serif text-2xl font-extrabold text-white">€7,000</p>
-                <p className="text-xs text-slate-300 font-medium">Max Annual DSU Grant</p>
+                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">€7,000</p>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Max Annual DSU Grant</p>
               </div>
             </div>
 
             {/* Stat 3 */}
             <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <GraduationCap className="w-5 h-5 text-[#D4AF37]" />
+              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div>
-                <p className="font-serif text-2xl font-extrabold text-white">3,500+</p>
-                <p className="text-xs text-slate-300 font-medium">Successful Students</p>
+                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">3,500+</p>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Successful Students</p>
               </div>
             </div>
 
             {/* Stat 4 */}
             <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Headphones className="w-5 h-5 text-[#D4AF37]" />
+              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+                <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div>
-                <p className="font-serif text-2xl font-extrabold text-white">100%</p>
-                <p className="text-xs text-slate-300 font-medium">Tuition Waiver Support</p>
+                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">100%</p>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Tuition Waiver Support</p>
               </div>
             </div>
 

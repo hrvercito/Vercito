@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   Users,
   Building2,
-  Headphones
+  Headphones,
+  Landmark
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -40,7 +41,7 @@ export const Hero: React.FC<HeroProps> = ({
   const { cmsData } = useCMS();
 
   // Instant Check card state (preserved strictly as requested)
-  const [quickCountry, setQuickCountry] = useState('Italy');
+  const [quickCountry, setQuickCountry] = useState('Australia');
   const [quickDegree, setQuickDegree] = useState('Masters');
   const [quickIelts, setQuickIelts] = useState('6.5');
 
@@ -154,11 +155,9 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Primary Button */}
               <button
                 onClick={onOpenApplication}
-                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
               >
-                <GraduationCap className="w-4 h-4 text-[#041122]" />
-                <span>APPLY NOW</span>
-                <ArrowRight className="w-4 h-4 text-[#041122]" />
+                <span>🎓 APPLY NOW →</span>
               </button>
 
               {/* Secondary Button */}
@@ -166,8 +165,7 @@ export const Hero: React.FC<HeroProps> = ({
                 href="#services"
                 className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider shadow-lg"
               >
-                <Compass className="w-4 h-4 text-[#D4AF37]" />
-                <span>OUR SERVICES</span>
+                <span>🌐 OUR SERVICES</span>
               </a>
             </div>
           </motion.div>
@@ -247,10 +245,9 @@ export const Hero: React.FC<HeroProps> = ({
                 {/* Analyze Button */}
                 <button
                   onClick={onOpenAIEvaluator}
-                  className="w-full py-3 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-1 active:scale-98"
+                  className="w-full py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-1 active:scale-98 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 text-[#071B36]" />
-                  <span>ANALYZE MY ELIGIBILITY NOW</span>
+                  <span>✈ ANALYZE MY ELIGIBILITY NOW</span>
                 </button>
               </div>
             </div>
@@ -280,7 +277,7 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Stat 2 */}
             <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
               <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                <Landmark className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div>
                 <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">€7,000</p>

@@ -10,16 +10,24 @@ import {
   Globe2,
   Moon,
   Sun,
+  Home,
+  Info,
+  Globe,
+  Briefcase,
   GraduationCap,
-  BookOpen,
+  Award,
+  Languages,
   FolderKanban,
-  ShieldCheck,
-  Headphones,
+  CreditCard,
+  BookOpen,
+  Mail,
+  UserCheck,
+  Send,
   ChevronRight,
   Sparkles,
-  Calendar,
-  Send
+  Calendar
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Currency } from '../types';
 import { useTranslation } from '../i18n/LanguageContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -48,83 +56,64 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState('#');
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
+
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash || '#');
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
-  const navLinks = [
-    { name: 'HOME', href: '#' },
-    { name: 'ABOUT US', href: '#process-steps' },
-    { name: 'DESTINATIONS', href: '#destinations' },
-    { name: 'SERVICES', href: '#services' },
-    { name: 'UNIVERSITIES', href: '#universities' },
-    { name: 'SCHOLARSHIPS', href: '#scholarships' },
-    { name: 'PAY ONLINE', href: '#payment' },
-    { name: 'BLOG', href: '#blog' },
-    { name: 'CONTACT', href: '#contact' },
+  const desktopNavLinks = [
+    { name: 'Home', href: '#' },
+    { name: 'About', href: '#process-steps' },
+    { name: 'Destinations', href: '#destinations' },
+    { name: 'Services', href: '#services' },
+    { name: 'Universities', href: '#universities' },
+    { name: 'Scholarships', href: '#scholarships' },
+    { name: 'Language Programs', href: '#language-programs' },
+    { name: 'Student Portal', onClick: onOpenStudentPortal },
+    { name: 'Payments', href: '#payment' },
+    { name: 'Blog', href: '#blog' },
+    { name: 'Contact', href: '#contact' },
   ];
 
-  const quickNavLinks = [
-    { name: t('nav.destinations'), href: '#destinations' },
-    { name: t('nav.services'), href: '#services' },
-    { name: t('nav.scholarships'), href: '#scholarships' },
-    { name: t('nav.universities'), href: '#universities' },
-    { name: 'Pay Fee Online', href: '#payment' },
-    { name: t('nav.testimonials'), href: '#testimonials' },
-    { name: t('nav.visaChecklist'), href: '#doc-guide' },
-    { name: t('nav.faq'), href: '#faq' },
+  const mobileMenuItems = [
+    { name: 'Home', href: '#', icon: Home, hash: '#' },
+    { name: 'About', href: '#process-steps', icon: Info, hash: '#process-steps' },
+    { name: 'Destinations', href: '#destinations', icon: Globe, hash: '#destinations' },
+    { name: 'Services', href: '#services', icon: Briefcase, hash: '#services' },
+    { name: 'Universities', href: '#universities', icon: GraduationCap, hash: '#universities' },
+    { name: 'Scholarships', href: '#scholarships', icon: Award, hash: '#scholarships' },
+    { name: 'Language Programs', href: '#language-programs', icon: Languages, hash: '#language-programs' },
+    { name: 'Student Portal', action: 'portal', icon: FolderKanban, hash: '#portal' },
+    { name: 'Payments', href: '#payment', icon: CreditCard, hash: '#payment' },
+    { name: 'Blog', href: '#blog', icon: BookOpen, hash: '#blog' },
+    { name: 'Contact', href: '#contact', icon: Mail, hash: '#contact' },
+    { name: 'Login', href: '#admin', icon: UserCheck, hash: '#admin' },
   ];
 
-  const primaryCards = [
-    {
-      id: 'info',
-      icon: BookOpen,
-      title: t('nav.infoGuidelines'),
-      desc: t('nav.infoGuidelinesDesc'),
-      href: '#process-steps',
-      action: () => setIsDrawerOpen(false),
-      badge: 'GUIDELINES',
-      gradient: 'from-blue-600/20 to-indigo-600/20 text-blue-500',
-    },
-    {
-      id: 'portal',
-      icon: FolderKanban,
-      title: t('nav.studentPortal'),
-      desc: t('nav.studentPortalDesc'),
-      action: () => {
-        setIsDrawerOpen(false);
-        onOpenStudentPortal();
-      },
-      badge: 'LIVE TRACKER',
-      gradient: 'from-amber-500/20 to-yellow-600/20 text-amber-500',
-    },
-    {
-      id: 'admin',
-      icon: ShieldCheck,
-      title: t('nav.adminPanel'),
-      desc: t('nav.adminPanelDesc'),
-      href: '#admin',
-      action: () => setIsDrawerOpen(false),
-      badge: 'PORTAL LOGIN',
-      gradient: 'from-purple-600/20 to-pink-600/20 text-purple-400',
-    },
-    {
-      id: 'support',
-      icon: Headphones,
-      title: t('nav.supportContact'),
-      desc: t('nav.supportContactDesc'),
-      href: '#contact',
-      action: () => setIsDrawerOpen(false),
-      badge: 'DHAKA & CTG',
-      gradient: 'from-emerald-600/20 to-teal-600/20 text-emerald-400',
-    },
-  ];
+  const handleItemClick = (item: typeof mobileMenuItems[0]) => {
+    if (item.action === 'portal') {
+      onOpenStudentPortal();
+    } else if (item.href) {
+      window.location.hash = item.href;
+      setActiveHash(item.href);
+    }
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -138,29 +127,46 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4">
-            {/* Brand Logo using official Vercito Logo */}
+          <div className="flex items-center justify-between gap-3">
+            {/* VERCITO Brand Logo */}
             <a href="#" className="flex items-center group focus:outline-none shrink-0">
               <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
             </a>
 
-            {/* Desktop Navigation Menu Links matching Image 1 */}
-            <nav className="hidden xl:flex items-center gap-6">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-xs font-extrabold tracking-wider text-slate-100 hover:text-[#D4AF37] transition-colors relative py-1 group"
-                >
-                  <span>{link.name}</span>
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-300" />
-                </a>
-              ))}
+            {/* Desktop Navigation Links */}
+            <nav className="hidden xl:flex items-center gap-5">
+              {desktopNavLinks.map((link) => {
+                const isActive = link.href === activeHash;
+                return link.onClick ? (
+                  <button
+                    key={link.name}
+                    onClick={link.onClick}
+                    className="text-xs font-bold tracking-wider text-slate-100 hover:text-[#D4AF37] transition-colors py-1 cursor-pointer"
+                  >
+                    {link.name}
+                  </button>
+                ) : (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setActiveHash(link.href || '#')}
+                    className={`text-xs font-bold tracking-wider transition-colors relative py-1 group ${
+                      isActive ? 'text-[#D4AF37]' : 'text-slate-100 hover:text-[#D4AF37]'
+                    }`}
+                  >
+                    <span>{link.name}</span>
+                    <span
+                      className={`absolute bottom-0 left-0 h-0.5 bg-[#D4AF37] transition-all duration-300 ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    />
+                  </a>
+                );
+              })}
             </nav>
 
-            {/* Header Actions */}
+            {/* Header Right Actions */}
             <div className="flex items-center gap-2 sm:gap-2.5">
-              {/* Language Switcher */}
               <LanguageSwitcher />
 
               {/* Currency Selector */}
@@ -182,156 +188,147 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isDarkMode ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-white" />}
               </button>
 
-              {/* Student Portal Button */}
-              <button
-                onClick={onOpenStudentPortal}
-                className="hidden lg:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl bg-white/10 border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0B1F3A] transition-all"
-              >
-                <FolderKanban className="w-3.5 h-3.5" />
-                <span>Portal</span>
-              </button>
-
-              {/* Apply Now Primary Button matching Image 1 */}
+              {/* Apply Now CTA */}
               <button
                 onClick={onOpenApplication}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all"
+                className="hidden md:block px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0"
               >
                 APPLY NOW
               </button>
 
-              {/* Menu Drawer Toggle */}
+              {/* Mobile Hamburger Toggle */}
               <button
-                onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-                className="flex items-center gap-1.5 p-2 px-2.5 rounded-xl bg-white/10 text-[#D4AF37] font-bold text-xs hover:bg-white/20 transition-colors border border-white/20"
-                aria-label="Open Navigation Menu"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2.5 rounded-xl bg-white/10 text-[#D4AF37] hover:bg-white/20 transition-all border border-white/20 shrink-0 focus:outline-none"
+                aria-label="Toggle Mobile Menu"
               >
-                <Menu className="w-4 h-4" />
+                {isMobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-[#D4AF37]" />}
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Requirement 1: Slide-over Navigation Side Menu with 4 Icon Cards */}
-      {isDrawerOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          {/* Overlay Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
-            onClick={() => setIsDrawerOpen(false)}
-          />
+      {/* Premium Animated Mobile Menu Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <div className="fixed inset-0 z-50 overflow-hidden">
+            {/* Dark Transparent Background Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/80 backdrop-blur-md"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-          <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#0B1F3A] text-white p-6 overflow-y-auto shadow-2xl border-l border-white/10 flex flex-col justify-between z-50 animate-in slide-in-from-right duration-300">
-            <div>
-              {/* Drawer Top Header */}
-              <div className="flex items-center justify-between pb-6 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#D4AF37] p-0.5 flex items-center justify-center shadow-lg shadow-[#D4AF37]/20">
-                    <GraduationCap className="w-6 h-6 text-[#0B1F3A]" />
-                  </div>
-                  <div>
-                    <span className="font-serif text-xl font-bold text-white tracking-tight">VERCITO</span>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-widest">{t('nav.tagline')}</p>
-                  </div>
-                </div>
+            {/* Smooth Slide-in Menu Panel */}
+            <motion.div
+              initial={{ x: '100%', opacity: 0.5 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              className="fixed top-0 right-0 bottom-0 w-[88vw] max-w-sm bg-[#0B1F3A] border-l-2 border-[#D4AF37]/50 shadow-2xl rounded-l-3xl flex flex-col justify-between overflow-hidden z-50"
+            >
+              {/* Header with Uploaded VERCITO Logo */}
+              <div className="p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/80">
+                <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
                 <button
-                  onClick={() => setIsDrawerOpen(false)}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-xl bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* 4 Primary Icon-Based Cards */}
-              <div className="py-6 space-y-3">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF37]">
-                  Main Navigation Hub
+              {/* Scrollable Navigation Items */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-white/20">
+                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] mb-2">
+                  Navigation Menu
                 </p>
 
-                <div className="grid grid-cols-1 gap-3">
-                  {primaryCards.map((card) => {
-                    const IconComp = card.icon;
-                    return (
-                      <a
-                        key={card.id}
-                        href={card.href || '#'}
-                        onClick={(e) => {
-                          if (card.action) card.action();
-                        }}
-                        className="p-4 rounded-2xl bg-slate-900/90 border border-white/10 hover:border-[#D4AF37] transition-all group relative overflow-hidden block"
-                      >
-                        <div className="flex items-start gap-3.5">
-                          <div className={`p-3 rounded-xl bg-slate-800 ${card.gradient} group-hover:scale-110 transition-transform`}>
-                            <IconComp className="w-5 h-5" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between">
-                              <h4 className="text-sm font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                                {card.title}
-                              </h4>
-                              <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-white/10 text-slate-300">
-                                {card.badge}
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
-                              {card.desc}
-                            </p>
-                          </div>
-                        </div>
-                      </a>
-                    );
-                  })}
-                </div>
-              </div>
+                {mobileMenuItems.map((item) => {
+                  const IconComp = item.icon;
+                  const isActive = activeHash === item.hash;
 
-              {/* Quick Navigation Links */}
-              <div className="pt-4 border-t border-white/10 space-y-2">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                  Quick Page Links
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {quickNavLinks.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsDrawerOpen(false)}
-                      className="flex items-center justify-between text-xs font-semibold text-slate-300 hover:text-[#D4AF37] p-2 rounded-lg hover:bg-white/5 transition-colors"
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => handleItemClick(item)}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/60 text-[#D4AF37] shadow-md'
+                          : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                      }`}
                     >
-                      <span>{link.name}</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-                    </a>
-                  ))}
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`p-1.5 rounded-lg ${
+                            isActive ? 'bg-[#D4AF37] text-[#0B1F3A]' : 'bg-white/10 text-slate-300'
+                          }`}
+                        >
+                          <IconComp className="w-4 h-4" />
+                        </div>
+                        <span>{item.name}</span>
+                      </div>
+
+                      <ChevronRight
+                        className={`w-4 h-4 ${isActive ? 'text-[#D4AF37]' : 'text-slate-500'}`}
+                      />
+                    </button>
+                  );
+                })}
+
+                {/* Apply Now Primary Highlighted Button */}
+                <div className="pt-3">
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onOpenApplication();
+                    }}
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Apply Now</span>
+                  </button>
                 </div>
               </div>
-            </div>
 
-            {/* Drawer Bottom Actions */}
-            <div className="pt-6 border-t border-white/10 space-y-3">
-              <button
-                onClick={() => {
-                  setIsDrawerOpen(false);
-                  onOpenAIEvaluator();
-                }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs"
-              >
-                <Sparkles className="w-4 h-4 text-[#D4AF37] animate-pulse" />
-                <span>{t('nav.aiCheck')}</span>
-              </button>
+              {/* Footer Quick Actions */}
+              <div className="p-4 border-t border-white/10 bg-slate-900/90 space-y-2.5">
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onOpenAIEvaluator();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/5 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs hover:bg-[#D4AF37]/10 transition-all"
+                >
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span>AI Eligibility Check</span>
+                </button>
 
-              <button
-                onClick={() => {
-                  setIsDrawerOpen(false);
-                  onOpenAppointment();
-                }}
-                className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E2C044] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs shadow-lg shadow-[#D4AF37]/20"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>{t('nav.bookConsultation')}</span>
-              </button>
-            </div>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onOpenAppointment();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-all"
+                >
+                  <Calendar className="w-4 h-4 text-[#D4AF37]" />
+                  <span>Book Free Counseling</span>
+                </button>
+
+                <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+                  <span>Language / ভাষা:</span>
+                  <LanguageSwitcher />
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 };
+

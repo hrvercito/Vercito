@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { useCMS } from '../context/CMSContext';
 import { CountrySelect } from './CountrySelect';
 
 interface HeroProps {

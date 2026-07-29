@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Search,
@@ -22,10 +22,13 @@ import {
   CreditCard,
   MessageSquare,
   Bot,
-  Paperclip
+  Paperclip,
+  Sparkles,
+  Award
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { VercitoLogo } from './VercitoLogo';
+import { AIAssessmentRecord } from '../types';
 
 interface StudentPortalModalProps {
   isOpen: boolean;
@@ -61,13 +64,16 @@ const DEMO_RECORDS: Record<string, DemoFileStatus> = {
     university: 'Politecnico di Milano',
     program: 'M.Sc. Computer Science',
     submittedDate: '15 Jan 2026',
-    currentStepIndex: 2,
+    currentStepIndex: 3,
     steps: [
-      { title: 'Profile Audit & File Evaluation', desc: 'Academic transcripts and CGPA verified', completed: true },
-      { title: 'Document Legalization & MOFA Attestation', desc: 'Ministry of Foreign Affairs attestation done', completed: true },
-      { title: 'University Pre-Enrollment Submission', desc: 'Pre-enrollment submitted on Universitaly portal', completed: true, current: true },
-      { title: 'Embassy Appointment & Bank Solvency Check', desc: 'VFS appointment scheduling in progress', completed: false },
-      { title: 'Visa Grant & Travel Briefing', desc: 'Final visa issuance and departure checklist', completed: false },
+      { title: '1. Profile Submitted', desc: 'Mandatory profile assessment & evaluation complete', completed: true },
+      { title: '2. Documents Uploaded', desc: 'Transcript, Certificate, CV & Passport verified', completed: true },
+      { title: '3. University Applied', desc: 'Application submitted on Universitaly portal', completed: true },
+      { title: '4. Offer Letter Received', desc: 'Conditional Admission Offer Letter issued', completed: true, current: true },
+      { title: '5. Tuition Paid', desc: 'Regional tax & pre-enrollment deposit confirmed', completed: false },
+      { title: '6. Visa Submitted', desc: 'Dossier & Bank solvency lodged at VFS Dhaka', completed: false },
+      { title: '7. Visa Approved', desc: 'Schengen National Type-D Study Visa granted', completed: false },
+      { title: '8. Departure', desc: 'Pre-departure flight & accommodation briefing', completed: false },
     ],
     documents: [
       { name: 'S.S.C & H.S.C Board Certificates', status: 'Approved', date: '16 Jan 2026' },
@@ -84,13 +90,16 @@ const DEMO_RECORDS: Record<string, DemoFileStatus> = {
     university: 'TU Munich (TUM)',
     program: 'B.Sc. Data Engineering',
     submittedDate: '02 Feb 2026',
-    currentStepIndex: 3,
+    currentStepIndex: 6,
     steps: [
-      { title: 'Profile Audit & File Evaluation', desc: 'High school grades and uni-assist pre-check', completed: true },
-      { title: 'Document Legalization & MOFA Attestation', desc: 'Notary & German Embassy verification', completed: true },
-      { title: 'University Pre-Enrollment Submission', desc: 'Direct offer letter issued by TUM', completed: true },
-      { title: 'Embassy Appointment & Bank Solvency Check', desc: 'Blocked Account (€11,208) verified', completed: true, current: true },
-      { title: 'Visa Grant & Travel Briefing', desc: 'Passport submitted at German Embassy Dhaka', completed: false },
+      { title: '1. Profile Submitted', desc: 'Profile audit & eligibility complete', completed: true },
+      { title: '2. Documents Uploaded', desc: 'Uni-assist notarized copies verified', completed: true },
+      { title: '3. University Applied', desc: 'Direct application lodged at TUM', completed: true },
+      { title: '4. Offer Letter Received', desc: 'Direct Unconditional Admission Letter', completed: true },
+      { title: '5. Tuition Paid', desc: 'Semester fee & Expatrio Blocked Account funded', completed: true },
+      { title: '6. Visa Submitted', desc: 'Passport lodged at German Embassy Dhaka', completed: true },
+      { title: '7. Visa Approved', desc: 'German National Student Visa Issued', completed: true, current: true },
+      { title: '8. Departure', desc: 'Munich accommodation & flight ticket confirmed', completed: false },
     ],
     documents: [
       { name: 'H.S.C Board & Marksheet', status: 'Approved', date: '04 Feb 2026' },
@@ -103,10 +112,24 @@ const DEMO_RECORDS: Record<string, DemoFileStatus> = {
 
 export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, onClose }) => {
   const { t, language } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'track' | 'upload' | 'payments' | 'chat'>('track');
+  const [activeTab, setActiveTab] = useState<'track' | 'upload' | 'payments' | 'chat' | 'assessments'>('track');
   const [searchId, setSearchId] = useState('VRC-2026-8891');
   const [fileRecord, setFileRecord] = useState<DemoFileStatus | null>(DEMO_RECORDS['VRC-2026-8891']);
   const [searchError, setSearchError] = useState('');
+
+  // AI Assessments state loaded from localStorage
+  const [savedAssessments, setSavedAssessments] = useState<AIAssessmentRecord[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('vercito_student_assessments');
+      if (stored) {
+        setSavedAssessments(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+  }, [isOpen]);
 
   // Live Chat State
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([
@@ -212,6 +235,18 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
           </button>
 
           <button
+            onClick={() => setActiveTab('assessments')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === 'assessments'
+                ? 'bg-white dark:bg-[#0B1F3A] text-[#0B1F3A] dark:text-[#D4AF37] shadow-sm border border-slate-200 dark:border-white/10'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>AI Assessments</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('upload')}
             className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'upload'
@@ -250,6 +285,70 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({ isOpen, 
 
         {/* Body Content */}
         <div className="p-6 max-h-[75vh] overflow-y-auto">
+          {activeTab === 'assessments' && (
+            <div className="space-y-4 animate-in fade-in duration-200">
+              <div className="p-4 rounded-2xl bg-slate-900 text-white border border-[#D4AF37]/30 flex items-center justify-between">
+                <div>
+                  <h4 className="font-serif font-bold text-base text-[#D4AF37] flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    <span>My AI Profile Assessment Reports</span>
+                  </h4>
+                  <p className="text-xs text-slate-300">
+                    Saved admission score audits, top 10 matched universities, and action plans.
+                  </p>
+                </div>
+              </div>
+
+              {savedAssessments.length === 0 ? (
+                <div className="p-8 text-center rounded-2xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-white/10 space-y-3">
+                  <Bot className="w-10 h-10 mx-auto text-[#D4AF37]" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    You have not saved any AI profile assessments yet.
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    Run the "VERCITO AI Study Specialist" on the homepage to generate and save your report here!
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {savedAssessments.map((rec) => (
+                    <div
+                      key={rec.id}
+                      className="p-5 rounded-2xl bg-slate-900 border border-white/10 text-white space-y-3"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div>
+                          <span className="font-mono text-xs font-bold text-[#D4AF37]">{rec.id}</span>
+                          <h5 className="font-bold text-sm text-white">{rec.input.fullName}</h5>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-extrabold text-[#D4AF37]">
+                            {rec.result.eligibilityScore}%
+                          </span>
+                          <span className="block text-[10px] font-semibold text-emerald-400">
+                            {rec.result.admissionChance}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                        <div>Target: <strong>{rec.input.preferredCountry} ({rec.input.preferredUniversity})</strong></div>
+                        <div>Subject: <strong>{rec.input.intendedSubject}</strong></div>
+                        <div>Intake: <strong>{rec.input.preferredIntake}</strong></div>
+                        <div>Budget: <strong>{rec.input.estimatedBudget}</strong></div>
+                      </div>
+
+                      <div className="pt-2 border-t border-white/10 text-xs text-slate-200">
+                        <strong className="text-[#D4AF37] block mb-1">Chief Advisor Advice:</strong>
+                        <p className="bg-white/5 p-2.5 rounded-xl leading-relaxed">{rec.result.personalizedAdvice}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {activeTab === 'track' ? (
             <div className="space-y-6">
               {/* Search Bar */}

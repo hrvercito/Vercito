@@ -14,6 +14,7 @@ import { VisaChecklistEditor } from './editors/VisaChecklistEditor';
 import { BlogEditor } from './editors/BlogEditor';
 import { ApplicationsManager } from './editors/ApplicationsManager';
 import { PaymentsManager } from './editors/PaymentsManager';
+import { AIAssessmentsManager } from './editors/AIAssessmentsManager';
 import { VercitoLogo } from '../VercitoLogo';
 
 import {
@@ -32,9 +33,10 @@ import {
   Menu,
   X,
   CheckCircle2,
+  Bot,
 } from 'lucide-react';
 
-type AdminSection = 'applications' | 'payments' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
+type AdminSection = 'applications' | 'ai-assessments' | 'payments' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
 
 interface AdminLayoutProps {
   onReturnToSite: () => void;
@@ -47,6 +49,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
 
   const navItems = [
     { id: 'applications' as AdminSection, label: 'Applications Received', icon: FolderKanban },
+    { id: 'ai-assessments' as AdminSection, label: 'AI Profile Assessments', icon: Bot },
     { id: 'payments' as AdminSection, label: 'SSLCommerz Payments', icon: CreditCard },
     { id: 'hero' as AdminSection, label: 'Hero Section', icon: Sparkles },
     { id: 'destinations' as AdminSection, label: 'Destinations & Universities', icon: Globe },
@@ -167,6 +170,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
         {/* Active Editor Rendering */}
         <div className="bg-slate-800/80 rounded-3xl p-6 border border-white/10 shadow-2xl backdrop-blur-md">
           {activeSection === 'applications' && <ApplicationsManager />}
+          {activeSection === 'ai-assessments' && <AIAssessmentsManager />}
           {activeSection === 'payments' && <PaymentsManager />}
           {activeSection === 'hero' && <HeroEditor />}
           {activeSection === 'destinations' && <DestinationsEditor />}

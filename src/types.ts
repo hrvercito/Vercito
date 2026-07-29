@@ -187,26 +187,102 @@ export interface FAQItem {
   answer: string;
 }
 
+export type AdmissionChance = 'Excellent' | 'Very Good' | 'Good' | 'Moderate' | 'Low';
+
+export interface RecommendedUniversityDetail {
+  name: string;
+  country: string;
+  qsRanking: number | string;
+  type: 'Public' | 'Private' | 'Polytechnic';
+  tuitionFee: string;
+  scholarshipAvailability: string;
+  applicationDeadline: string;
+  matchReason: string;
+}
+
+export interface RecommendedScholarshipDetail {
+  name: string;
+  coverage: string;
+  eligibility: string;
+  deadline: string;
+  winningProbability: 'Very High' | 'High' | 'Moderate' | 'Low';
+}
+
+export interface EnglishRequirementBreakdown {
+  ieltsRequired: boolean;
+  ieltsNotes?: string;
+  ieltsWaiverAvailable: boolean;
+  moiAccepted: boolean;
+  duolingoAccepted: boolean;
+  pteAccepted: boolean;
+  toeflAccepted: boolean;
+}
+
+export interface EstimatedCostBreakdown {
+  tuitionFee: string;
+  livingCost: string;
+  visaFee: string;
+  healthInsurance: string;
+  totalEstimatedBudget: string;
+}
+
 export interface ProfileEvaluationInput {
+  // Required Fields
   fullName: string;
   email: string;
   phone: string;
-  currentEducationLevel: string; // e.g., "HSC / A-Levels" | "Bachelors Graduate" | "Masters"
+  currentEducationLevel: string;
   cgpaOrGpa: string;
-  englishProficiency: string; // "IELTS 6.5+" | "IELTS 6.0" | "Duolingo / PTE" | "MOI / English Waiver"
-  intendedDegree: string; // "Bachelors" | "Masters" | "PhD"
+  englishProficiency: string;
   preferredCountry: string;
-  budgetPerYearEUR: string;
+  preferredUniversity: string;
   intendedSubject: string;
+  preferredIntake: string;
+  passportAvailable: 'Yes' | 'No';
+  nationality: string;
+  estimatedBudget: string;
+  scholarshipPreference: 'Full Scholarship' | 'Partial Scholarship' | 'Self-Funded' | 'Any';
+  preferredStudyLevel: 'Bachelors' | 'Masters' | 'PhD' | 'Diploma' | 'Language Programs';
+
+  // Optional Fields
+  workExperience?: string;
+  visaRefusal?: string;
+  visaRefusalDetails?: string;
+  studyMode?: 'On-Campus' | 'Hybrid' | 'Distance Learning';
+  additionalNotes?: string;
+
+  // Upload Metadata
+  transcriptFileName?: string;
+  certificateFileName?: string;
+  passportFileName?: string;
+  cvFileName?: string;
+  englishReportFileName?: string;
 }
 
 export interface ProfileEvaluationResult {
-  eligibilityScore: number; // 0-100
-  recommendedCountries: { name: string; matchPercentage: number; reason: string }[];
-  suggestedUniversities: string[];
-  eligibleScholarships: string[];
-  visaFeasibility: string;
+  eligibilityScore: number;
+  admissionChance: AdmissionChance;
+  recommendedUniversities: RecommendedUniversityDetail[];
+  recommendedScholarships: RecommendedScholarshipDetail[];
+  englishRequirements: EnglishRequirementBreakdown;
+  estimatedCost: EstimatedCostBreakdown;
+  documentChecklist: {
+    missingDocuments: string[];
+    requiredDocuments: string[];
+  };
+  nextStepsActionPlan: string[];
   personalizedAdvice: string;
+  visaFeasibility: string;
+}
+
+export interface AIAssessmentRecord {
+  id: string;
+  createdAt: string;
+  input: ProfileEvaluationInput;
+  result: ProfileEvaluationResult;
+  status: 'New Assessment' | 'In Review' | 'Contacted' | 'Converted to Application' | 'Archived';
+  assignedCounselor?: string;
+  encryptedToken?: string;
 }
 
 export interface AppointmentBooking {

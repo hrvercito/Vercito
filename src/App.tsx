@@ -36,12 +36,13 @@ import { SitemapModal } from './components/SitemapModal';
 import { CMSProvider, useCMS } from './context/CMSContext';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminLayout } from './components/admin/AdminLayout';
+import { LoadingScreen } from './components/LoadingScreen';
 
 import { BrandIdentityShowcase } from './components/BrandIdentityShowcase';
 import { Currency } from './types';
 
 export function AppContent() {
-  const { isAdminAuthenticated } = useCMS();
+  const { isAdminAuthenticated, isLoading } = useCMS();
   const [isAdminView, setIsAdminView] = useState<boolean>(() => {
     return window.location.hash === '#admin' || window.location.pathname.startsWith('/admin');
   });
@@ -91,6 +92,10 @@ export function AppContent() {
     window.location.hash = '';
     setIsAdminView(false);
   };
+
+  if (isLoading) {
+    return <LoadingScreen message="Loading VERCITO Global Education System..." />;
+  }
 
   // If in Admin mode
   if (isAdminView) {
@@ -191,7 +196,10 @@ export function AppContent() {
         <PaymentSection currency={currency} />
 
         {/* Direct Contact & Gulshan/Chittagong Office Booking */}
-        <ContactSection onOpenAppointment={() => setIsAppointmentOpen(true)} />
+        <ContactSection
+          onOpenAppointment={() => setIsAppointmentOpen(true)}
+          onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
+        />
       </main>
 
       {/* Requirement 10: Footer with Company Info, Quick Links & Admin Console Link */}

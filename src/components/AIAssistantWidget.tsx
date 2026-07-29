@@ -146,13 +146,11 @@ export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
       if (getGeminiApiKey()) {
         const evalResult = await evaluateProfileWithGemini(profileForm);
         const formattedReply = `🎯 **VERCITO AI Profile Assessment Result**\n\n` +
-          `⭐ **Admission & Visa Match Score**: **${evalResult.eligibilityScore}%**\n\n` +
-          `🌍 **Recommended Target Countries**:\n` +
-          evalResult.recommendedCountries.map((c) => `• **${c.name}** (${c.matchPercentage}% match): ${c.reason}`).join('\n') +
-          `\n\n🏫 **Suggested Public Universities**:\n` +
-          evalResult.suggestedUniversities.map((u) => `• ${u}`).join('\n') +
+          `⭐ **Admission & Visa Match Score**: **${evalResult.eligibilityScore}%** (${evalResult.admissionChance})\n\n` +
+          `🏫 **Recommended Universities**:\n` +
+          evalResult.recommendedUniversities.map((u) => `• **${u.name}** (${u.country}): ${u.matchReason}`).join('\n') +
           `\n\n💶 **Eligible Scholarships**:\n` +
-          evalResult.eligibleScholarships.map((s) => `• ${s}`).join('\n') +
+          evalResult.recommendedScholarships.map((s) => `• **${s.name}**: ${s.coverage}`).join('\n') +
           `\n\n🛂 **Visa Feasibility**: ${evalResult.visaFeasibility}\n\n` +
           `💡 **Expert Advice**: ${evalResult.personalizedAdvice}`;
 

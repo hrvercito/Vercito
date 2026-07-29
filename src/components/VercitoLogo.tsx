@@ -166,9 +166,9 @@ export const VercitoLogo: React.FC<VercitoLogoProps> = ({
     </svg>
   );
 
-  // Typography color resolution
-  const primaryTextColor = isDarkBg ? 'text-white' : 'text-[#0B1F3A]';
-  const taglineTextColor = isDarkBg ? 'text-slate-300' : 'text-[#0B1F3A]';
+  // Typography color resolution with dark mode support
+  const primaryTextColor = isDarkBg ? 'text-white' : 'text-[#0B1F3A] dark:text-white';
+  const taglineTextColor = isDarkBg ? 'text-slate-200' : 'text-slate-700 dark:text-slate-300';
 
   if (variant === 'icon') {
     return <div className={`${heightClasses} aspect-square ${className}`}>{Emblem}</div>;

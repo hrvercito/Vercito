@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <defs>
+    <!-- Background Circle Fill -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0E284B"/>
+      <stop offset="100%" stop-color="#0B1F3A"/>
+    </radialGradient>
+
+    <!-- Navy Gradients -->
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1F3A" />
+      <stop offset="50%" stop-color="#08162A" />
+      <stop offset="100%" stop-color="#040C18" />
+    </linearGradient>
+
+    <!-- Gold Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9E29C" />
+      <stop offset="35%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#AA820A" />
+      <stop offset="100%" stop-color="#E5C158" />
+    </linearGradient>
+
+    <!-- Globe Gradient -->
+    <radialGradient id="globeGrad" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#1E4D8C" />
+      <stop offset="60%" stop-color="#0B2A5B" />
+      <stop offset="100%" stop-color="#051430" />
+    </radialGradient>
+  </defs>
+
+  <!-- Dark Navy Container Background for Dark & Light browser tab visibility -->
+  <rect width="500" height="500" rx="110" fill="url(#bgGrad)"/>
+  <rect width="490" height="490" x="5" y="5" rx="105" fill="none" stroke="url(#goldGrad)" stroke-width="6" stroke-opacity="0.8"/>
+
+  <!-- GLOBE CENTER -->
+  <circle cx="250" cy="230" r="105" fill="url(#globeGrad)" stroke="url(#goldGrad)" stroke-width="3" />
+  <ellipse cx="250" cy="230" rx="105" ry="40" fill="none" stroke="#64B5F6" stroke-width="1.5" stroke-opacity="0.4" />
+  <ellipse cx="250" cy="230" rx="60" ry="105" fill="none" stroke="#64B5F6" stroke-width="1.5" stroke-opacity="0.4" />
+  <line x1="145" y1="230" x2="355" y2="230" stroke="#64B5F6" stroke-width="1.5" stroke-opacity="0.4" />
+  <line x1="250" y1="125" x2="250" y2="335" stroke="#64B5F6" stroke-width="1.5" stroke-opacity="0.4" />
+
+  <!-- Stylized Continents -->
+  <path d="M210,165 Q230,155 250,160 T270,185 Q260,205 240,210 Q225,225 215,200 Z M235,220 Q265,225 275,255 Q260,290 230,295 Q210,280 220,250 Z" fill="#FFFFFF" fill-opacity="0.95" />
+  <path d="M165,180 Q180,175 190,195 Q175,220 160,200 Z" fill="#FFFFFF" fill-opacity="0.85" />
+
+  <!-- BIG STYLIZED 'V' -->
+  <!-- Left Stroke of V (Navy Blue) -->
+  <path d="M135,110 L195,110 L250,320 L220,320 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="2" />
+  <!-- Right Stroke of V (Metallic Gold) -->
+  <path d="M365,110 L305,110 L250,320 L280,320 Z" fill="url(#goldGrad)" stroke="#0B1F3A" stroke-width="2" />
+
+  <!-- MORTARBOARD / GRADUATION CAP -->
+  <polygon points="250,25 380,68 250,110 120,68" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="3" />
+  <polygon points="250,32 360,68 250,102 140,68" fill="url(#navyGrad)" />
+  <path d="M185,82 L185,115 Q250,145 315,115 L315,82 Q250,110 185,82 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="2" />
+
+  <!-- Cap Tassel -->
+  <path d="M250,68 Q210,75 198,125" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+  <circle cx="250" cy="68" r="4" fill="url(#goldGrad)" />
+  <polygon points="193,125 203,125 200,155 196,155" fill="url(#goldGrad)" />
+
+  <!-- FIVE STARS ARC -->
+  <path d="M325,52 L327,58 L333,58 L328,62 L330,68 L325,64 L320,68 L322,62 L317,58 L323,58 Z" fill="url(#goldGrad)"/>
+  <path d="M350,67 L352,73 L358,73 L353,77 L355,83 L350,79 L345,83 L347,77 L342,73 L348,73 Z" fill="url(#goldGrad)"/>
+  <path d="M375,87 L377,93 L383,93 L378,97 L380,103 L375,99 L370,103 L372,97 L367,93 L373,93 Z" fill="url(#goldGrad)"/>
+  <path d="M395,112 L397,118 L403,118 L398,122 L400,128 L395,124 L390,128 L392,122 L387,118 L393,118 Z" fill="url(#goldGrad)"/>
+  <path d="M410,142 L412,148 L418,148 L413,152 L415,158 L410,154 L405,158 L407,152 L402,148 L408,148 Z" fill="url(#goldGrad)"/>
+
+  <!-- ORBITING SWOOSH RINGS & AIRPLANE -->
+  <path d="M140,260 Q120,220 220,180 Q320,140 400,120" fill="none" stroke="url(#navyGrad)" stroke-width="10" stroke-linecap="round" />
+  <path d="M130,270 Q200,320 340,260 Q430,210 420,130" fill="none" stroke="url(#goldGrad)" stroke-width="12" stroke-linecap="round" />
+
+  <!-- Airplane Icon -->
+  <g transform="translate(415, 125) rotate(-35) scale(1.1)">
+    <path d="M0,-22 L5,-5 L22,5 L22,10 L5,2 L4,18 L10,23 L10,27 L0,23 L-10,27 L-10,23 L-4,18 L-5,2 L-22,10 L-22,5 L-5,-5 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="1.5" />
+  </g>
+</svg>

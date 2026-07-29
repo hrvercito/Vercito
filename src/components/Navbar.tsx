@@ -121,27 +121,27 @@ export const Navbar: React.FC<NavbarProps> = ({
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled
             ? isDarkMode
-              ? 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl py-2.5'
-              : 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-[#D4AF37]/30 shadow-xl py-2.5 text-white'
-            : 'bg-gradient-to-b from-[#0B1F3A]/90 to-transparent py-3 text-white'
+              ? 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl py-2'
+              : 'bg-[#0B1F3A]/95 backdrop-blur-xl border-b border-[#D4AF37]/30 shadow-xl py-2 text-white'
+            : 'bg-gradient-to-b from-[#0B1F3A]/95 via-[#0B1F3A]/80 to-transparent py-2.5 text-white'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-1.5 sm:gap-3">
             {/* VERCITO Brand Logo */}
-            <a href="#" className="flex items-center group focus:outline-none shrink-0">
-              <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
+            <a href="#" className="flex items-center group focus:outline-none shrink min-w-0">
+              <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} className="scale-90 sm:scale-100 origin-left" />
             </a>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden xl:flex items-center gap-5">
+            {/* Desktop Navigation Links (hidden on screens < 1280px / < 992px) */}
+            <nav className="hidden xl:flex items-center gap-4 xl:gap-5">
               {desktopNavLinks.map((link) => {
                 const isActive = link.href === activeHash;
                 return link.onClick ? (
                   <button
                     key={link.name}
                     onClick={link.onClick}
-                    className="text-xs font-bold tracking-wider text-slate-100 hover:text-[#D4AF37] transition-colors py-1 cursor-pointer"
+                    className="text-xs font-bold tracking-wider text-slate-100 hover:text-[#D4AF37] transition-colors py-1 cursor-pointer whitespace-nowrap"
                   >
                     {link.name}
                   </button>
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     key={link.name}
                     href={link.href}
                     onClick={() => setActiveHash(link.href || '#')}
-                    className={`text-xs font-bold tracking-wider transition-colors relative py-1 group ${
+                    className={`text-xs font-bold tracking-wider transition-colors relative py-1 group whitespace-nowrap ${
                       isActive ? 'text-[#D4AF37]' : 'text-slate-100 hover:text-[#D4AF37]'
                     }`}
                   >
@@ -166,43 +166,46 @@ export const Navbar: React.FC<NavbarProps> = ({
             </nav>
 
             {/* Header Right Actions */}
-            <div className="flex items-center gap-2 sm:gap-2.5">
-              <LanguageSwitcher />
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+              {/* Language Switcher - compact on small screens */}
+              <div className="scale-90 sm:scale-100 origin-right">
+                <LanguageSwitcher />
+              </div>
 
-              {/* Currency Selector */}
+              {/* Currency Selector - visible sm+ */}
               <button
                 onClick={onToggleCurrency}
-                className="hidden sm:flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white"
+                className="hidden sm:flex items-center gap-1 text-[11px] font-bold px-2 py-1.5 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white shrink-0"
                 title="Toggle Currency (EUR / BDT)"
               >
                 <Globe2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>{currency === 'EUR' ? 'EUR' : 'BDT'}</span>
               </button>
 
-              {/* Theme Toggle */}
+              {/* Theme Toggle - compact */}
               <button
                 onClick={onToggleDarkMode}
-                className="p-1.5 sm:p-2 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white"
+                className="p-1.5 sm:p-2 rounded-xl border border-white/20 hover:border-[#D4AF37] transition-all bg-white/10 text-white shrink-0"
                 title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
-                {isDarkMode ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-white" />}
+                {isDarkMode ? <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37]" /> : <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />}
               </button>
 
-              {/* Apply Now CTA */}
+              {/* Apply Now CTA - visible md+ */}
               <button
                 onClick={onOpenApplication}
-                className="hidden md:block px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0"
+                className="hidden md:block px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0"
               >
                 APPLY NOW
               </button>
 
-              {/* Mobile Hamburger Toggle */}
+              {/* Mobile Hamburger Toggle (Visible on screens below 1280px) */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2.5 rounded-xl bg-white/10 text-[#D4AF37] hover:bg-white/20 transition-all border border-white/20 shrink-0 focus:outline-none"
+                className="xl:hidden p-2 sm:p-2.5 rounded-xl bg-white/10 text-[#D4AF37] hover:bg-white/20 transition-all border border-white/20 shrink-0 focus:outline-none"
                 aria-label="Toggle Mobile Menu"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-[#D4AF37]" />}
+                {isMobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />}
               </button>
             </div>
           </div>
@@ -229,22 +232,46 @@ export const Navbar: React.FC<NavbarProps> = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              className="fixed top-0 right-0 bottom-0 w-[88vw] max-w-sm bg-[#0B1F3A] border-l-2 border-[#D4AF37]/50 shadow-2xl rounded-l-3xl flex flex-col justify-between overflow-hidden z-50"
+              className="fixed top-0 right-0 bottom-0 w-[88vw] max-w-xs sm:max-w-sm bg-[#0B1F3A] border-l-2 border-[#D4AF37]/50 shadow-2xl flex flex-col justify-between overflow-hidden z-50 text-white"
             >
-              {/* Header with Uploaded VERCITO Logo */}
-              <div className="p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/80">
+              {/* Header with VERCITO Logo */}
+              <div className="p-4 border-b border-white/10 flex items-center justify-between bg-slate-900/90">
                 <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 rounded-xl bg-white/10 text-slate-300 hover:text-white hover:bg-white/20 transition-colors"
+                  aria-label="Close Mobile Menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
+              {/* Quick Controls in Mobile Menu */}
+              <div className="px-4 py-2 bg-[#08172D] border-b border-white/10 flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-medium text-slate-300">Currency:</span>
+                  <button
+                    onClick={onToggleCurrency}
+                    className="flex items-center gap-1 text-[11px] font-bold px-2 py-1 rounded-lg border border-white/20 bg-white/10 text-[#D4AF37]"
+                  >
+                    <Globe2 className="w-3 h-3" />
+                    <span>{currency}</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-medium text-slate-300">Theme:</span>
+                  <button
+                    onClick={onToggleDarkMode}
+                    className="p-1.5 rounded-lg border border-white/20 bg-white/10 text-[#D4AF37]"
+                  >
+                    {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5 text-white" />}
+                  </button>
+                </div>
+              </div>
+
               {/* Scrollable Navigation Items */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-thin scrollbar-thumb-white/20">
-                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] mb-2">
+              <div className="flex-1 overflow-y-auto p-4 space-y-1.5 scrollbar-thin scrollbar-thumb-white/20">
+                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] mb-1">
                   Navigation Menu
                 </p>
 
@@ -296,7 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               {/* Footer Quick Actions */}
-              <div className="p-4 border-t border-white/10 bg-slate-900/90 space-y-2.5">
+              <div className="p-4 border-t border-white/10 bg-slate-900/90 space-y-2">
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
@@ -318,11 +345,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Calendar className="w-4 h-4 text-[#D4AF37]" />
                   <span>Book Free Counseling</span>
                 </button>
-
-                <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400">
-                  <span>Language / ভাষা:</span>
-                  <LanguageSwitcher />
-                </div>
               </div>
             </motion.div>
           </div>

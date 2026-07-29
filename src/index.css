@@ -6,6 +6,14 @@
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: #0B1F3A;
@@ -14,6 +22,11 @@
 
   h1, h2, h3, .font-serif {
     font-family: var(--font-serif);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
   }
 }
 

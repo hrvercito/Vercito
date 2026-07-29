@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if authenticated user is admin
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.admin == true ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true) ||
+        request.auth.token.email.matches('.*vercito.*') ||
+        request.auth.token.email == 'hr.vercito@gmail.com' ||
+        request.auth.token.email == 'admin@vercito.com'
+      );
+    }
+
+    // Public readable CMS content (Hero, Universities, Scholarships, Blogs, Founder Profile, Contact Info, Reviews)
+    match /cms/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Student Applications
+    match /applications/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // AI Profile Assessments
+    match /aiAssessments/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Payments
+    match /payments/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Users and Admins collection
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

@@ -4,7 +4,11 @@
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CMSData, DEFAULT_CMS_DATA, CMSHeroContent } from '../data/defaultCMSData';
+import {
+  CMSData,
+  DEFAULT_CMS_DATA,
+  CMSHeroContent,
+} from '../data/defaultCMSData';
 import {
   CountryDestination,
   UniversityPartner,
@@ -13,7 +17,23 @@ import {
   FAQItem,
   DocumentChecklistItem,
   BlogPost,
+  FounderProfile,
+  ContactInfo,
 } from '../types';
+import {
+  auth,
+  db,
+  googleProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  User,
+} from '../lib/firebase';
 
 interface CMSContextType {
   cmsData: CMSData;
@@ -21,9 +41,12 @@ interface CMSContextType {
   isSaving: boolean;
   saveMessage: string | null;
   adminToken: string | null;
+  adminUser: User | null;
   isAdminLoggedIn: boolean;
+  isAdminAuthenticated: boolean;
   loginAdmin: (email: string, pass: string) => Promise<{ success: boolean; message?: string }>;
-  logoutAdmin: () => void;
+  loginWithGoogle: () => Promise<{ success: boolean; message?: string }>;
+  logoutAdmin: () => Promise<void>;
   updateHero: (heroData: CMSHeroContent) => Promise<boolean>;
   updateDestinations: (destinations: CountryDestination[]) => Promise<boolean>;
   updateUniversities: (universities: UniversityPartner[]) => Promise<boolean>;
@@ -32,13 +55,33 @@ interface CMSContextType {
   updateFaqs: (faqs: FAQItem[]) => Promise<boolean>;
   updateVisaChecklist: (checklist: DocumentChecklistItem[]) => Promise<boolean>;
   updateBlogs: (blogs: BlogPost[]) => Promise<boolean>;
+  updateFounderProfile: (profile: FounderProfile) => Promise<boolean>;
+  updateContactInfo: (contactInfo: ContactInfo) => Promise<boolean>;
   resetToDefaultCMS: () => Promise<boolean>;
 }
 
 const CMSContext = createContext<CMSContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'vercito_cms_content_v1';
+const LOCAL_STORAGE_KEY = 'vercito_cms_content_v2';
 const ADMIN_TOKEN_KEY = 'vercito_admin_token';
+
+// List of allowed administrator emails
+const ADMIN_EMAILS = [
+  'hr.vercito@gmail.com',
+  'admin@vercito.com',
+  'ceo@vercito.com',
+  'md@vercito.com',
+];
+
+export const isUserAdmin = (email?: string | null): boolean => {
+  if (!email) return false;
+  const cleanEmail = email.trim().toLowerCase();
+  return (
+    ADMIN_EMAILS.includes(cleanEmail) ||
+    cleanEmail.endsWith('@vercito.com') ||
+    cleanEmail.includes('vercito')
+  );
+};
 
 export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cmsData, setCmsData] = useState<CMSData>(() => {
@@ -57,67 +100,95 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
+  const [adminUser, setAdminUser] = useState<User | null>(null);
   const [adminToken, setAdminToken] = useState<string | null>(() => {
     return localStorage.getItem(ADMIN_TOKEN_KEY);
   });
 
   const isAdminLoggedIn = !!adminToken;
 
-  // Fetch live CMS data from backend on mount
+  // Listen to Firebase Auth state
   useEffect(() => {
-    let isMounted = true;
-    const fetchCMSData = async () => {
-      try {
-        const res = await fetch('/api/cms/content');
-        const contentType = res.headers.get('content-type');
-        if (res.ok && contentType && contentType.includes('application/json')) {
-          const data = await res.json();
-          if (data && !data.error && data.hero) {
-            if (isMounted) {
-              setCmsData(data);
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
-            }
-          }
-        }
-      } catch (err) {
-        console.warn('Backend CMS endpoint unreachable, using local storage fallback.', err);
-      } finally {
-        if (isMounted) setIsLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && isUserAdmin(user.email)) {
+        setAdminUser(user);
+        const token = user.uid || 'firebase_verified_admin';
+        setAdminToken(token);
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+      } else if (user && !isUserAdmin(user.email)) {
+        // Sign out non-admin user
+        signOut(auth);
+        setAdminUser(null);
+        setAdminToken(null);
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+      } else {
+        setAdminUser(null);
       }
-    };
+    });
 
-    fetchCMSData();
+    return () => unsubscribe();
+  }, []);
+
+  // Listen to Firestore 'cms/main_content' document in real-time
+  useEffect(() => {
+    let unsubscribeFirestore: (() => void) | null = null;
+
+    try {
+      const cmsRef = doc(db, 'cms', 'main_content');
+      unsubscribeFirestore = onSnapshot(
+        cmsRef,
+        (snapshot) => {
+          if (snapshot.exists()) {
+            const firestoreData = snapshot.data() as CMSData;
+            if (firestoreData && firestoreData.hero) {
+              setCmsData((prev) => ({
+                ...DEFAULT_CMS_DATA,
+                ...firestoreData,
+              }));
+              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(firestoreData));
+            }
+          } else {
+            // First time initialization: seed Firestore with DEFAULT_CMS_DATA
+            setDoc(cmsRef, DEFAULT_CMS_DATA, { merge: true }).catch((err) =>
+              console.warn('Initial Firestore CMS seeding notice:', err)
+            );
+          }
+          setIsLoading(false);
+        },
+        (error) => {
+          console.warn('Firestore CMS snapshot listener notice (using local storage fallback):', error);
+          setIsLoading(false);
+        }
+      );
+    } catch (e) {
+      console.warn('Firestore initialization fallback:', e);
+      setIsLoading(false);
+    }
+
     return () => {
-      isMounted = false;
+      if (unsubscribeFirestore) unsubscribeFirestore();
     };
   }, []);
 
-  const saveToServerAndLocal = async (updatedData: CMSData): Promise<boolean> => {
+  // Save updated CMS data to Firestore and Local Storage
+  const saveToFirestoreAndLocal = async (updatedData: CMSData): Promise<boolean> => {
     setIsSaving(true);
     setSaveMessage(null);
     try {
-      // 1. Save to local storage for instant UI state update across sessions
+      // 1. Update React state & Local Storage immediately
       setCmsData(updatedData);
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedData));
 
-      // 2. Persist to backend if API is active
-      const res = await fetch('/api/cms/content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
-      });
+      // 2. Persist to Firestore
+      const cmsRef = doc(db, 'cms', 'main_content');
+      await setDoc(cmsRef, updatedData, { merge: true });
 
-      const contentType = res.headers.get('content-type');
-      if (res.ok && contentType && contentType.includes('application/json')) {
-        setSaveMessage('Saved successfully! Changes are live on the website.');
-      } else {
-        setSaveMessage('Saved locally in browser storage.');
-      }
+      setSaveMessage('Saved successfully! Changes synced to Cloud Firestore.');
       setTimeout(() => setSaveMessage(null), 4000);
       return true;
-    } catch (err) {
-      console.warn('Backend save endpoint unreachable, saved to local storage:', err);
-      setSaveMessage('Saved locally in browser storage.');
+    } catch (err: any) {
+      console.warn('Firestore save notice (saved to local state):', err);
+      setSaveMessage('Saved in local browser state.');
       setTimeout(() => setSaveMessage(null), 4000);
       return true;
     } finally {
@@ -125,102 +196,129 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // Firebase Email/Password Admin Login
   const loginAdmin = async (email: string, pass: string) => {
+    if (!isUserAdmin(email)) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
+
     try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pass }),
-      });
-      const contentType = res.headers.get('content-type');
-
-      // If backend server or serverless function responded with JSON
-      if (res.ok && contentType && contentType.includes('application/json')) {
-        const data = await res.json();
-        if (data.success && data.token) {
-          setAdminToken(data.token);
-          localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-          return { success: true };
-        } else if (data.message) {
-          return { success: false, message: data.message };
-        }
+      const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+      const user = userCredential.user;
+      if (isUserAdmin(user.email)) {
+        setAdminUser(user);
+        const token = user.uid;
+        setAdminToken(token);
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+        return { success: true };
+      } else {
+        await signOut(auth);
+        return { success: false, message: 'Access denied' };
       }
-    } catch (err) {
-      console.warn('Backend login endpoint unavailable or static environment detected. Using client-side authentication fallback.', err);
+    } catch (firebaseErr: any) {
+      return {
+        success: false,
+        message: 'Access denied',
+      };
     }
-
-    // Client-side Fallback (for Netlify/Vercel static deployments where Node server API isn't running)
-    const envAdminEmail = (import.meta as any).env?.VITE_ADMIN_EMAIL;
-    const envAdminPassword = (import.meta as any).env?.VITE_ADMIN_PASSWORD;
-
-    const validEmails = [
-      envAdminEmail,
-      'admin@vercito.com',
-      'hr.vercito@gmail.com',
-    ].filter(Boolean).map(e => String(e).trim().toLowerCase());
-
-    const validPass = envAdminPassword || 'vercito2026!';
-
-    if (validEmails.includes(email.trim().toLowerCase()) && pass === validPass) {
-      const fallbackToken = 'vercito_admin_session_token_2026_verified';
-      setAdminToken(fallbackToken);
-      localStorage.setItem(ADMIN_TOKEN_KEY, fallbackToken);
-      return { success: true };
-    }
-
-    return {
-      success: false,
-      message: 'Invalid email or password. Please check your credentials and try again.',
-    };
   };
 
-  const logoutAdmin = () => {
+  // Firebase Google Sign-In Admin Login
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      if (isUserAdmin(user.email)) {
+        setAdminUser(user);
+        const token = user.uid;
+        setAdminToken(token);
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
+        return { success: true };
+      } else {
+        await signOut(auth);
+        return {
+          success: false,
+          message: 'Access denied',
+        };
+      }
+    } catch (err: any) {
+      console.error('Google Sign-In Error:', err);
+      return {
+        success: false,
+        message: 'Access denied',
+      };
+    }
+  };
+
+  // Logout
+  const logoutAdmin = async () => {
+    try {
+      await signOut(auth);
+    } catch (e) {
+      console.warn('Sign out notice:', e);
+    }
+    setAdminUser(null);
     setAdminToken(null);
     localStorage.removeItem(ADMIN_TOKEN_KEY);
   };
 
+  // Section Update Helpers
   const updateHero = (heroData: CMSHeroContent) => {
     const updated = { ...cmsData, hero: heroData };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateDestinations = (destinations: CountryDestination[]) => {
     const updated = { ...cmsData, destinations };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateUniversities = (universities: UniversityPartner[]) => {
     const updated = { ...cmsData, universities };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateScholarships = (scholarships: Scholarship[]) => {
     const updated = { ...cmsData, scholarships };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateTestimonials = (testimonials: SuccessStory[]) => {
     const updated = { ...cmsData, testimonials };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateFaqs = (faqs: FAQItem[]) => {
     const updated = { ...cmsData, faqs };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateVisaChecklist = (visaChecklist: DocumentChecklistItem[]) => {
     const updated = { ...cmsData, visaChecklist };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
   };
 
   const updateBlogs = (blogs: BlogPost[]) => {
     const updated = { ...cmsData, blogs };
-    return saveToServerAndLocal(updated);
+    return saveToFirestoreAndLocal(updated);
+  };
+
+  const updateFounderProfile = (founderProfile: FounderProfile) => {
+    const updated = { ...cmsData, founderProfile };
+    return saveToFirestoreAndLocal(updated);
+  };
+
+  const updateContactInfo = (contactInfo: ContactInfo) => {
+    const updated = { ...cmsData, contactInfo };
+    return saveToFirestoreAndLocal(updated);
   };
 
   const resetToDefaultCMS = () => {
-    return saveToServerAndLocal(DEFAULT_CMS_DATA);
+    return saveToFirestoreAndLocal(DEFAULT_CMS_DATA);
   };
 
   return (
@@ -231,8 +329,11 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isSaving,
         saveMessage,
         adminToken,
+        adminUser,
         isAdminLoggedIn,
+        isAdminAuthenticated: isAdminLoggedIn,
         loginAdmin,
+        loginWithGoogle,
         logoutAdmin,
         updateHero,
         updateDestinations,
@@ -242,6 +343,8 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateFaqs,
         updateVisaChecklist,
         updateBlogs,
+        updateFounderProfile,
+        updateContactInfo,
         resetToDefaultCMS,
       }}
     >

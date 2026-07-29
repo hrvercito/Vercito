@@ -187,6 +187,50 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface FounderProfile {
+  name: string;
+  designation: string;
+  photo: string;
+  bio: string;
+  experienceYears: string;
+  expertise: string[];
+  languages: string[];
+  email: string;
+  phone: string;
+  whatsapp: string;
+  linkedin: string;
+  quote: string;
+  achievements: string[];
+}
+
+export interface OfficeLocation {
+  id: string;
+  name: string;
+  subtitle: string;
+  address: string;
+  phoneNumbers: string[];
+  email: string;
+  officeHours: string;
+  googleMapsUrl: string;
+  mapEmbedSrc: string;
+  image: string;
+}
+
+export interface ContactInfo {
+  hotline: string;
+  whatsappNumber: string;
+  email: string;
+  headOfficeAddress: string;
+  offices: OfficeLocation[];
+  socialLinks: {
+    facebook?: string;
+    instagram?: string;
+    youtube?: string;
+    linkedin?: string;
+    whatsapp?: string;
+  };
+}
+
 export type AdmissionChance = 'Excellent' | 'Very Good' | 'Good' | 'Moderate' | 'Low';
 
 export interface RecommendedUniversityDetail {

@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "cms": {
+      "title": "CMS Content",
+      "description": "Stores editable website content documents (hero, contactInfo, founderProfile, destinations, universities, scholarships, testimonials, faqs, blogs, visaChecklist)",
+      "fields": {
+        "content": { "type": "map", "description": "JSON map storing section or collection data" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last edit" },
+        "updatedBy": { "type": "string", "description": "User UID who last modified the content" }
+      }
+    },
+    "applications": {
+      "title": "Student Applications",
+      "description": "Submitted student admission & visa applications",
+      "fields": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "targetCountry": { "type": "string" },
+        "degreeLevel": { "type": "string" },
+        "ieltsScore": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "aiAssessments": {
+      "title": "AI Profile Assessments",
+      "description": "AI evaluation reports saved by students or system",
+      "fields": {
+        "studentName": { "type": "string" },
+        "email": { "type": "string" },
+        "assessment": { "type": "map" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "payments": {
+      "title": "SSLCommerz Payments",
+      "description": "Payment records for consultancy or visa processing",
+      "fields": {
+        "transactionId": { "type": "string" },
+        "amount": { "type": "number" },
+        "customerEmail": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "users": {
+      "title": "Users and Admins",
+      "description": "User profiles and admin role flags",
+      "fields": {
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "isAdmin": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      }
+    }
+  }
+}

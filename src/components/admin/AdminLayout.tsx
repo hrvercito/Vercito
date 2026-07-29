@@ -7,11 +7,14 @@ import React, { useState } from 'react';
 import { useCMS } from '../../context/CMSContext';
 import { HeroEditor } from './editors/HeroEditor';
 import { DestinationsEditor } from './editors/DestinationsEditor';
+import { UniversitiesEditor } from './editors/UniversitiesEditor';
 import { ScholarshipsEditor } from './editors/ScholarshipsEditor';
 import { TestimonialsEditor } from './editors/TestimonialsEditor';
 import { FAQEditor } from './editors/FAQEditor';
 import { VisaChecklistEditor } from './editors/VisaChecklistEditor';
 import { BlogEditor } from './editors/BlogEditor';
+import { FounderProfileEditor } from './editors/FounderProfileEditor';
+import { ContactInfoEditor } from './editors/ContactInfoEditor';
 import { ApplicationsManager } from './editors/ApplicationsManager';
 import { PaymentsManager } from './editors/PaymentsManager';
 import { AIAssessmentsManager } from './editors/AIAssessmentsManager';
@@ -20,11 +23,14 @@ import { VercitoLogo } from '../VercitoLogo';
 import {
   Sparkles,
   Globe,
+  Building2,
   Award,
   Quote,
   HelpCircle,
   ShieldCheck,
   BookOpen,
+  UserCheck,
+  PhoneCall,
   FolderKanban,
   CreditCard,
   LogOut,
@@ -36,32 +42,50 @@ import {
   Bot,
 } from 'lucide-react';
 
-type AdminSection = 'applications' | 'ai-assessments' | 'payments' | 'hero' | 'destinations' | 'scholarships' | 'testimonials' | 'faq' | 'visa-checklist' | 'blog';
+type AdminSection =
+  | 'applications'
+  | 'ai-assessments'
+  | 'payments'
+  | 'hero'
+  | 'universities'
+  | 'scholarships'
+  | 'blog'
+  | 'founder'
+  | 'contact'
+  | 'testimonials'
+  | 'destinations'
+  | 'faq'
+  | 'visa-checklist';
 
 interface AdminLayoutProps {
   onReturnToSite: () => void;
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
-  const { logoutAdmin, saveMessage, resetToDefaultCMS, isSaving } = useCMS();
-  const [activeSection, setActiveSection] = useState<AdminSection>('applications');
+  const { logoutAdmin, saveMessage, resetToDefaultCMS, isSaving, adminUser } = useCMS();
+  const [activeSection, setActiveSection] = useState<AdminSection>('universities');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'applications' as AdminSection, label: 'Applications Received', icon: FolderKanban },
-    { id: 'ai-assessments' as AdminSection, label: 'AI Profile Assessments', icon: Bot },
-    { id: 'payments' as AdminSection, label: 'SSLCommerz Payments', icon: CreditCard },
-    { id: 'hero' as AdminSection, label: 'Hero Section', icon: Sparkles },
-    { id: 'destinations' as AdminSection, label: 'Destinations & Universities', icon: Globe },
+    { id: 'universities' as AdminSection, label: 'Universities', icon: Building2 },
     { id: 'scholarships' as AdminSection, label: 'Scholarships', icon: Award },
-    { id: 'testimonials' as AdminSection, label: 'Testimonials & Reviews', icon: Quote },
-    { id: 'faq' as AdminSection, label: 'FAQ Section', icon: HelpCircle },
-    { id: 'visa-checklist' as AdminSection, label: 'Visa Checklist', icon: ShieldCheck },
-    { id: 'blog' as AdminSection, label: 'Blog & Country Guides', icon: BookOpen },
+    { id: 'blog' as AdminSection, label: 'Blogs & Guides', icon: BookOpen },
+    { id: 'founder' as AdminSection, label: 'Founder Profile', icon: UserCheck },
+    { id: 'contact' as AdminSection, label: 'Contact Info & Offices', icon: PhoneCall },
+    { id: 'testimonials' as AdminSection, label: 'Reviews & Testimonials', icon: Quote },
+    { id: 'hero' as AdminSection, label: 'Homepage Hero Content', icon: Sparkles },
+    { id: 'destinations' as AdminSection, label: 'Destinations', icon: Globe },
+    { id: 'applications' as AdminSection, label: 'Student Applications', icon: FolderKanban },
+    { id: 'ai-assessments' as AdminSection, label: 'AI Profile Assessments', icon: Bot },
+    { id: 'payments' as AdminSection, label: 'Payments & Receipts', icon: CreditCard },
   ];
 
   const handleResetData = async () => {
-    if (window.confirm('Are you sure you want to reset all CMS content to default system values? This action cannot be undone.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to reset all CMS content to default system values? This action cannot be undone.'
+      )
+    ) {
       await resetToDefaultCMS();
     }
   };
@@ -74,7 +98,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
           <div className="p-1.5 rounded-lg bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs">
             VERCITO
           </div>
-          <span className="font-serif font-bold text-sm text-white">CMS Panel</span>
+          <span className="font-serif font-bold text-sm text-white">Firebase Admin</span>
         </div>
 
         <button
@@ -93,14 +117,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
       >
         <div className="space-y-6">
           {/* Brand Header */}
-          <div className="hidden md:flex items-center gap-3 pb-4 border-b border-white/10">
+          <div className="hidden md:flex flex-col gap-2 pb-4 border-b border-white/10">
             <VercitoLogo variant="horizontal" size="sm" isDarkBg={true} />
+            <div className="flex items-center gap-1.5 text-[11px] text-[#D4AF37] font-semibold mt-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="truncate">Connected to Firebase Admin</span>
+            </div>
           </div>
 
           {/* Navigation Items */}
           <nav className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-3 mb-2">
-              Website Content Modules
+              Manageable Content
             </p>
 
             {navItems.map((item) => {
@@ -113,7 +141,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
                     setActiveSection(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all ${
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                     isActive
                       ? 'bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] font-extrabold shadow-lg shadow-[#D4AF37]/20'
                       : 'text-slate-300 hover:bg-white/10 hover:text-white'
@@ -169,16 +197,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
 
         {/* Active Editor Rendering */}
         <div className="bg-slate-800/80 rounded-3xl p-6 border border-white/10 shadow-2xl backdrop-blur-md">
+          {activeSection === 'universities' && <UniversitiesEditor />}
+          {activeSection === 'scholarships' && <ScholarshipsEditor />}
+          {activeSection === 'blog' && <BlogEditor />}
+          {activeSection === 'founder' && <FounderProfileEditor />}
+          {activeSection === 'contact' && <ContactInfoEditor />}
+          {activeSection === 'testimonials' && <TestimonialsEditor />}
+          {activeSection === 'hero' && <HeroEditor />}
+          {activeSection === 'destinations' && <DestinationsEditor />}
           {activeSection === 'applications' && <ApplicationsManager />}
           {activeSection === 'ai-assessments' && <AIAssessmentsManager />}
           {activeSection === 'payments' && <PaymentsManager />}
-          {activeSection === 'hero' && <HeroEditor />}
-          {activeSection === 'destinations' && <DestinationsEditor />}
-          {activeSection === 'scholarships' && <ScholarshipsEditor />}
-          {activeSection === 'testimonials' && <TestimonialsEditor />}
           {activeSection === 'faq' && <FAQEditor />}
           {activeSection === 'visa-checklist' && <VisaChecklistEditor />}
-          {activeSection === 'blog' && <BlogEditor />}
         </div>
       </main>
     </div>

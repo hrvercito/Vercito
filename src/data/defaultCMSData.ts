@@ -21,6 +21,8 @@ import {
   FAQItem,
   DocumentChecklistItem,
   BlogPost,
+  FounderProfile,
+  ContactInfo,
 } from '../types';
 
 export interface CMSHeroContent {
@@ -75,7 +77,64 @@ export interface CMSData {
   faqs: FAQItem[];
   visaChecklist: DocumentChecklistItem[];
   blogs: BlogPost[];
+  founderProfile: FounderProfile;
+  contactInfo: ContactInfo;
 }
+
+export const DEFAULT_FOUNDER_PROFILE: FounderProfile = {
+  name: 'Engr. Kazi Ashraful Islam',
+  designation: 'Founder & CEO',
+  photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800',
+  bio: 'Visionary higher education strategist with 12+ years of expertise in European university pre-enrollment, Universitaly portals, DSU scholarships, and embassy visa protocols. Personally guided over 3,500 Bangladeshi students.',
+  experienceYears: '12+ Years Experience',
+  expertise: ['Schengen Visa Regulations', 'Universitaly Portal', 'Strategic Education Planning', 'University Alliances'],
+  languages: ['English', 'Bengali', 'Italian (Basic)'],
+  email: 'ceo@vercito.com',
+  phone: '+880 1711 000001',
+  whatsapp: '8801711000001',
+  linkedin: 'https://linkedin.com/in/vercito-ceo',
+  quote: 'Empowering Bangladeshi scholars with transparent, 100% scholarship-backed higher education across Europe and America.',
+  achievements: ['3,500+ Successful Students', '98.8% Visa Success Rate', '€7M+ Total Scholarships Won'],
+};
+
+export const DEFAULT_CONTACT_INFO: ContactInfo = {
+  hotline: '+880 1711 000000',
+  whatsappNumber: '8801711000000',
+  email: 'info@vercito.com',
+  headOfficeAddress: 'Level 7, VERCITO Tower, Road 11, Block D, Gulshan 2, Dhaka-1212, Bangladesh',
+  offices: [
+    {
+      id: 'dhaka',
+      name: 'Dhaka Head Office (Gulshan 2)',
+      subtitle: 'Primary European & Schengen Admissions Hub',
+      address: 'Level 7, VERCITO Tower, Road 11, Block D, Gulshan 2, Dhaka-1212, Bangladesh',
+      phoneNumbers: ['+880 1711 000000', '+880 1700 000000'],
+      email: 'dhaka@vercito.com',
+      officeHours: 'Saturday – Thursday: 10:00 AM – 07:00 PM (Friday Closed)',
+      googleMapsUrl: 'https://maps.google.com/?q=Gulshan+2+Dhaka',
+      mapEmbedSrc: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.582372583804!2d90.4125!3d23.7915!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c7a0f0000001%3A0x1!2sGulshan+2%2C+Dhaka!5e0!3m2!1sen!2sbd!4v1620000000000!5m2!1sen!2sbd',
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1000',
+    },
+    {
+      id: 'chattogram',
+      name: 'Chattogram Branch Office (GEC Circle)',
+      subtitle: 'Port City European Counseling Center',
+      address: 'Suite 4A, Equity Central, GEC Circle, CDA Avenue, Chattogram',
+      phoneNumbers: ['+880 1800 000000', '+880 1811 000000'],
+      email: 'ctg@vercito.com',
+      officeHours: 'Saturday – Thursday: 10:00 AM – 07:00 PM (Friday Closed)',
+      googleMapsUrl: 'https://maps.google.com/?q=GEC+Circle+Chittagong',
+      mapEmbedSrc: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3689.8788!2d91.8211!3d22.3587!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3752ec3000000001%3A0x1!2sGEC+Circle%2C+Chittagong!5e0!3m2!1sen!2sbd!4v1620000000000!5m2!1sen!2sbd',
+      image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1000',
+    },
+  ],
+  socialLinks: {
+    facebook: 'https://facebook.com/vercito',
+    youtube: 'https://youtube.com/vercito',
+    linkedin: 'https://linkedin.com/company/vercito',
+    whatsapp: 'https://wa.me/8801711000000',
+  },
+};
 
 export const DEFAULT_CMS_DATA: CMSData = {
   hero: {
@@ -124,7 +183,6 @@ export const DEFAULT_CMS_DATA: CMSData = {
   },
   destinations: COUNTRY_DESTINATIONS,
   universities: (() => {
-    // Map existing db items by ID
     const map = new Map<string, UniversityPartner>();
     UNIVERSITIES_DATABASE.forEach(u => map.set(u.id, u));
     UNIVERSITY_PARTNERS.forEach(u => {
@@ -139,4 +197,6 @@ export const DEFAULT_CMS_DATA: CMSData = {
   faqs: FAQS,
   visaChecklist: DOCUMENT_CHECKLIST,
   blogs: BLOG_POSTS,
+  founderProfile: DEFAULT_FOUNDER_PROFILE,
+  contactInfo: DEFAULT_CONTACT_INFO,
 };

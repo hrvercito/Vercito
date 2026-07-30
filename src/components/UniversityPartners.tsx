@@ -28,6 +28,7 @@ import { Currency, UniversityPartner } from '../types';
 import { useCMS } from '../context/CMSContext';
 import { UniversityDetailModal } from './UniversityDetailModal';
 import { UniversityCompareDrawer } from './UniversityCompareDrawer';
+import { UniversityGuideModal } from './UniversityGuideModal';
 
 interface UniversityPartnersProps {
   currency: Currency;
@@ -52,6 +53,7 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
 
   // Modals & Drawers States
   const [selectedUniversity, setSelectedUniversity] = useState<UniversityPartner | null>(null);
+  const [guideUniversity, setGuideUniversity] = useState<UniversityPartner | null>(null);
   const [comparedUnis, setComparedUnis] = useState<UniversityPartner[]>([]);
   const [showCompareDrawer, setShowCompareDrawer] = useState(false);
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>(() => {
@@ -511,17 +513,26 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center gap-2">
+                    <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex items-center gap-1.5">
+                      <button
+                        onClick={() => setGuideUniversity(uni)}
+                        className="py-2 px-2.5 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-300 dark:hover:bg-white/20 transition-all flex items-center gap-1 cursor-pointer"
+                        title="View complete application guide"
+                      >
+                        <BookOpen className="w-3 h-3 text-[#D4AF37]" />
+                        <span>Guide</span>
+                      </button>
+
                       <button
                         onClick={() => setSelectedUniversity(uni)}
-                        className="flex-1 py-2.5 px-3 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white font-bold text-xs hover:bg-slate-300 dark:hover:bg-white/20 transition-all"
+                        className="py-2 px-2.5 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-slate-200 font-bold text-[11px] hover:bg-slate-300 dark:hover:bg-white/20 transition-all flex-1 cursor-pointer text-center"
                       >
-                        View Details
+                        Details
                       </button>
 
                       <button
                         onClick={() => onSelectUniversityForApplication(uni.name)}
-                        className="flex-1 py-2.5 px-3 rounded-xl bg-[#0B1F3A] dark:bg-[#D4AF37] text-[#D4AF37] dark:text-[#0B1F3A] font-bold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1"
+                        className="py-2 px-3 rounded-xl bg-[#0B1F3A] dark:bg-[#D4AF37] text-[#D4AF37] dark:text-[#0B1F3A] font-extrabold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1 cursor-pointer flex-1"
                       >
                         <span>Apply</span>
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -534,6 +545,16 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
           </div>
         )}
       </div>
+
+      {/* University Guide Modal */}
+      {guideUniversity && (
+        <UniversityGuideModal
+          university={guideUniversity}
+          isOpen={!!guideUniversity}
+          onClose={() => setGuideUniversity(null)}
+          onApplyNow={onSelectUniversityForApplication}
+        />
+      )}
 
       {/* Detail Modal */}
       {selectedUniversity && (

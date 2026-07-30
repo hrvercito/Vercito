@@ -38,10 +38,10 @@ interface NavbarProps {
   onToggleCurrency: () => void;
   isDarkMode: boolean;
   onToggleDarkMode: () => void;
-  onOpenAIEvaluator: () => void;
-  onOpenAppointment: () => void;
-  onOpenApplication: () => void;
-  onOpenStudentPortal: () => void;
+  onOpenAIEvaluator?: () => void;
+  onOpenAppointment?: () => void;
+  onOpenApplication?: () => void;
+  onOpenStudentPortal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -191,10 +191,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {isDarkMode ? <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37]" /> : <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />}
               </button>
 
+              {/* View My Application CTA - visible sm+ */}
+              <button
+                onClick={onOpenStudentPortal}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#D4AF37] font-extrabold text-xs tracking-wider border border-[#D4AF37]/40 shadow-sm transition-all shrink-0 cursor-pointer"
+                title="View My Application / Application Tracking"
+              >
+                <FolderKanban className="w-3.5 h-3.5" />
+                <span>View My Application</span>
+              </button>
+
               {/* Apply Now CTA - visible md+ */}
               <button
                 onClick={onOpenApplication}
-                className="hidden md:block px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0"
+                className="hidden md:block px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer"
               >
                 APPLY NOW
               </button>

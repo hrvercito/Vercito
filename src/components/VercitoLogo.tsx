@@ -20,13 +20,13 @@ export const VercitoLogo: React.FC<VercitoLogoProps> = ({
   className = '',
   showTagline = true,
 }) => {
-  // Height sizing
+  // Height sizing scaled up by ~20-25% as requested
   const heightClasses = {
-    xs: 'h-7',
-    sm: 'h-9',
-    md: 'h-12',
-    lg: 'h-16',
-    xl: 'h-24',
+    xs: 'h-8 sm:h-9',
+    sm: 'h-11 sm:h-12',
+    md: 'h-15 sm:h-16',
+    lg: 'h-20 sm:h-22',
+    xl: 'h-28 sm:h-32',
   }[size];
 
   // SVG Emblem Mark
@@ -206,9 +206,10 @@ export const VercitoLogo: React.FC<VercitoLogoProps> = ({
             </span>
           </div>
           {showTagline && (
-            <span className={`text-[10px] font-semibold tracking-wider uppercase ${taglineTextColor} opacity-90`}>
-              SHAPING FUTURES BEYOND BORDERS
-            </span>
+            <div className={`flex flex-col text-[8.5px] sm:text-[9.5px] font-bold tracking-widest uppercase text-[#D4AF37] leading-tight opacity-95`}>
+              <span>SHAPING FUTURES</span>
+              <span>BEYOND BORDERS</span>
+            </div>
           )}
         </div>
       </div>
@@ -226,12 +227,13 @@ export const VercitoLogo: React.FC<VercitoLogoProps> = ({
 
       {showTagline && (
         <div className="w-full space-y-1.5 mt-2">
-          <div className="flex items-center justify-center gap-2">
-            <span className="h-[1px] w-8 bg-[#D4AF37]" />
-            <span className={`text-xs sm:text-sm font-bold tracking-widest uppercase ${taglineTextColor}`}>
-              SHAPING FUTURES BEYOND BORDERS
+          <div className="flex flex-col items-center justify-center gap-0.5">
+            <span className={`text-xs sm:text-sm font-bold tracking-widest uppercase text-[#D4AF37]`}>
+              SHAPING FUTURES
             </span>
-            <span className="h-[1px] w-8 bg-[#D4AF37]" />
+            <span className={`text-xs sm:text-sm font-bold tracking-widest uppercase text-[#D4AF37]`}>
+              BEYOND BORDERS
+            </span>
           </div>
 
           <div className="inline-block px-3 py-1 rounded-md bg-[#0B1F3A] border border-[#D4AF37] text-[#D4AF37] font-mono text-[11px] font-black tracking-widest uppercase my-1">

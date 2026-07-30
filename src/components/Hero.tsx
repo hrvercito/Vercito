@@ -27,15 +27,17 @@ import { VercitoLogo } from './VercitoLogo';
 import heroStudentLondon from '../assets/images/hero_student_london_1785314504415.jpg';
 
 interface HeroProps {
-  onOpenAIEvaluator: () => void;
-  onOpenAppointment: () => void;
-  onOpenApplication: () => void;
+  onOpenAIEvaluator?: () => void;
+  onOpenAppointment?: () => void;
+  onOpenApplication?: () => void;
+  onOpenStudentPortal?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onOpenAIEvaluator,
   onOpenAppointment,
   onOpenApplication,
+  onOpenStudentPortal,
 }) => {
   const { language } = useTranslation();
   const { cmsData } = useCMS();
@@ -150,23 +152,23 @@ export const Hero: React.FC<HeroProps> = ({
               We help students achieve their dreams of studying abroad and build a successful global career through expert admission guidance, scholarship assistance, university selection, visa processing, and continuous student support.
             </p>
 
-            {/* CTA Buttons matching Reference Image */}
+            {/* CTA Buttons - Apply Now & View My Application */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-3 sm:gap-4 pt-1 sm:pt-2 max-w-md">
               {/* Primary Button */}
               <button
                 onClick={onOpenApplication}
-                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
+                className="px-6 sm:px-8 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
               >
                 <span>🎓 APPLY NOW →</span>
               </button>
 
               {/* Secondary Button */}
-              <a
-                href="#services"
-                className="px-6 sm:px-7 py-3 sm:py-3.5 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider shadow-lg"
+              <button
+                onClick={onOpenStudentPortal}
+                className="px-6 sm:px-7 py-3.5 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider shadow-lg cursor-pointer"
               >
-                <span>🌐 OUR SERVICES</span>
-              </a>
+                <span>📁 VIEW MY APPLICATION</span>
+              </button>
             </div>
           </motion.div>
 
@@ -244,7 +246,7 @@ export const Hero: React.FC<HeroProps> = ({
 
                 {/* Analyze Button */}
                 <button
-                  onClick={onOpenAIEvaluator}
+                  onClick={() => onOpenAIEvaluator?.()}
                   className="w-full py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-1 active:scale-98 cursor-pointer"
                 >
                   <span>✈ ANALYZE MY ELIGIBILITY NOW</span>

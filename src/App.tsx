@@ -6,6 +6,13 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { QuickAccessSection } from './components/QuickAccessSection';
+import { WhyChooseVercito } from './components/WhyChooseVercito';
+import { FeaturedUniversitiesHomepage } from './components/FeaturedUniversitiesHomepage';
+import { SimpleApplicationProcess } from './components/SimpleApplicationProcess';
+import { CompactCTASection } from './components/CompactCTASection';
+import { PageHeaderBanner } from './components/PageHeaderBanner';
+
 import { VisaProcessSteps } from './components/VisaProcessSteps';
 import { DocumentGuideSection } from './components/DocumentGuideSection';
 import { CampusGallerySection } from './components/CampusGallerySection';
@@ -34,6 +41,8 @@ import { LanguageBanner } from './components/LanguageBanner';
 import { SitemapModal } from './components/SitemapModal';
 
 import { CMSProvider, useCMS } from './context/CMSContext';
+import { AuthProvider } from './context/AuthContext';
+import { ApplicationProvider } from './context/ApplicationContext';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { LoadingScreen } from './components/LoadingScreen';
@@ -61,11 +70,20 @@ export function AppContent() {
   const [selectedCountryForApp, setSelectedCountryForApp] = useState('Italy');
   const [selectedUniForApp, setSelectedUniForApp] = useState('Politecnico di Milano');
 
+  const [currentHash, setCurrentHash] = useState<string>(() => window.location.hash || '#');
+
   useEffect(() => {
     const checkHash = () => {
-      setIsAdminView(window.location.hash === '#admin' || window.location.pathname.startsWith('/admin'));
+      const hash = window.location.hash || '#';
+      setCurrentHash(hash);
+      setIsAdminView(hash === '#admin' || window.location.pathname.startsWith('/admin'));
+
+      if (hash === '#portal' || hash === '#student-portal') {
+        setIsStudentPortalOpen(true);
+      }
     };
     window.addEventListener('hashchange', checkHash);
+    checkHash();
     return () => window.removeEventListener('hashchange', checkHash);
   }, []);
 
@@ -105,6 +123,28 @@ export function AppContent() {
     return <AdminLogin onLoginSuccess={() => setIsAdminView(true)} onReturnToSite={returnToSite} />;
   }
 
+  // Route flags
+  const isUniversitiesPage = currentHash === '#universities';
+  const isDestinationsPage = currentHash === '#destinations';
+  const isServicesPage = currentHash === '#services';
+  const isAboutPage = currentHash === '#about' || currentHash === '#process-steps';
+  const isFAQPage = currentHash === '#faq';
+  const isScholarshipsPage = currentHash === '#scholarships' || currentHash === '#language-programs';
+  const isBlogPage = currentHash === '#blog';
+  const isContactPage = currentHash === '#contact';
+  const isPaymentPage = currentHash === '#payment';
+
+  const isSubPage =
+    isUniversitiesPage ||
+    isDestinationsPage ||
+    isServicesPage ||
+    isAboutPage ||
+    isFAQPage ||
+    isScholarshipsPage ||
+    isBlogPage ||
+    isContactPage ||
+    isPaymentPage;
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B1F3A] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300 selection:bg-[#D4AF37] selection:text-[#0B1F3A]">
       {/* Navigation Bar */}
@@ -120,86 +160,194 @@ export function AppContent() {
       />
 
       <main>
-        {/* Requirement 3: Animated Hero Section with Two Clear Stacked CTAs */}
-        <Hero
-          onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
-          onOpenAppointment={() => setIsAppointmentOpen(true)}
-          onOpenApplication={() => setIsApplicationOpen(true)}
-        />
+        {!isSubPage && (
+          /* ================= COMPACT HOMEPAGE ================= */
+          <>
+            {/* 1. Hero Section */}
+            <Hero
+              onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
+              onOpenAppointment={() => setIsAppointmentOpen(true)}
+              onOpenApplication={() => setIsApplicationOpen(true)}
+              onOpenStudentPortal={() => setIsStudentPortalOpen(true)}
+            />
 
-        {/* Requirement 4: Visa Processing Steps Section */}
-        <VisaProcessSteps
-          onOpenAppointment={() => setIsAppointmentOpen(true)}
-        />
+            {/* 2. Quick Access Section */}
+            <QuickAccessSection
+              onExploreUniversities={() => (window.location.hash = '#universities')}
+              onCheckEligibility={() => setIsAIEvaluatorOpen(true)}
+              onApplyOnline={() => setIsApplicationOpen(true)}
+              onViewApplication={() => setIsStudentPortalOpen(true)}
+            />
 
-        {/* Requirement 7: University/Course Selection & Budget Stepper */}
-        <CourseSelectionStepper
-          currency={currency}
-          onOpenApplicationWithUni={handleOpenApplicationWithUni}
-        />
+            {/* 3. Why Choose Vercito Section */}
+            <WhyChooseVercito onLearnMore={() => (window.location.hash = '#about')} />
 
-        {/* Requirement 5: Document Guide Section with Expandable Details */}
-        <DocumentGuideSection />
+            {/* 4. Featured Universities (3-4 cards) */}
+            <FeaturedUniversitiesHomepage
+              currency={currency}
+              onViewAllUniversities={() => (window.location.hash = '#universities')}
+              onSelectUniversityForApplication={handleOpenApplicationWithUni}
+            />
 
-        {/* Requirement 6: Campus / Student Life Gallery Section */}
-        <CampusGallerySection />
+            {/* 5. Simple 4-Step Application Process */}
+            <SimpleApplicationProcess onStartApplication={() => setIsApplicationOpen(true)} />
 
-        {/* Study Destinations (Italy, Germany, France, Hungary, USA, Spain, etc.) */}
-        <StudyDestinations
-          currency={currency}
-          onSelectCountryForApplication={(countryName) => {
-            setSelectedCountryForApp(countryName);
-            setIsApplicationOpen(true);
-          }}
-        />
+            {/* 6. Compact Call-To-Action Section */}
+            <CompactCTASection
+              onOpenApplication={() => setIsApplicationOpen(true)}
+              onOpenCounseling={() => setIsAppointmentOpen(true)}
+            />
+          </>
+        )}
 
-        {/* Comprehensive Services */}
-        <ServicesSection
-          onOpenAppointment={() => setIsAppointmentOpen(true)}
-          onOpenApplication={() => setIsApplicationOpen(true)}
-        />
+        {/* ================= DEDICATED SEPARATE PAGES ================= */}
 
-        {/* Scholarship Section & Grant Calculator */}
-        <ScholarshipCalculator
-          currency={currency}
-          onOpenAppointment={() => setIsAppointmentOpen(true)}
-          onOpenApplication={() => setIsApplicationOpen(true)}
-        />
+        {/* Universities Page */}
+        {isUniversitiesPage && (
+          <>
+            <PageHeaderBanner
+              category="Universities"
+              title="Partner Universities Directory"
+              subtitle="Browse accredited European & American universities, filter by tuition budgets, scholarship eligibility, and apply directly."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <UniversityPartners
+              currency={currency}
+              onSelectUniversityForApplication={handleOpenApplicationWithUni}
+            />
+            <CourseSelectionStepper
+              currency={currency}
+              onOpenApplicationWithUni={handleOpenApplicationWithUni}
+            />
+          </>
+        )}
 
-        {/* Partner Universities Grid */}
-        <UniversityPartners
-          currency={currency}
-          onSelectUniversityForApplication={handleOpenApplicationWithUni}
-        />
+        {/* Countries / Destinations Page */}
+        {isDestinationsPage && (
+          <>
+            <PageHeaderBanner
+              category="Destinations"
+              title="Global Study Destinations"
+              subtitle="Explore top European and American study destinations with comprehensive tuition, visa success rate, and post-study work guides."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <StudyDestinations
+              currency={currency}
+              onSelectCountryForApplication={(countryName) => {
+                setSelectedCountryForApp(countryName);
+                setIsApplicationOpen(true);
+              }}
+              onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
+            />
+          </>
+        )}
 
-        {/* 6-Step Student Journey Timeline */}
-        <StudentJourney onOpenAppointment={() => setIsAppointmentOpen(true)} />
+        {/* Services Page */}
+        {isServicesPage && (
+          <>
+            <PageHeaderBanner
+              category="Services"
+              title="Our Professional Services"
+              subtitle="Complete end-to-end international student services, from university shortlisting and SOP preparation to embassy file audits and flight departure."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <ServicesSection
+              onOpenAppointment={() => setIsAppointmentOpen(true)}
+              onOpenApplication={() => setIsApplicationOpen(true)}
+            />
+            <DocumentGuideSection />
+            <VisaChecklistTool />
+          </>
+        )}
 
-        {/* Requirement 8: Success Stories & Testimonials with Visa Granted Badge & End CTA */}
-        <SuccessStories
-          onOpenApplication={() => setIsApplicationOpen(true)}
-        />
+        {/* About Us Page */}
+        {isAboutPage && (
+          <>
+            <PageHeaderBanner
+              category="About Us"
+              title="About Vercito Higher Education"
+              subtitle="Empowering international students since 2026 with a proven 98.8% visa success rate and dedicated student support."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <VisaProcessSteps onOpenAppointment={() => setIsAppointmentOpen(true)} />
+            <CampusGallerySection />
+            <StudentJourney onOpenAppointment={() => setIsAppointmentOpen(true)} />
+            <SuccessStories onOpenApplication={() => setIsApplicationOpen(true)} />
+            <BrandIdentityShowcase />
+          </>
+        )}
 
-        {/* Visa Process & Document Checklist Tool */}
-        <VisaChecklistTool />
+        {/* FAQ Page */}
+        {isFAQPage && (
+          <>
+            <PageHeaderBanner
+              category="FAQ"
+              title="Frequently Asked Questions"
+              subtitle="Clear answers to common questions regarding admissions, DSU scholarships, bank statement audits, and embassy visas."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <FAQSection />
+          </>
+        )}
 
-        {/* Knowledge Base & Country Guides Blog */}
-        <BlogSection />
+        {/* Scholarships Page */}
+        {isScholarshipsPage && (
+          <>
+            <PageHeaderBanner
+              category="Scholarships"
+              title="Scholarships & Tuition Waiver Grants"
+              subtitle="Calculate your grant eligibility and explore regional tuition waiver programs up to €7,000 annually."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <ScholarshipCalculator
+              currency={currency}
+              onOpenAppointment={() => setIsAppointmentOpen(true)}
+              onOpenApplication={() => setIsApplicationOpen(true)}
+            />
+          </>
+        )}
 
-        {/* Requirement 9: FAQ Accordion Collapsed by Default */}
-        <FAQSection />
+        {/* Blog Page */}
+        {isBlogPage && (
+          <>
+            <PageHeaderBanner
+              category="Blog"
+              title="Study Abroad Guides & News"
+              subtitle="Latest insights, embassy rules, living cost guides, and student success stories."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <BlogSection />
+          </>
+        )}
 
-        {/* Corporate Brand Identity Showcase & Collateral Suite */}
-        <BrandIdentityShowcase />
+        {/* Contact Page */}
+        {isContactPage && (
+          <>
+            <PageHeaderBanner
+              category="Contact"
+              title="Contact Vercito Specialists"
+              subtitle="Visit our Gulshan (Dhaka) or Chittagong offices or schedule an online video consultation."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <ContactSection
+              onOpenAppointment={() => setIsAppointmentOpen(true)}
+              onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
+            />
+          </>
+        )}
 
-        {/* Secure SSLCommerz Payment Gateway Section */}
-        <PaymentSection currency={currency} />
-
-        {/* Direct Contact & Gulshan/Chittagong Office Booking */}
-        <ContactSection
-          onOpenAppointment={() => setIsAppointmentOpen(true)}
-          onOpenAIEvaluator={() => setIsAIEvaluatorOpen(true)}
-        />
+        {/* Payments Page */}
+        {isPaymentPage && (
+          <>
+            <PageHeaderBanner
+              category="Payments"
+              title="Secure Payment Portal"
+              subtitle="Pay official application processing fees or tuition deposits securely via SSLCommerz gateway."
+              onBackToHome={() => (window.location.hash = '#')}
+            />
+            <PaymentSection currency={currency} />
+          </>
+        )}
       </main>
 
       {/* Requirement 10: Footer with Company Info, Quick Links & Admin Console Link */}
@@ -242,6 +390,7 @@ export function AppContent() {
       <StudentPortalModal
         isOpen={isStudentPortalOpen}
         onClose={() => setIsStudentPortalOpen(false)}
+        onOpenApplyNow={() => setIsApplicationOpen(true)}
       />
     </div>
   );
@@ -251,7 +400,11 @@ export function App() {
   return (
     <CMSProvider>
       <LanguageProvider>
-        <AppContent />
+        <AuthProvider>
+          <ApplicationProvider>
+            <AppContent />
+          </ApplicationProvider>
+        </AuthProvider>
       </LanguageProvider>
     </CMSProvider>
   );

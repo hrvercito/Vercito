@@ -30,6 +30,63 @@
   }
 }
 
+/* Section 13: Public Content Casual Copy Protection */
+.protected-content,
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Allow text selection & copy-paste inside form inputs, textareas, editable fields, and specific copyable elements */
+input,
+textarea,
+select,
+[contenteditable="true"],
+.selectable-text,
+.printable-document,
+#printable-application-form {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Section 12: Direct Print Application Styles */
+@media print {
+  /* Hide all website components, headers, footers, floating widgets when printing */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Show only the printable application form document */
+  #printable-application-form,
+  #printable-application-form * {
+    visibility: visible !important;
+  }
+
+  #printable-application-form {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: block !important;
+    font-size: 12px !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+}
+
 /* Custom Geometric Utilities & Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

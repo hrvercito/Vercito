@@ -24,7 +24,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface StudyDestinationsProps {
   currency: Currency;
   onSelectCountryForApplication: (countryName: string) => void;
-  onOpenAIEvaluator: () => void;
+  onOpenAIEvaluator?: () => void;
 }
 
 export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
@@ -330,7 +330,7 @@ export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
                   <button
                     onClick={() => {
                       setSelectedCountry(null);
-                      onOpenAIEvaluator();
+                      onOpenAIEvaluator?.();
                     }}
                     className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white font-semibold text-xs hover:bg-slate-200 dark:hover:bg-white/20 transition-all flex items-center justify-center gap-2"
                   >

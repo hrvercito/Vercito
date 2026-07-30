@@ -35,6 +35,7 @@ interface AIAssistantWidgetProps {
 
 export const AIAssistantWidget: React.FC<AIAssistantWidgetProps> = ({
   onOpenAppointment,
+  onOpenApplication,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState<'chat' | 'analyze'>('chat');

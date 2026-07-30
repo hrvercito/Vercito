@@ -435,3 +435,97 @@ export interface NotificationItem {
   isRead: boolean;
 }
 
+export type ApplicationStatus =
+  | 'Application Received'
+  | 'Document Review'
+  | 'Additional Documents Required'
+  | 'Application Under Review'
+  | 'University Review'
+  | 'Offer Received'
+  | 'Conditional Offer'
+  | 'Final Decision'
+  | 'Application Completed';
+
+export interface StudentAccount {
+  id: string; // e.g. "USR-1001"
+  fullName: string;
+  email: string;
+  passwordHash?: string;
+  phone: string;
+  district: string;
+  dateOfBirth: string;
+  nationality: string;
+  fullAddress?: string;
+  registeredAt: string;
+  status: 'Active' | 'Suspended';
+}
+
+export interface ApplicationDocItem {
+  id: string;
+  docType: 'passport' | 'certificates' | 'transcripts' | 'englishTest' | 'cv' | 'sop' | 'recommendation' | 'other';
+  title: string;
+  fileName: string;
+  status: 'Provided' | 'Not Provided' | 'Under Review' | 'Approved' | 'Action Needed';
+  uploadDate: string;
+  fileSize?: string;
+}
+
+export interface ApplicationTimelineEvent {
+  id: string;
+  status: ApplicationStatus;
+  date: string;
+  note: string;
+  updatedBy: string;
+}
+
+export interface ApplicationRecord {
+  id: string; // Unique Application ID e.g. "VER-APP-2026-100001"
+  studentUserId: string; // Owner User ID for strict privacy check
+  studentName: string;
+  studentEmail: string;
+  studentPhone: string;
+  studentDistrict: string;
+
+  // Selected University Details
+  universityId: string;
+  universityName: string;
+  universityLogo: string;
+  country: string;
+  city: string;
+  selectedCourse: string;
+  degreeLevel: string;
+  intake: string;
+  tuitionFeeEUR: number;
+  applicationFeeEUR: number;
+  applicationDeadline: string;
+
+  // Applicant Personal Info
+  fullName: string;
+  dateOfBirth: string;
+  nationality: string;
+  fullAddress: string;
+
+  // Academic Info
+  previousEducation: string;
+  institutionName: string;
+  academicSubject: string;
+  cgpa: string;
+  graduationYear: string;
+
+  // English Proficiency
+  englishTestType: 'IELTS' | 'PTE' | 'TOEFL' | 'Duolingo' | 'MOI' | 'None';
+  englishScore: string;
+  testDate: string;
+
+  // Application Documents
+  documents: Record<string, ApplicationDocItem>;
+
+  // Status & Meta
+  status: ApplicationStatus;
+  isDraft: boolean;
+  submissionDate: string;
+  lastUpdated: string;
+  timeline: ApplicationTimelineEvent[];
+  additionalNotes?: string;
+}
+

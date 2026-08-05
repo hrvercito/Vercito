@@ -25,6 +25,83 @@ export interface PaymentReceiptData {
 }
 
 /**
+ * Generates high-res PNG data URL for VERCITO official logo emblem
+ */
+async function getVercitoLogoDataUrl(): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+  return new Promise((resolve) => {
+    try {
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 500 500">
+        <defs>
+          <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0B1F3A" />
+            <stop offset="50%" stop-color="#08162A" />
+            <stop offset="100%" stop-color="#040C18" />
+          </linearGradient>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#F9E29C" />
+            <stop offset="35%" stop-color="#D4AF37" />
+            <stop offset="70%" stop-color="#AA820A" />
+            <stop offset="100%" stop-color="#E5C158" />
+          </linearGradient>
+          <radialGradient id="globeGrad" cx="40%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#1E4D8C" />
+            <stop offset="60%" stop-color="#0B2A5B" />
+            <stop offset="100%" stop-color="#051430" />
+          </radialGradient>
+        </defs>
+        <circle cx="250" cy="230" r="105" fill="url(#globeGrad)" stroke="url(#goldGrad)" stroke-width="3" />
+        <ellipse cx="250" cy="230" rx="105" ry="40" fill="none" stroke="#64B5F6" stroke-width="1.2" stroke-opacity="0.3" />
+        <ellipse cx="250" cy="230" rx="60" ry="105" fill="none" stroke="#64B5F6" stroke-width="1.2" stroke-opacity="0.3" />
+        <line x1="145" y1="230" x2="355" y2="230" stroke="#64B5F6" stroke-width="1.2" stroke-opacity="0.3" />
+        <line x1="250" y1="125" x2="250" y2="335" stroke="#64B5F6" stroke-width="1.2" stroke-opacity="0.3" />
+        <path d="M210,165 Q230,155 250,160 T270,185 Q260,205 240,210 Q225,225 215,200 Z M235,220 Q265,225 275,255 Q260,290 230,295 Q210,280 220,250 Z" fill="#FFFFFF" fill-opacity="0.95" />
+        <path d="M165,180 Q180,175 190,195 Q175,220 160,200 Z" fill="#FFFFFF" fill-opacity="0.85" />
+        <path d="M135,110 L195,110 L250,320 L220,320 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="1.5" />
+        <path d="M365,110 L305,110 L250,320 L280,320 Z" fill="url(#goldGrad)" stroke="#0B1F3A" stroke-width="1.5" />
+        <polygon points="250,25 380,68 250,110 120,68" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="3" />
+        <polygon points="250,32 360,68 250,102 140,68" fill="url(#navyGrad)" />
+        <path d="M185,82 L185,115 Q250,145 315,115 L315,82 Q250,110 185,82 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="2" />
+        <path d="M250,68 Q210,75 198,125" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+        <circle cx="250" cy="68" r="4" fill="url(#goldGrad)" />
+        <polygon points="193,125 203,125 200,155 196,155" fill="url(#goldGrad)" />
+        <path d="M140,260 Q120,220 220,180 Q320,140 400,120" fill="none" stroke="url(#navyGrad)" stroke-width="10" stroke-linecap="round" />
+        <path d="M130,270 Q200,320 340,260 Q430,210 420,130" fill="none" stroke="url(#goldGrad)" stroke-width="12" stroke-linecap="round" />
+        <g transform="translate(415, 125) rotate(-35) scale(1.1)">
+          <path d="M0,-22 L5,-5 L22,5 L22,10 L5,2 L4,18 L10,23 L10,27 L0,23 L-10,27 L-10,23 L-4,18 L-5,2 L-22,10 L-22,5 L-5,-5 Z" fill="url(#navyGrad)" stroke="url(#goldGrad)" stroke-width="1.5" />
+        </g>
+      </svg>`;
+
+      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 300;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, 300, 300);
+          const dataUrl = canvas.toDataURL('image/png');
+          URL.revokeObjectURL(url);
+          resolve(dataUrl);
+        } else {
+          URL.revokeObjectURL(url);
+          resolve(null);
+        }
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(null);
+      };
+      img.src = url;
+    } catch (e) {
+      resolve(null);
+    }
+  });
+}
+
+/**
  * Generates an official, professional VERCITO PDF payment receipt.
  */
 export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Promise<jsPDF> {
@@ -48,11 +125,28 @@ export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Pr
     minute: '2-digit',
   });
 
+  const formattedAmount = `BDT ${payment.amount.toLocaleString()}`;
+  const eurApprox = Math.round(payment.amount / 132);
+
   const verificationUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/#verify-receipt?tran_id=${payment.tran_id}`
-    : `https://vercito.com/verify-receipt?tran_id=${payment.tran_id}`;
+    : `https://vercito.com/#verify-receipt?tran_id=${payment.tran_id}`;
 
-  // 1. Top Navy Header Banner
+  // Get official VERCITO logo PNG data
+  const logoDataUrl = await getVercitoLogoDataUrl();
+
+  // 1. Watermark (Subtle Security Authenticity Feature)
+  doc.saveGraphicsState();
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(36);
+  doc.setTextColor(240, 244, 250);
+  doc.text('VERCITO VERIFIED', pageWidth / 2, pageHeight / 2, {
+    align: 'center',
+    angle: -30,
+  });
+  doc.restoreGraphicsState();
+
+  // 2. Top Navy Header Banner
   doc.setFillColor(11, 31, 58); // #0B1F3A Vercito Navy
   doc.rect(0, 0, pageWidth, 36, 'F');
 
@@ -60,59 +154,71 @@ export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Pr
   doc.setFillColor(212, 175, 55); // #D4AF37 Gold
   doc.rect(0, 36, pageWidth, 2, 'F');
 
-  // Header Brand Name
+  // Header Official VERCITO Logo
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, 'PNG', 15, 6, 22, 22);
+  }
+
+  // Header Brand Info
+  const textLeft = logoDataUrl ? 42 : 15;
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.text('VERCITO', 15, 18);
+  doc.setFontSize(19);
+  doc.text('VERCITO', textLeft, 16);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(212, 175, 55);
-  doc.text('HIGHER EDUCATION CONSULTANCY', 15, 24);
+  doc.text('HIGHER EDUCATION CONSULTANCY', textLeft, 22);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
   doc.setTextColor(200, 210, 225);
-  doc.text('Gulshan 2, Dhaka 1212 | www.vercito.com | hr.vercito@gmail.com', 15, 29);
+  doc.text('Gulshan 2, Dhaka 1212 | www.vercito.com | hr.vercito@gmail.com', textLeft, 27);
 
-  // Top Right "OFFICIAL RECEIPT" Badge
+  // Top Right "PAYMENT RECEIPT" & STATUS
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setTextColor(212, 175, 55);
-  doc.text('PAYMENT RECEIPT', pageWidth - 15, 18, { align: 'right' });
+  doc.text('PAYMENT RECEIPT', pageWidth - 15, 16, { align: 'right' });
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(34, 197, 94); // Green PAID
-  doc.text('[ STATUS: PAID & VERIFIED ]', pageWidth - 15, 26, { align: 'right' });
+  doc.setFontSize(8.5);
+  doc.setTextColor(34, 197, 94); // Clean Green
+  doc.text('✓ PAYMENT PAID & VERIFIED', pageWidth - 15, 24, { align: 'right' });
 
-  // 2. Invoice & Transaction Overview Box
-  let y = 48;
+  // 3. Invoice & Transaction Overview Box
+  let y = 44;
 
   doc.setDrawColor(226, 232, 240);
   doc.setFillColor(248, 250, 252);
-  doc.roundedRect(15, y, pageWidth - 30, 22, 2, 2, 'FD');
+  doc.roundedRect(15, y, pageWidth - 30, 20, 2, 2, 'FD');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
 
-  doc.text('INVOICE NO:', 20, y + 8);
-  doc.text('DATE & TIME:', 75, y + 8);
-  doc.text('SSLCOMMERZ TRAN ID:', 135, y + 8);
+  doc.text('INVOICE NO:', 20, y + 7);
+  doc.text('DATE & TIME:', 75, y + 7);
+  doc.text('SSLCOMMERZ TRAN ID:', 135, y + 7);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.setTextColor(11, 31, 58);
+
+  doc.text(invoiceNo, 20, y + 14);
+  doc.text(`${dateStr}, ${timeStr}`, 75, y + 14);
+
+  // Wrap or fit long transaction ID
+  doc.setFont('courier', 'bold');
+  doc.setFontSize(8.5);
+  doc.text(payment.tran_id, 135, y + 14);
+
+  // 4. Student Details (Billed To)
+  y += 27;
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.setTextColor(11, 31, 58);
-
-  doc.text(invoiceNo, 20, y + 15);
-  doc.text(`${dateStr}, ${timeStr}`, 75, y + 15);
-  doc.setFontSize(9);
-  doc.text(payment.tran_id, 135, y + 15);
-
-  // 3. Student Details (Billed To)
-  y += 30;
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
   doc.setTextColor(11, 31, 58);
   doc.text('BILLED TO (STUDENT INFORMATION)', 15, y);
 
@@ -120,16 +226,16 @@ export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Pr
   doc.setDrawColor(212, 175, 55);
   doc.line(15, y + 2, 85, y + 2);
 
-  y += 9;
+  y += 8;
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.text(payment.studentName, 15, y);
 
   y += 5;
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
+  doc.setFontSize(9);
   doc.setTextColor(71, 85, 105);
   doc.text(`Email: ${payment.studentEmail}`, 15, y);
 
@@ -138,109 +244,134 @@ export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Pr
 
   if (payment.notes) {
     y += 5;
-    doc.text(`Reference / Note: ${payment.notes}`, 15, y);
+    const noteLines = doc.splitTextToSize(`Reference / Note: ${payment.notes}`, pageWidth - 30);
+    doc.text(noteLines, 15, y);
+    y += (noteLines.length - 1) * 4;
   }
 
-  // 4. Itemized Payment Table
-  y += 12;
+  // 5. Itemized Payment Table
+  y += 10;
 
   // Table Header
   doc.setFillColor(11, 31, 58);
-  doc.rect(15, y, pageWidth - 30, 9, 'F');
+  doc.rect(15, y, pageWidth - 30, 8, 'F');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(255, 255, 255);
-  doc.text('DESCRIPTION / PAYMENT PURPOSE', 20, y + 6);
-  doc.text('QTY', 130, y + 6, { align: 'center' });
-  doc.text('CURRENCY', 155, y + 6, { align: 'center' });
-  doc.text('AMOUNT (BDT)', pageWidth - 20, y + 6, { align: 'right' });
+  doc.text('DESCRIPTION / PAYMENT PURPOSE', 20, y + 5.5);
+  doc.text('QTY', 125, y + 5.5, { align: 'center' });
+  doc.text('CURRENCY', 150, y + 5.5, { align: 'center' });
+  doc.text('AMOUNT', pageWidth - 20, y + 5.5, { align: 'right' });
 
-  y += 9;
+  y += 8;
 
   // Table Body Row
+  const purposeText = payment.purpose || 'VERCITO Higher Education Service Fee';
+  const purposeLines = doc.splitTextToSize(purposeText, 95);
+  const rowHeight = Math.max(14, purposeLines.length * 5 + 7);
+
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(226, 232, 240);
-  doc.rect(15, y, pageWidth - 30, 16, 'D');
+  doc.rect(15, y, pageWidth - 30, rowHeight, 'D');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
-  doc.setTextColor(15, 23, 42);
-  doc.text(payment.purpose || 'VERCITO Higher Education Fee', 20, y + 7);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(100, 116, 139);
-  doc.text('Official Consultation & Processing Charges', 20, y + 12);
-
   doc.setFontSize(9);
   doc.setTextColor(15, 23, 42);
-  doc.text('1', 130, y + 9, { align: 'center' });
-  doc.text('BDT (৳)', 155, y + 9, { align: 'center' });
-  doc.setFont('helvetica', 'bold');
-  doc.text(`৳ ${payment.amount.toLocaleString()}`, pageWidth - 20, y + 9, { align: 'right' });
+  doc.text(purposeLines, 20, y + 6);
 
-  y += 16;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text('Official Consultation & Processing Charges', 20, y + 6 + (purposeLines.length * 4.5));
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(15, 23, 42);
+  doc.text('1', 125, y + 8, { align: 'center' });
+  doc.text('BDT', 150, y + 8, { align: 'center' });
+
+  doc.setFont('helvetica', 'bold');
+  doc.text(formattedAmount, pageWidth - 20, y + 8, { align: 'right' });
+
+  y += rowHeight;
 
   // Total Summary Row
   doc.setFillColor(241, 245, 249);
   doc.rect(15, y, pageWidth - 30, 12, 'FD');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(11, 31, 58);
-  doc.text('TOTAL AMOUNT PAID:', 20, y + 8);
+  doc.text('TOTAL AMOUNT PAID:', 20, y + 7.5);
 
-  const eurApprox = Math.round(payment.amount / 132);
   doc.setFontSize(8.5);
   doc.setTextColor(100, 116, 139);
-  doc.text(`(Approx. € ${eurApprox} EUR)`, 75, y + 8);
+  doc.text(`(Approx. EUR ${eurApprox})`, 75, y + 7.5);
 
-  doc.setFontSize(12);
+  doc.setFontSize(11);
   doc.setTextColor(11, 31, 58);
-  doc.text(`৳ ${payment.amount.toLocaleString()} BDT`, pageWidth - 20, y + 8, { align: 'right' });
+  doc.text(formattedAmount, pageWidth - 20, y + 7.5, { align: 'right' });
 
-  // 5. SSLCommerz Gateway Verification & Audit Section
-  y += 20;
+  // 6. SSLCommerz Gateway Verification Section
+  y += 18;
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(11, 31, 58);
   doc.text('SSLCOMMERZ GATEWAY VERIFICATION DATA', 15, y);
 
-  y += 5;
+  y += 4;
+  const auditBoxY = y;
+  const auditBoxHeight = 32;
+
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(212, 175, 55);
-  doc.roundedRect(15, y, pageWidth - 30, 28, 2, 2, 'FD');
+  doc.roundedRect(15, auditBoxY, pageWidth - 30, auditBoxHeight, 2, 2, 'FD');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
 
-  doc.text('SSLCommerz Validation ID:', 20, y + 7);
-  doc.text('Bank Reference ID:', 20, y + 14);
-  doc.text('Payment Channel:', 20, y + 21);
+  // Column 1 Labels
+  doc.text('SSLCommerz Validation ID:', 20, auditBoxY + 7);
+  doc.text('Bank Reference ID:', 20, auditBoxY + 16);
+  doc.text('Payment Channel:', 20, auditBoxY + 25);
 
-  doc.text('Gateway Status:', 120, y + 7);
-  doc.text('Issuer / Network:', 120, y + 14);
-  doc.text('Security Level:', 120, y + 21);
+  // Column 2 Labels
+  doc.text('Gateway Status:', 115, auditBoxY + 7);
+  doc.text('Issuer / Network:', 115, auditBoxY + 16);
+  doc.text('Security Level:', 115, auditBoxY + 25);
 
+  // Column 1 Values (Wrapped if long)
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
 
-  doc.text(payment.val_id || `VAL-SSL-${payment.tran_id.slice(-6)}`, 65, y + 7);
-  doc.text(payment.bankTranId || `TXN${Math.floor(10000000 + Math.random() * 90000000)}`, 65, y + 14);
-  doc.text(payment.paymentMethod || 'bKash / Visa / Mobile Banking', 65, y + 21);
+  const valId = payment.val_id || `VAL-SSL-${payment.tran_id.slice(-6)}`;
+  const valIdLines = doc.splitTextToSize(valId, 48);
+  doc.text(valIdLines, 60, auditBoxY + 7);
 
+  const bankId = payment.bankTranId || `TXN${Math.floor(10000000 + Math.random() * 90000000)}`;
+  const bankIdLines = doc.splitTextToSize(bankId, 48);
+  doc.text(bankIdLines, 60, auditBoxY + 16);
+
+  const channel = payment.paymentMethod || 'bKash / Visa / Mobile Banking';
+  const channelLines = doc.splitTextToSize(channel, 48);
+  doc.text(channelLines, 60, auditBoxY + 25);
+
+  // Column 2 Values
   doc.setTextColor(34, 197, 94); // Green
-  doc.text('SUCCESS (Passed)', 155, y + 7);
+  doc.text('✓ SUCCESS (Passed)', 150, auditBoxY + 7);
 
   doc.setTextColor(15, 23, 42);
-  doc.text(payment.cardIssuer || 'SSLCommerz Authorized Gateway', 155, y + 14);
-  doc.text('256-Bit SSL Encrypted (PCI-DSS)', 155, y + 21);
+  const issuer = payment.cardIssuer || 'SSLCommerz Authorized Gateway';
+  const issuerLines = doc.splitTextToSize(issuer, 42);
+  doc.text(issuerLines, 150, auditBoxY + 16);
 
-  // 6. QR Code & Official Company Seal Area
-  y += 36;
+  doc.text('256-Bit SSL Encrypted (PCI-DSS)', 150, auditBoxY + 25);
+
+  // 7. QR Code & Official Company Logo Seal Area
+  y = auditBoxY + auditBoxHeight + 8;
 
   // Generate real QR code image
   try {
@@ -253,63 +384,63 @@ export async function generatePaymentReceiptPDF(payment: PaymentReceiptData): Pr
       },
     });
 
-    doc.addImage(qrDataUrl, 'PNG', 15, y, 28, 28);
+    doc.addImage(qrDataUrl, 'PNG', 15, y, 26, 26);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(11, 31, 58);
-    doc.text('SCAN TO VERIFY RECEIPT', 15, y + 32);
+    doc.text('SCAN TO VERIFY RECEIPT', 15, y + 30);
+
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6.5);
     doc.setTextColor(100, 116, 139);
-    doc.text('Official VERCITO Online Ledger', 15, y + 35);
+    doc.text('Official VERCITO Receipt Verification', 15, y + 33.5);
   } catch (qrErr) {
     console.warn('QR code rendering fallback:', qrErr);
   }
 
-  // Draw Official Circular Stamp / Seal
-  const sealX = pageWidth - 55;
-  const sealY = y + 14;
+  // Official VERCITO Logo in Authorization Section
+  const authCenterX = 165;
+  const logoX = authCenterX - 10;
+  const logoY = y;
 
-  doc.setDrawColor(212, 175, 55); // Gold
-  doc.setLineWidth(1);
-  doc.circle(sealX, sealY, 14, 'D');
-  doc.setLineWidth(0.3);
-  doc.circle(sealX, sealY, 12, 'D');
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, 'PNG', logoX, logoY, 20, 20);
+  }
 
+  // Authorization Representative Text
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(6);
+  doc.setFontSize(8.5);
   doc.setTextColor(11, 31, 58);
-  doc.text('VERCITO STUDY ABROAD', sealX, sealY - 4, { align: 'center' });
-  doc.setFontSize(7);
-  doc.setTextColor(212, 175, 55);
-  doc.text('★ OFFICIAL SEAL ★', sealX, sealY, { align: 'center' });
-  doc.setFontSize(5.5);
-  doc.setTextColor(11, 31, 58);
-  doc.text('VERIFIED & STAMPED', sealX, sealY + 4, { align: 'center' });
-
-  // Signature line
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.setTextColor(11, 31, 58);
-  doc.text('VERCITO Accounts Division', sealX, sealY + 22, { align: 'center' });
+  doc.text('VERCITO Accounts Division', authCenterX, logoY + 23, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
+  doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
-  doc.text('Authorized Finance Representative', sealX, sealY + 26, { align: 'center' });
+  doc.text('Authorized Finance Representative', authCenterX, logoY + 27, { align: 'center' });
 
-  // 7. Footer Disclaimer
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(6.5);
+  doc.setTextColor(212, 175, 55);
+  doc.text('[ Digital Authorization Verified ]', authCenterX, logoY + 31, { align: 'center' });
+
+  // 8. Footer Disclaimer
   doc.setFillColor(11, 31, 58);
-  doc.rect(0, pageHeight - 12, pageWidth, 12, 'F');
+  doc.rect(0, pageHeight - 14, pageWidth, 14, 'F');
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
+  doc.setFontSize(6.8);
   doc.setTextColor(200, 210, 225);
   doc.text(
-    'This is an official computer-generated receipt issued by VERCITO International Education Consultancy. Registered in Bangladesh.',
+    'This is an official computer-generated payment receipt issued by VERCITO International Education Consultancy.',
     pageWidth / 2,
-    pageHeight - 5,
+    pageHeight - 8.5,
+    { align: 'center' }
+  );
+  doc.text(
+    'For receipt verification, scan the QR code or use the official VERCITO receipt verification system.',
+    pageWidth / 2,
+    pageHeight - 4.5,
     { align: 'center' }
   );
 
@@ -331,3 +462,4 @@ export async function downloadPaymentReceipt(payment: PaymentReceiptData): Promi
     throw error;
   }
 }
+

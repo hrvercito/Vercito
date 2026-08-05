@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { BlogPost } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { BookOpen, Plus, Trash2, Edit2, Clock, User } from 'lucide-react';
 
 export const BlogEditor: React.FC = () => {
@@ -158,12 +159,13 @@ export const BlogEditor: React.FC = () => {
             </div>
 
             <div className="md:col-span-3">
-              <label className="block text-slate-300 mb-1 font-semibold">Cover Image URL</label>
-              <input
-                type="text"
+              <ImageUploadField
+                label="Blog Cover Image"
                 value={editingBlog.image}
-                onChange={(e) => setEditingBlog({ ...editingBlog, image: e.target.value })}
-                className="w-full p-2.5 rounded-xl bg-slate-800 border border-white/15 text-white focus:outline-none focus:border-[#D4AF37]"
+                onChange={(url) => setEditingBlog({ ...editingBlog, image: url })}
+                aspectRatio="16:9"
+                category="blog"
+                defaultImage="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=800"
               />
             </div>
 

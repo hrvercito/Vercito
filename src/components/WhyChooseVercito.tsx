@@ -6,32 +6,36 @@
 import React from 'react';
 import { ShieldCheck, GraduationCap, FileCheck2, HeartHandshake, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface WhyChooseVercitoProps {
   onLearnMore?: () => void;
 }
 
 export const WhyChooseVercito: React.FC<WhyChooseVercitoProps> = ({ onLearnMore }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
+
   const features = [
     {
       icon: ShieldCheck,
-      title: '98.8% Visa Success Rate',
-      description: 'Rigorous 3-tier document audit & embassy interview simulation before filing.',
+      title: isBn ? '৯৮.৮% ভিসা সাফল্যের হার' : '98.8% Visa Success Rate',
+      description: isBn ? 'ফাইল জমা দেওয়ার আগে ৩-স্তরীয় ডকুমেন্ট অডিট এবং এম্বাসি ইন্টারভিউ সিমুলেশন।' : 'Rigorous 3-tier document audit & embassy interview simulation before filing.',
     },
     {
       icon: GraduationCap,
-      title: '150+ Partner Universities',
-      description: 'Direct admissions to premier public & private universities in Europe & USA.',
+      title: isBn ? '১৫০+ পার্টনার বিশ্ববিদ্যালয়' : '150+ Partner Universities',
+      description: isBn ? 'ইউরোপ ও আমেরিকার প্রথম সারির পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ে সরাসরি ভর্তি।' : 'Direct admissions to premier public & private universities in Europe & USA.',
     },
     {
       icon: FileCheck2,
-      title: 'Full Scholarship Assistance',
-      description: 'Guidance for DSU, Regional Grants, and Merit Scholarships up to €7,000/yr.',
+      title: isBn ? 'সম্পূর্ণ স্কলারশিপ সহায়তা' : 'Full Scholarship Assistance',
+      description: isBn ? 'ডিএসইউ, রিজিয়নাল গ্র্যান্ট এবং বাৎসরিক €৭,০০০ পর্যন্ত মেরিটি স্কলারশিপের দিকনির্দেশনা।' : 'Guidance for DSU, Regional Grants, and Merit Scholarships up to €7,000/yr.',
     },
     {
       icon: HeartHandshake,
-      title: 'End-to-End & Arrival Support',
-      description: 'Complete guidance from university apply to airport pickup & residence permit.',
+      title: isBn ? 'শুরু থেকে পৌঁছানো পর্যন্ত সহায়তা' : 'End-to-End & Arrival Support',
+      description: isBn ? 'বিশ্ববিদ্যালয় আবেদন থেকে এয়ারপোর্ট পিকআপ ও রেসিডেন্স পারমিট পর্যন্ত সর্বাত্মক সাহায্য।' : 'Complete guidance from university apply to airport pickup & residence permit.',
     },
   ];
 
@@ -41,10 +45,10 @@ export const WhyChooseVercito: React.FC<WhyChooseVercitoProps> = ({ onLearnMore 
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-2">
-              <span>Why Choose Vercito</span>
+              <span>{isBn ? 'কেন ভার্সિટো বেছে নেবেন' : 'Why Choose Vercito'}</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-white">
-              Your Trusted Gateway to World-Class Education
+              {isBn ? 'বিশ্বমানের শিক্ষার বিশ্বস্ত প্রবেশদ্বার' : 'Your Trusted Gateway to World-Class Education'}
             </h2>
           </div>
 
@@ -53,7 +57,7 @@ export const WhyChooseVercito: React.FC<WhyChooseVercitoProps> = ({ onLearnMore 
               onClick={onLearnMore}
               className="inline-flex items-center gap-2 text-xs font-bold text-[#D4AF37] hover:underline cursor-pointer"
             >
-              <span>Learn More About Vercito</span>
+              <span>{isBn ? 'ভার্সিটো সম্পর্কে আরও জানুন' : 'Learn More About Vercito'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}

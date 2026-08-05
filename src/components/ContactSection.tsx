@@ -5,6 +5,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 import {
   MapPin,
   Phone,
@@ -62,6 +64,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   onOpenAppointment,
   onOpenAIEvaluator,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
+  const { cmsData } = useCMS();
+  const founder = cmsData.founderProfile;
+  const contactInfo = cmsData.contactInfo;
+
   // Modal states for Video Meeting and Callback Request
   const [activeModalMember, setActiveModalMember] = useState<TeamMember | null>(null);
   const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false);
@@ -102,22 +110,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   // Testimonials Slider state
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
-  // Team Data
+  // Team Data (Founder & CEO dynamically sourced from CMS Firestore)
   const teamMembers: TeamMember[] = [
     {
       id: 'ceo',
-      name: 'Engr. Kazi Ashraful Islam',
-      designation: 'Founder & CEO',
-      photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800',
-      bio: 'Visionary higher education strategist with 12+ years of expertise in European university pre-enrollment, Universitaly portals, DSU scholarships, and embassy visa protocols. Personally guided over 3,000 Bangladeshi students.',
-      experience: '12+ Years Experience',
-      expertise: ['Schengen Visa Regulations', 'Universitaly Portal', 'Strategic Education Planning', 'University Alliances'],
-      languages: ['English', 'Bengali', 'Italian (Basic)'],
+      name: founder?.name || 'Engr. Kazi Ashraful Islam',
+      designation: founder?.designation || 'Founder & CEO',
+      photo: founder?.photo || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800',
+      bio: founder?.bio || 'Visionary higher education strategist with 12+ years of expertise in European university pre-enrollment, Universitaly portals, DSU scholarships, and embassy visa protocols. Personally guided over 3,500 Bangladeshi students.',
+      experience: founder?.experienceYears || '12+ Years Experience',
+      expertise: founder?.expertise && founder.expertise.length > 0 ? founder.expertise : ['Schengen Visa Regulations', 'Universitaly Portal', 'Strategic Education Planning', 'University Alliances'],
+      languages: founder?.languages && founder.languages.length > 0 ? founder.languages : ['English', 'Bengali', 'Italian (Basic)'],
       office: 'Dhaka Head Office (Gulshan 2)',
-      email: 'ceo@vercito.com',
-      phone: '+880 1711 000001',
-      whatsapp: '8801711000001',
-      linkedin: 'https://linkedin.com/in/vercito-ceo',
+      email: founder?.email || 'ceo@vercito.com',
+      phone: founder?.phone || '+880 1711 000001',
+      whatsapp: founder?.whatsapp || '8801711000001',
+      linkedin: founder?.linkedin || 'https://linkedin.com/in/vercito-ceo',
       isLeadership: true,
     },
     {

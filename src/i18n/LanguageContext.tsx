@@ -156,16 +156,58 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   // Translation function `t`
   const t = (key: string, params?: Record<string, string>): string => {
-    const dict = TRANSLATIONS[language] || TRANSLATIONS[DEFAULT_LANGUAGE];
-    let template = (dict as any)[key] || (TRANSLATIONS[DEFAULT_LANGUAGE] as any)[key] || key;
+    if (!key) return '';
+
+    const currentDict = TRANSLATIONS[language] || TRANSLATIONS[DEFAULT_LANGUAGE];
+    const defaultDict = TRANSLATIONS[DEFAULT_LANGUAGE] || TRANSLATIONS['en'];
+
+    // 1. Exact match in current language dictionary
+    let template: string | undefined = (currentDict as any)[key];
+
+    // 2. Case-insensitive match in current language dictionary
+    if (!template && typeof currentDict === 'object') {
+      const lower = key.toLowerCase();
+      const matchedKey = Object.keys(currentDict).find((k) => k.toLowerCase() === lower);
+      if (matchedKey) {
+        template = (currentDict as any)[matchedKey];
+      }
+    }
+
+    // 3. Exact match in default (English) dictionary
+    if (!template && typeof defaultDict === 'object') {
+      template = (defaultDict as any)[key];
+    }
+
+    // 4. Case-insensitive match in default (English) dictionary
+    if (!template && typeof defaultDict === 'object') {
+      const lower = key.toLowerCase();
+      const matchedKey = Object.keys(defaultDict).find((k) => k.toLowerCase() === lower);
+      if (matchedKey) {
+        template = (defaultDict as any)[matchedKey];
+      }
+    }
+
+    // 5. Fallback formatting: Never display raw dot-separated keys or uppercase code identifiers
+    if (!template) {
+      if (key.includes('.')) {
+        const lastPart = key.split('.').pop() || key;
+        const spaced = lastPart
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/_/g, ' ')
+          .trim();
+        template = spaced ? spaced.charAt(0).toUpperCase() + spaced.slice(1) : key;
+      } else {
+        template = key;
+      }
+    }
 
     if (params) {
       Object.entries(params).forEach(([paramKey, value]) => {
-        template = template.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), value);
+        template = (template as string).replace(new RegExp(`\\{${paramKey}\\}`, 'g'), value);
       });
     }
 
-    return template;
+    return template as string;
   };
 
   const value: LanguageContextType = {

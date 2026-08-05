@@ -28,9 +28,12 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { useCMS } from '../context/CMSContext';
 
 export const BrandIdentityShowcase: React.FC = () => {
   const { t } = useTranslation();
+  const { cmsData } = useCMS();
+  const founderName = cmsData.founderProfile?.name || 'Engr. Kazi Ashraful Islam';
   const [activeTab, setActiveTab] = useState<'all' | 'stationery' | 'digital' | 'signage' | 'cards'>('all');
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
@@ -57,7 +60,7 @@ export const BrandIdentityShowcase: React.FC = () => {
             VERCITO Corporate Branding Suite
           </h2>
           <p className="text-sm sm:text-base text-slate-300 font-light leading-relaxed">
-            Standard European luxury branding crafted for <strong className="text-[#D4AF37]">VERCITO International Education Consultancy</strong>. Founder & CEO: <span className="text-white font-medium">Md Sohel Rana</span> (Gulshan-2, Dhaka & Portugal, Europe).
+            Standard European luxury branding crafted for <strong className="text-[#D4AF37]">VERCITO International Education Consultancy</strong>. Founder & CEO: <span className="text-white font-medium">{founderName}</span> (Gulshan-2, Dhaka & Portugal, Europe).
           </p>
 
           {/* Color Palette Pill Bar */}

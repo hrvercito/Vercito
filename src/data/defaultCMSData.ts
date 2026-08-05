@@ -23,6 +23,7 @@ import {
   BlogPost,
   FounderProfile,
   ContactInfo,
+  MediaItem,
 } from '../types';
 
 export interface CMSHeroContent {
@@ -79,6 +80,7 @@ export interface CMSData {
   blogs: BlogPost[];
   founderProfile: FounderProfile;
   contactInfo: ContactInfo;
+  mediaLibrary?: MediaItem[];
 }
 
 export const DEFAULT_FOUNDER_PROFILE: FounderProfile = {
@@ -138,16 +140,16 @@ export const DEFAULT_CONTACT_INFO: ContactInfo = {
 
 export const DEFAULT_CMS_DATA: CMSData = {
   hero: {
-    topBadgeBn: 'ইউরোপ ও আমেরিকা উচ্চশিক্ষা এবং সরকারি স্কলারশিপ স্পেশালিস্ট',
+    topBadgeBn: 'ইউরোপ ও আমেরিকা উচ্চশিক্ষা এবং স্টুডেন্ট ভিসা স্পেশালিস্ট',
     topBadgeEn: 'Europe & USA Higher Education & Student Visa Specialist',
-    title1Bn: 'ইউরোপ ও আমেরিকার সেরা বিশ্ববিদ্যালয়ে',
-    title1En: 'Shape Your Global Future In',
-    title2Bn: 'আপনার উচ্চশিক্ষার স্বপ্ন পূরণ করুন',
-    title2En: "Europe & America's Top Universities",
+    title1Bn: 'আপনার ভবিষ্যৎ, আমাদের দিকনির্দেশনা।',
+    title1En: 'Your Future, Our Guidance.',
+    title2Bn: 'বিশ্বজুড়ে সুযোগ।',
+    title2En: 'Worldwide Opportunities.',
     subtitleBn:
-      'বাংলাদেশি শিক্ষার্থীদের জন্য ১০০% স্কলারশিপ, বিনা টিউশন ফি-তে ইটালি, জার্মানি, আমেরিকা, ফ্রান্স ও ইউরোপিয়ান ইউনিয়নের শীর্ষ বিশ্ববিদ্যালয়ে ভর্তি ও নির্ভরযোগ্য ভিসা প্রসেসিং।',
+      'আমরা শিক্ষার্থীদের বিদেশে উচ্চশিক্ষার স্বপ্ন পূরণ এবং সফল আন্তর্জাতিক ক্যারিয়ার গড়ে তুলতে বিশেষজ্ঞ ভর্তি পরামর্শ, স্কলারশিপ সহায়তা, বিশ্ববিদ্যালয় নির্বাচন, ভিসা প্রসেসিং এবং ধারাবাহিক শিক্ষার্থী সহায়তা প্রদান করি।',
     subtitleEn:
-      '100% Scholarship Assistance, Tuition-Free Public Universities, and Expert Visa Processing for Bangladeshi Students targeting Italy, Germany, USA, France, and EU destinations.',
+      'We help students achieve their dreams of studying abroad and build a successful global career through expert admission guidance, scholarship assistance, university selection, visa processing, and continuous student support.',
     evaluateAiBn: 'এআই দিয়ে যোগ্যতা যাচাই করুন',
     evaluateAiEn: 'Evaluate Profile with AI',
     bookConsultationBn: 'ফ্রি কাউন্সেলিং বুক করুন',
@@ -199,4 +201,33 @@ export const DEFAULT_CMS_DATA: CMSData = {
   blogs: BLOG_POSTS,
   founderProfile: DEFAULT_FOUNDER_PROFILE,
   contactInfo: DEFAULT_CONTACT_INFO,
+  mediaLibrary: [
+    {
+      id: 'media-1',
+      name: 'polimi_campus.jpg',
+      url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800',
+      size: 145000,
+      type: 'image/jpeg',
+      uploadedAt: new Date().toISOString(),
+      category: 'university',
+    },
+    {
+      id: 'media-2',
+      name: 'italy_banner.jpg',
+      url: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&q=80&w=800',
+      size: 210000,
+      type: 'image/jpeg',
+      uploadedAt: new Date().toISOString(),
+      category: 'destination',
+    },
+    {
+      id: 'media-3',
+      name: 'founder_ceo.jpg',
+      url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800',
+      size: 180000,
+      type: 'image/jpeg',
+      uploadedAt: new Date().toISOString(),
+      category: 'profile',
+    },
+  ],
 };

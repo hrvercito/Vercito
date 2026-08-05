@@ -24,44 +24,49 @@ import {
 } from 'lucide-react';
 import { Currency } from '../types';
 import { downloadPaymentReceipt, PaymentReceiptData } from '../lib/pdfReceiptGenerator';
+import { OfficialReceiptModal } from './OfficialReceiptModal';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface PaymentSectionProps {
   currency?: Currency;
 }
 
 export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT' }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
+
   // Preset Payment Categories
   const presetPackages = [
     {
       id: 'assessment',
-      title: 'Profile Assessment & Review',
+      title: isBn ? 'প্রোফাইল অ্যাসেসমেন্ট ও রিভিউ' : 'Profile Assessment & Review',
       amountBDT: 1500,
       amountEUR: 12,
-      desc: 'Expert evaluation of transcripts, SOP guidance & university shortlist',
+      desc: isBn ? 'ট্রান্সক্রিপ্ট মূল্যায়ন, এসওপি গাইডলাইন এবং ইউনিভার্সিটি শর্টলিস্ট' : 'Expert evaluation of transcripts, SOP guidance & university shortlist',
       popular: false,
     },
     {
       id: 'application',
-      title: 'University Application Fee',
+      title: isBn ? 'ইউনিভার্সিটি অ্যাপ্লিকেশন ফি' : 'University Application Fee',
       amountBDT: 5000,
       amountEUR: 38,
-      desc: 'Official submission fee for European university application portal',
+      desc: isBn ? 'ইউরোপীয় বিশ্ববিদ্যালয় আবেদন পোর্টালের অফিশিয়াল ফি' : 'Official submission fee for European university application portal',
       popular: true,
     },
     {
       id: 'visa_deposit',
-      title: 'Visa Legalization & VFS Deposit',
+      title: isBn ? 'ভিসা লিগ্যালাইজেশন ও ভিএফএস ডিপোজিট' : 'Visa Legalization & VFS Deposit',
       amountBDT: 15000,
       amountEUR: 115,
-      desc: 'MOFA attestation, CIMEA statement of comparability & visa file prep',
+      desc: isBn ? 'এমওএফএ অ্যাটেস্টেশন, সিআইএমইএ কম্পারেবিলিটি ও ভিসা ফাইল প্রস্তুত' : 'MOFA attestation, CIMEA statement of comparability & visa file prep',
       popular: false,
     },
     {
       id: 'custom',
-      title: 'Custom Fee Amount',
+      title: isBn ? 'কাস্টম ফি এর পরিমাণ' : 'Custom Fee Amount',
       amountBDT: 0,
       amountEUR: 0,
-      desc: 'Enter invoice number or specific fee provided by your counselor',
+      desc: isBn ? 'কাউন্সেলর প্রদত্ত নির্দিষ্ট ইনভয়েস নম্বর বা সার্ভিস ফি লিখুন' : 'Enter invoice number or specific fee provided by your counselor',
       popular: false,
     },
   ];
@@ -110,7 +115,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
       console.error('Error loading payment history:', e);
     }
 
-    // Check if coming back from redirect callback `#payment-status?tran_id=...&status=SUCCESS`
+    // Check if coming back from redirect callback or scanning QR code
     const hash = window.location.hash;
     if (hash && hash.includes('payment-status')) {
       const params = new URLSearchParams(hash.split('?')[1] || '');
@@ -126,6 +131,20 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
             }
           })
           .catch((err) => console.error('Error fetching callback payment status:', err));
+      }
+    } else if (hash && hash.includes('verify-receipt')) {
+      const params = new URLSearchParams(hash.split('?')[1] || '');
+      const tran_id = params.get('tran_id');
+
+      if (tran_id) {
+        fetch(`/api/payment/status/${tran_id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.payment) {
+              setReceiptData(data.payment);
+            }
+          })
+          .catch((err) => console.error('Error fetching verified receipt status:', err));
       }
     }
   }, []);
@@ -290,15 +309,17 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
             <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>PCI-DSS Level 1 Encryption Verified</span>
+            <span>{isBn ? 'পিসিআই-ডিএসএস লেভেল ১ এনক্রিপ্টেড ও সুরক্ষিত' : 'PCI-DSS Level 1 Encryption Verified'}</span>
           </div>
 
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-            Secure Payment Gateway
+            {isBn ? 'নিরাপদ পেমেন্ট গেটওয়ে' : 'Secure Payment Gateway'}
           </h2>
 
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Pay application fees, evaluation deposits, and legalization charges safely using Bangladeshi Mobile Banking, International Bank Cards, or NetBanking.
+            {isBn
+              ? 'মোবাইল ব্যাংকিং (বিকাশ, নগদ, রকেট), ব্যাংক কার্ড এবং নেট ব্যাংকিং ব্যবহার করে নিরাপদে অ্যাপ্লিকেশন ফি, প্রসেসিং ডিপোজিট ও লিগ্যালাইজেশন চার্জ পরিশোধ করুন।'
+              : 'Pay application fees, evaluation deposits, and legalization charges safely using Bangladeshi Mobile Banking, International Bank Cards, or NetBanking.'}
           </p>
 
           {/* Prompt required text & Payment History Button */}
@@ -306,17 +327,17 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
             <div className="inline-flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-[#D4AF37]" />
               <span className="text-sm font-extrabold tracking-wide text-white uppercase bg-[#0B1F3A] px-4 py-1.5 rounded-xl border border-[#D4AF37]/40 shadow-inner">
-                Secure Payments Powered by SSLCommerz
+                {isBn ? 'এসএসএল কমার্জ পরিচালিত নিরাপদ পেমেন্ট' : 'Secure Payments Powered by SSLCommerz'}
               </span>
             </div>
 
             {paymentHistory.length > 0 && (
               <button
                 onClick={() => setShowHistoryModal(true)}
-                className="px-4 py-1.5 rounded-xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs flex items-center gap-2 transition-all"
+                className="px-4 py-1.5 rounded-xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
               >
                 <History className="w-4 h-4" />
-                <span>My Receipts ({paymentHistory.length})</span>
+                <span>{isBn ? `আমার রসিদসমূহ (${paymentHistory.length})` : `My Receipts (${paymentHistory.length})`}</span>
               </button>
             )}
           </div>
@@ -328,28 +349,28 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
             <div className="flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-[#D4AF37]" />
               <h3 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-                Supported SSLCommerz Channels
+                {isBn ? 'সমর্থিত পেমেন্ট মাধ্যমসমূহ' : 'Supported SSLCommerz Channels'}
               </h3>
             </div>
 
             {/* Category Filter Pills */}
             <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
               {[
-                { id: 'all', label: 'All Methods' },
-                { id: 'mobile', label: 'Mobile Banking' },
-                { id: 'cards', label: 'Cards (Visa/MC)' },
-                { id: 'banking', label: 'Internet Banking' },
+                { id: 'all', labelBn: 'সব মাধ্যম', labelEn: 'All Methods' },
+                { id: 'mobile', labelBn: 'মোবাইল ব্যাংকিং', labelEn: 'Mobile Banking' },
+                { id: 'cards', labelBn: 'কার্ড (Visa/MC)', labelEn: 'Cards (Visa/MC)' },
+                { id: 'banking', labelBn: 'ইন্টারনেট ব্যাংকিং', labelEn: 'Internet Banking' },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setSelectedPaymentMethodCategory(tab.id as any)}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                  className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                     selectedPaymentMethodCategory === tab.id
                       ? 'bg-[#D4AF37] text-[#0B1F3A]'
                       : 'bg-white/5 text-slate-300 hover:bg-white/10'
                   }`}
                 >
-                  {tab.label}
+                  {isBn ? tab.labelBn : tab.labelEn}
                 </button>
               ))}
             </div>
@@ -762,89 +783,10 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ currency = 'BDT'
 
       {/* Completed Payment Receipt Modal */}
       {receiptData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="w-full max-w-lg bg-[#0B1F3A] rounded-2xl border-2 border-[#D4AF37] shadow-2xl p-6 sm:p-8 space-y-6 relative text-white">
-            <button
-              onClick={() => setReceiptData(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center space-y-2">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto mb-2">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
-              <h3 className="font-serif text-2xl font-bold text-white">Payment Verified & Successful</h3>
-              <p className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">
-                SSLCommerz Secured Payment Confirmation
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 text-xs">
-              <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-slate-400">Student Name:</span>
-                <span className="font-bold text-white">{receiptData.studentName}</span>
-              </div>
-              <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-slate-400">Transaction ID:</span>
-                <span className="font-mono text-[#D4AF37]">{receiptData.tran_id}</span>
-              </div>
-              <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-slate-400">SSLCommerz Val ID:</span>
-                <span className="font-mono text-slate-200">{receiptData.val_id}</span>
-              </div>
-              <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-slate-400">Bank Ref ID:</span>
-                <span className="font-mono text-emerald-400">{receiptData.bankTranId}</span>
-              </div>
-              <div className="flex justify-between border-b border-white/10 pb-2">
-                <span className="text-slate-400">Channel Used:</span>
-                <span className="font-semibold text-white">{receiptData.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between pt-1">
-                <span className="text-slate-400 font-bold">Amount Paid:</span>
-                <span className="font-serif font-black text-lg text-[#D4AF37]">
-                  ৳{receiptData.amount?.toLocaleString()} BDT
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => triggerReceiptDownload(receiptData)}
-                disabled={isGeneratingPdf}
-                className="flex-1 py-3 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-extrabold text-xs flex items-center justify-center gap-2 hover:bg-[#e5be42] transition-all disabled:opacity-50"
-              >
-                {isGeneratingPdf ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Generating PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4 text-[#0B1F3A]" />
-                    <span>Download Official Receipt</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={() => setReceiptData(null)}
-                className="py-3 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/10"
-              >
-                Close
-              </button>
-            </div>
-
-            {pdfError && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
-                <span>{pdfError}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <OfficialReceiptModal
+          receipt={receiptData}
+          onClose={() => setReceiptData(null)}
+        />
       )}
 
       {/* Payment History Drawer Modal */}

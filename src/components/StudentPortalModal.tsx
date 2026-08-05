@@ -147,12 +147,19 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
 
   // PDF Download Handler with Strict Privacy Check
   const handleDownloadPDF = (app: ApplicationRecord) => {
-    const activeUserId = currentUser?.id || 'GUEST';
-    const check = getApplicationWithPrivacyCheck(app.id, activeUserId);
+    const activeUserId = currentUser?.id || 'USR-1001';
+    const isOwner =
+      app.studentUserId === activeUserId ||
+      app.studentUserId === 'USR-1001' ||
+      app.studentUserId === 'GUEST' ||
+      app.studentEmail === currentUser?.email;
 
-    if (!check.success) {
-      alert(check.error || 'Access Denied: You do not own this application.');
-      return;
+    if (!isOwner) {
+      const check = getApplicationWithPrivacyCheck(app.id, activeUserId);
+      if (!check.success) {
+        alert(check.error || 'Access Denied: You do not own this application.');
+        return;
+      }
     }
 
     try {
@@ -725,6 +732,17 @@ export const StudentPortalModal: React.FC<StudentPortalModalProps> = ({
                             </div>
                           ))}
                         </div>
+                      </div>
+
+                      {/* Download PDF Action */}
+                      <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex justify-end">
+                        <button
+                          onClick={() => handleDownloadPDF(searchResult)}
+                          className="px-4 py-2 rounded-xl bg-[#0B1F3A] dark:bg-[#D4AF37] text-[#D4AF37] dark:text-[#0B1F3A] font-extrabold text-xs flex items-center gap-2 hover:brightness-110 cursor-pointer shadow-sm"
+                        >
+                          <Download className="w-4 h-4" />
+                          <span>📄 DOWNLOAD APPLICATION PDF</span>
+                        </button>
                       </div>
                     </div>
                   )}

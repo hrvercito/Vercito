@@ -17,7 +17,9 @@ import { FounderProfileEditor } from './editors/FounderProfileEditor';
 import { ContactInfoEditor } from './editors/ContactInfoEditor';
 import { ApplicationsManager } from './editors/ApplicationsManager';
 import { PaymentsManager } from './editors/PaymentsManager';
+import { SubscribersManager } from './editors/SubscribersManager';
 import { AIAssessmentsManager } from './editors/AIAssessmentsManager';
+import { MediaLibraryManager } from './editors/MediaLibraryManager';
 import { VercitoLogo } from '../VercitoLogo';
 
 import {
@@ -33,6 +35,7 @@ import {
   PhoneCall,
   FolderKanban,
   CreditCard,
+  Mail,
   LogOut,
   ExternalLink,
   RotateCcw,
@@ -40,12 +43,14 @@ import {
   X,
   CheckCircle2,
   Bot,
+  FolderOpen,
 } from 'lucide-react';
 
 type AdminSection =
   | 'applications'
   | 'ai-assessments'
   | 'payments'
+  | 'subscribers'
   | 'hero'
   | 'universities'
   | 'scholarships'
@@ -54,6 +59,7 @@ type AdminSection =
   | 'contact'
   | 'testimonials'
   | 'destinations'
+  | 'media-library'
   | 'faq'
   | 'visa-checklist';
 
@@ -67,9 +73,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
+    { id: 'media-library' as AdminSection, label: '📷 Media Library', icon: FolderOpen },
     { id: 'universities' as AdminSection, label: 'Universities', icon: Building2 },
     { id: 'scholarships' as AdminSection, label: 'Scholarships', icon: Award },
     { id: 'blog' as AdminSection, label: 'Blogs & Guides', icon: BookOpen },
+    { id: 'subscribers' as AdminSection, label: 'Email Subscribers', icon: Mail },
     { id: 'founder' as AdminSection, label: 'Founder Profile', icon: UserCheck },
     { id: 'contact' as AdminSection, label: 'Contact Info & Offices', icon: PhoneCall },
     { id: 'testimonials' as AdminSection, label: 'Reviews & Testimonials', icon: Quote },
@@ -197,6 +205,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
 
         {/* Active Editor Rendering */}
         <div className="bg-slate-800/80 rounded-3xl p-6 border border-white/10 shadow-2xl backdrop-blur-md">
+          {activeSection === 'media-library' && <MediaLibraryManager />}
           {activeSection === 'universities' && <UniversitiesEditor />}
           {activeSection === 'scholarships' && <ScholarshipsEditor />}
           {activeSection === 'blog' && <BlogEditor />}
@@ -208,6 +217,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ onReturnToSite }) => {
           {activeSection === 'applications' && <ApplicationsManager />}
           {activeSection === 'ai-assessments' && <AIAssessmentsManager />}
           {activeSection === 'payments' && <PaymentsManager />}
+          {activeSection === 'subscribers' && <SubscribersManager />}
           {activeSection === 'faq' && <FAQEditor />}
           {activeSection === 'visa-checklist' && <VisaChecklistEditor />}
         </div>

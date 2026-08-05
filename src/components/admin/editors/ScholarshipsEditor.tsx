@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { Scholarship } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { Award, Plus, Trash2, Edit2, Save, Check } from 'lucide-react';
 
 export const ScholarshipsEditor: React.FC = () => {
@@ -171,6 +172,17 @@ export const ScholarshipsEditor: React.FC = () => {
                 <option value="true">Yes - 100% Fully Funded</option>
                 <option value="false">Partial Tuition Waiver / Grant</option>
               </select>
+            </div>
+
+            <div className="md:col-span-3">
+              <ImageUploadField
+                label="Scholarship / Grant Banner Image"
+                value={(editingScholarship as any).image || ''}
+                onChange={(url) => setEditingScholarship({ ...editingScholarship, image: url } as any)}
+                aspectRatio="16:9"
+                category="scholarship"
+                defaultImage="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800"
+              />
             </div>
 
             <div className="md:col-span-3">

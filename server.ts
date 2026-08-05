@@ -12,9 +12,122 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import nodemailer from "nodemailer";
+
 const CMS_FILE_PATH = path.join(process.cwd(), "cms-data.json");
 const PAYMENTS_FILE_PATH = path.join(process.cwd(), "payments-data.json");
+const SUBSCRIBERS_FILE_PATH = path.join(process.cwd(), "subscribers-data.json");
 const ADMIN_TOKEN = "vercito_admin_session_token_2026_verified";
+
+interface SubscriberRecord {
+  id: string;
+  email: string;
+  subscribedAt: string;
+  date: string;
+  time: string;
+  status: "Active" | "Deactivated" | "Unsubscribed";
+}
+
+function getSubscriberRecords(): SubscriberRecord[] {
+  try {
+    if (fs.existsSync(SUBSCRIBERS_FILE_PATH)) {
+      const data = fs.readFileSync(SUBSCRIBERS_FILE_PATH, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error("Error reading subscribers file:", err);
+  }
+  return [];
+}
+
+function saveSubscriberRecords(records: SubscriberRecord[]) {
+  try {
+    fs.writeFileSync(SUBSCRIBERS_FILE_PATH, JSON.stringify(records, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Error saving subscribers file:", err);
+  }
+}
+
+// In-memory rate limiting map for spam prevention
+const subscriptionRateLimitMap = new Map<string, number>();
+
+const createMailTransporter = () => {
+  const host = process.env.SMTP_HOST || "smtp.gmail.com";
+  const port = parseInt(process.env.SMTP_PORT || "587");
+  const user = process.env.SMTP_USER || process.env.ADMIN_EMAIL || "hr.vercito@gmail.com";
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASSWORD;
+
+  if (pass) {
+    return nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+    });
+  }
+
+  return nodemailer.createTransport({
+    jsonTransport: true,
+  });
+};
+
+async function sendSubscriptionEmails(subscriber: SubscriberRecord) {
+  try {
+    const transporter = createMailTransporter();
+    const adminEmail = process.env.ADMIN_EMAIL || "hr.vercito@gmail.com";
+
+    // 1. Subscriber Confirmation Email
+    const subMailOptions = {
+      from: `"VERCITO Higher Education" <${process.env.SMTP_USER || "info@vercito.com"}>`,
+      to: subscriber.email,
+      subject: "Welcome to VERCITO – Subscription Confirmed",
+      text: "Thank you for subscribing to VERCITO International Education Consultancy. You will receive important updates about university admissions, scholarships, study abroad opportunities, visa guidance, and upcoming intakes.",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 24px; color: #0B1F3A; max-width: 600px; border: 1px solid #D4AF37; border-radius: 12px; background-color: #ffffff;">
+          <h2 style="color: #0B1F3A; border-bottom: 2px solid #D4AF37; padding-bottom: 12px; margin-top: 0;">Welcome to VERCITO International Education Consultancy</h2>
+          <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+            Thank you for subscribing to VERCITO International Education Consultancy. You will receive important updates about university admissions, scholarships, study abroad opportunities, visa guidance, and upcoming intakes.
+          </p>
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b;">
+            <strong>VERCITO Higher Education Consultancy</strong><br/>
+            Dhaka Head Office: Level 7, VERCITO Tower, Road 11, Block D, Gulshan 2, Dhaka-1212<br/>
+            Hotline: +880 1711 000000 | Email: info@vercito.com | Web: www.vercito.com
+          </div>
+        </div>
+      `,
+    };
+
+    // 2. Admin Notification Email
+    const adminMailOptions = {
+      from: `"VERCITO Website Alert" <${process.env.SMTP_USER || "no-reply@vercito.com"}>`,
+      to: adminEmail,
+      subject: "New VERCITO Website Subscriber",
+      text: `New VERCITO Subscriber Alert:
+- Subscriber Email: ${subscriber.email}
+- Subscription Date: ${subscriber.date}
+- Subscription Time: ${subscriber.time}
+- Unique Subscriber ID: ${subscriber.id}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 24px; color: #0B1F3A; max-width: 600px; border: 1px solid #D4AF37; border-radius: 12px; background-color: #f8fafc;">
+          <h2 style="color: #0B1F3A; margin-top: 0; border-bottom: 2px solid #D4AF37; padding-bottom: 8px;">New VERCITO Website Subscriber</h2>
+          <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 14px;">
+            <tr><th style="padding: 8px; border-bottom: 1px solid #cbd5e1; width: 40%;">Subscriber Email:</th><td style="padding: 8px; border-bottom: 1px solid #cbd5e1; font-weight: bold;">${subscriber.email}</td></tr>
+            <tr><th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Subscription Date:</th><td style="padding: 8px; border-bottom: 1px solid #cbd5e1;">${subscriber.date}</td></tr>
+            <tr><th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Subscription Time:</th><td style="padding: 8px; border-bottom: 1px solid #cbd5e1;">${subscriber.time}</td></tr>
+            <tr><th style="padding: 8px; border-bottom: 1px solid #cbd5e1;">Subscriber ID:</th><td style="padding: 8px; border-bottom: 1px solid #cbd5e1; font-family: monospace;">${subscriber.id}</td></tr>
+          </table>
+        </div>
+      `,
+    };
+
+    await Promise.allSettled([
+      transporter.sendMail(subMailOptions),
+      transporter.sendMail(adminMailOptions),
+    ]);
+  } catch (err) {
+    console.error("Error sending subscriber emails:", err);
+  }
+}
 
 // Helper for managing payment database on disk
 interface PaymentRecord {
@@ -83,6 +196,143 @@ async function startServer() {
   // Health check
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", app: "VERCITO Backend" });
+  });
+
+  // Email Subscriber Route
+  app.post("/api/subscribe", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email || typeof email !== "string") {
+        return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+      }
+
+      const cleanEmail = email.trim().toLowerCase();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(cleanEmail)) {
+        return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+      }
+
+      // Spam Protection & Rate Limiting (max 1 request per 5 seconds per email/IP)
+      const clientIp = req.ip || "ip_default";
+      const rateKey = `${clientIp}_${cleanEmail}`;
+      const nowTs = Date.now();
+      const lastRequest = subscriptionRateLimitMap.get(rateKey);
+
+      if (lastRequest && nowTs - lastRequest < 5000) {
+        return res.status(429).json({
+          success: false,
+          message: "Please wait a moment before trying again.",
+        });
+      }
+      subscriptionRateLimitMap.set(rateKey, nowTs);
+
+      const records = getSubscriberRecords();
+      const existing = records.find((r) => r.email === cleanEmail);
+
+      if (existing && existing.status === "Active") {
+        return res.status(400).json({
+          success: false,
+          message: "This email is already subscribed.",
+        });
+      }
+
+      const now = new Date();
+      const dateStr = now.toISOString().split("T")[0];
+      const timeStr = now.toTimeString().split(" ")[0];
+
+      let subscriber: SubscriberRecord;
+
+      if (existing) {
+        existing.status = "Active";
+        existing.subscribedAt = now.toISOString();
+        existing.date = dateStr;
+        existing.time = timeStr;
+        subscriber = existing;
+      } else {
+        subscriber = {
+          id: `SUB-${Date.now()}`,
+          email: cleanEmail,
+          subscribedAt: now.toISOString(),
+          date: dateStr,
+          time: timeStr,
+          status: "Active",
+        };
+        records.unshift(subscriber);
+      }
+
+      saveSubscriberRecords(records);
+
+      // Send real confirmation and admin notification emails
+      sendSubscriptionEmails(subscriber);
+
+      return res.json({
+        success: true,
+        message: "Subscription successful! Please check your email.",
+        subscriber,
+      });
+    } catch (err) {
+      console.error("Error handling subscription:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Unable to complete your subscription right now. Please try again later.",
+      });
+    }
+  });
+
+  // Admin Subscribers Endpoints
+  app.get("/api/admin/subscribers", (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${ADMIN_TOKEN}`) {
+      return res.status(401).json({ success: false, message: "Unauthorized admin request." });
+    }
+
+    const records = getSubscriberRecords();
+    res.json({
+      success: true,
+      totalCount: records.length,
+      subscribers: records,
+    });
+  });
+
+  app.post("/api/admin/subscribers/status", (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${ADMIN_TOKEN}`) {
+      return res.status(401).json({ success: false, message: "Unauthorized admin request." });
+    }
+
+    const { id, status } = req.body;
+    const records = getSubscriberRecords();
+    const sub = records.find((r) => r.id === id);
+
+    if (!sub) {
+      return res.status(404).json({ success: false, message: "Subscriber not found." });
+    }
+
+    sub.status = status || "Deactivated";
+    saveSubscriberRecords(records);
+
+    res.json({ success: true, subscriber: sub });
+  });
+
+  app.delete("/api/admin/subscribers/:id", (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${ADMIN_TOKEN}`) {
+      return res.status(401).json({ success: false, message: "Unauthorized admin request." });
+    }
+
+    const { id } = req.params;
+    let records = getSubscriberRecords();
+    const initialLen = records.length;
+    records = records.filter((r) => r.id !== id);
+
+    if (records.length === initialLen) {
+      return res.status(404).json({ success: false, message: "Subscriber not found." });
+    }
+
+    saveSubscriberRecords(records);
+    res.json({ success: true, message: "Subscriber deleted successfully." });
   });
 
   // Admin Login Endpoint

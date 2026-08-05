@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { SUCCESS_STORIES } from '../data/mockData';
+import { useCMS } from '../context/CMSContext';
 import { Quote, Award, ShieldCheck, MapPin, Star, ArrowRight, GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useTranslation } from '../i18n/LanguageContext';
@@ -15,9 +16,12 @@ interface SuccessStoriesProps {
 
 export const SuccessStories: React.FC<SuccessStoriesProps> = ({ onOpenApplication }) => {
   const { t, language } = useTranslation();
+  const { cmsData } = useCMS();
   const [selectedFilter, setSelectedFilter] = useState<string>('All');
 
-  const filteredStories = SUCCESS_STORIES.filter((s) => {
+  const testimonialsList = cmsData.testimonials && cmsData.testimonials.length > 0 ? cmsData.testimonials : SUCCESS_STORIES;
+
+  const filteredStories = testimonialsList.filter((s) => {
     if (selectedFilter === 'All') return true;
     return s.country === selectedFilter;
   });

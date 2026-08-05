@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { Save, Sparkles, Languages, Check } from 'lucide-react';
 import { CMSHeroContent } from '../../../data/defaultCMSData';
+import { ImageUploadField } from '../media/ImageUploadField';
 
 export const HeroEditor: React.FC = () => {
   const { cmsData, updateHero, isSaving } = useCMS();
@@ -97,6 +98,21 @@ export const HeroEditor: React.FC = () => {
               />
             </div>
           </div>
+        </div>
+
+        {/* Hero Background Banner Image */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-sm space-y-4">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#D4AF37]">
+            Hero Banner Image
+          </h3>
+          <ImageUploadField
+            label="Homepage Hero Background / Banner Image"
+            value={(heroForm as any).heroBgImage || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200'}
+            onChange={(url) => setHeroForm((prev) => ({ ...prev, heroBgImage: url } as any))}
+            aspectRatio="16:9"
+            category="hero"
+            defaultImage="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200"
+          />
         </div>
 
         {/* Headlines & Subtitle */}

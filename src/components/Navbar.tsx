@@ -77,32 +77,32 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   const desktopNavLinks = [
-    { name: 'Home', href: '#' },
-    { name: 'About', href: '#process-steps' },
-    { name: 'Destinations', href: '#destinations' },
-    { name: 'Services', href: '#services' },
-    { name: 'Universities', href: '#universities' },
-    { name: 'Scholarships', href: '#scholarships' },
-    { name: 'Language Programs', href: '#language-programs' },
-    { name: 'Student Portal', onClick: onOpenStudentPortal },
-    { name: 'Payments', href: '#payment' },
-    { name: 'Blog', href: '#blog' },
-    { name: 'Contact', href: '#contact' },
+    { name: t('nav.home'), href: '#' },
+    { name: t('nav.about'), href: '#process-steps' },
+    { name: t('nav.destinations'), href: '#destinations' },
+    { name: t('nav.services'), href: '#services' },
+    { name: t('nav.universities'), href: '#universities' },
+    { name: t('nav.scholarships'), href: '#scholarships' },
+    { name: t('nav.languagePrograms'), href: '#language-programs' },
+    { name: t('nav.studentPortal'), onClick: onOpenStudentPortal },
+    { name: t('nav.payments'), href: '#payment' },
+    { name: t('nav.blog'), href: '#blog' },
+    { name: t('nav.contact'), href: '#contact' },
   ];
 
   const mobileMenuItems = [
-    { name: 'Home', href: '#', icon: Home, hash: '#' },
-    { name: 'About', href: '#process-steps', icon: Info, hash: '#process-steps' },
-    { name: 'Destinations', href: '#destinations', icon: Globe, hash: '#destinations' },
-    { name: 'Services', href: '#services', icon: Briefcase, hash: '#services' },
-    { name: 'Universities', href: '#universities', icon: GraduationCap, hash: '#universities' },
-    { name: 'Scholarships', href: '#scholarships', icon: Award, hash: '#scholarships' },
-    { name: 'Language Programs', href: '#language-programs', icon: Languages, hash: '#language-programs' },
-    { name: 'Student Portal', action: 'portal', icon: FolderKanban, hash: '#portal' },
-    { name: 'Payments', href: '#payment', icon: CreditCard, hash: '#payment' },
-    { name: 'Blog', href: '#blog', icon: BookOpen, hash: '#blog' },
-    { name: 'Contact', href: '#contact', icon: Mail, hash: '#contact' },
-    { name: 'Login', href: '#admin', icon: UserCheck, hash: '#admin' },
+    { name: t('nav.home'), href: '#', icon: Home, hash: '#' },
+    { name: t('nav.about'), href: '#process-steps', icon: Info, hash: '#process-steps' },
+    { name: t('nav.destinations'), href: '#destinations', icon: Globe, hash: '#destinations' },
+    { name: t('nav.services'), href: '#services', icon: Briefcase, hash: '#services' },
+    { name: t('nav.universities'), href: '#universities', icon: GraduationCap, hash: '#universities' },
+    { name: t('nav.scholarships'), href: '#scholarships', icon: Award, hash: '#scholarships' },
+    { name: t('nav.languagePrograms'), href: '#language-programs', icon: Languages, hash: '#language-programs' },
+    { name: t('nav.studentPortal'), action: 'portal', icon: FolderKanban, hash: '#portal' },
+    { name: t('nav.payments'), href: '#payment', icon: CreditCard, hash: '#payment' },
+    { name: t('nav.blog'), href: '#blog', icon: BookOpen, hash: '#blog' },
+    { name: t('nav.contact'), href: '#contact', icon: Mail, hash: '#contact' },
+    { name: t('nav.login'), href: '#admin', icon: UserCheck, hash: '#admin' },
   ];
 
   const handleItemClick = (item: typeof mobileMenuItems[0]) => {
@@ -195,10 +195,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onOpenStudentPortal}
                 className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#D4AF37] font-extrabold text-xs tracking-wider border border-[#D4AF37]/40 shadow-sm transition-all shrink-0 cursor-pointer"
-                title="View My Application / Application Tracking"
+                title={t('nav.viewMyApplication')}
               >
                 <FolderKanban className="w-3.5 h-3.5" />
-                <span>View My Application</span>
+                <span>{t('nav.viewMyApplication')}</span>
               </button>
 
               {/* Apply Now CTA - visible md+ */}
@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onOpenApplication}
                 className="hidden md:block px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase shadow-md hover:brightness-110 active:scale-95 transition-all shrink-0 cursor-pointer"
               >
-                APPLY NOW
+                {t('nav.applyNow')}
               </button>
 
               {/* Mobile Hamburger Toggle (Visible on screens below 1280px) */}
@@ -327,7 +327,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E5C158] to-[#C5A028] text-[#0B1F3A] font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all"
                   >
                     <Send className="w-4 h-4" />
-                    <span>Apply Now</span>
+                    <span>{t('nav.applyNow')}</span>
                   </button>
                 </div>
               </div>
@@ -342,7 +342,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/5 border border-[#D4AF37]/40 text-[#D4AF37] font-bold text-xs hover:bg-[#D4AF37]/10 transition-all"
                 >
                   <Sparkles className="w-4 h-4 animate-pulse" />
-                  <span>AI Eligibility Check</span>
+                  <span>{t('nav.aiCheck')}</span>
                 </button>
 
                 <button
@@ -353,7 +353,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-white/10 text-white font-bold text-xs hover:bg-white/20 transition-all"
                 >
                   <Calendar className="w-4 h-4 text-[#D4AF37]" />
-                  <span>Book Free Counseling</span>
+                  <span>{t('hero.bookConsultation')}</span>
                 </button>
               </div>
             </motion.div>

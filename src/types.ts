@@ -529,3 +529,15 @@ export interface ApplicationRecord {
   additionalNotes?: string;
 }
 
+export interface MediaItem {
+  id: string;
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+  width?: number;
+  height?: number;
+  uploadedAt: string;
+  category?: 'hero' | 'university' | 'destination' | 'scholarship' | 'blog' | 'profile' | 'general';
+}
+

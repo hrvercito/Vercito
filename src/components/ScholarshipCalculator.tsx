@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Award, Sparkles, CheckCircle2, ChevronRight, Calculator, FileText, Send } from 'lucide-react';
 import { Currency } from '../types';
 import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 import { CountrySelect } from './CountrySelect';
 
 interface ScholarshipCalculatorProps {
@@ -20,6 +21,8 @@ export const ScholarshipCalculator: React.FC<ScholarshipCalculatorProps> = ({
   onOpenAppointment,
   onOpenApplication,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const { cmsData } = useCMS();
   const SCHOLARSHIPS = cmsData.scholarships;
   const [cgpa, setCgpa] = useState<number>(3.3);
@@ -40,13 +43,13 @@ export const ScholarshipCalculator: React.FC<ScholarshipCalculatorProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
             <Award className="w-3.5 h-3.5" />
-            <span>100% Tuition Waivers & Cash Grants</span>
+            <span>{t('calculator.tag')}</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
-            European Scholarship Finder & Grant Calculator
+            {t('calculator.title')}
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-light leading-relaxed">
-            Discover fully funded scholarships for Bangladeshi applicants. Over €2.5M in grants secured for VERCITO scholars across Italy, Germany, France, and Hungary.
+            {t('calculator.subtitle')}
           </p>
         </div>
 

@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { UniversityPartner } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import {
   Building2,
   Plus,
@@ -218,22 +219,36 @@ export const UniversitiesEditor: React.FC = () => {
                 />
               </div>
 
+              {/* University Logo Upload */}
+              <div className="sm:col-span-2 md:col-span-1">
+                <ImageUploadField
+                  label="University Logo"
+                  value={editingUni.logo || ''}
+                  onChange={(url) => setEditingUni({ ...editingUni, logo: url })}
+                  aspectRatio="1:1"
+                  category="university"
+                  defaultImage="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=200"
+                />
+              </div>
+
+              {/* Cover Image Upload */}
+              <div className="sm:col-span-2 md:col-span-2">
+                <ImageUploadField
+                  label="University Cover Image"
+                  value={editingUni.image || ''}
+                  onChange={(url) => setEditingUni({ ...editingUni, image: url })}
+                  aspectRatio="16:9"
+                  category="university"
+                  defaultImage="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800"
+                />
+              </div>
+
               <div>
                 <label className="block font-semibold mb-1">Official Website URL</label>
                 <input
                   type="url"
                   value={editingUni.officialWebsite || ''}
                   onChange={(e) => setEditingUni({ ...editingUni, officialWebsite: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-white/15 text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold mb-1">Cover Image URL</label>
-                <input
-                  type="text"
-                  value={editingUni.image}
-                  onChange={(e) => setEditingUni({ ...editingUni, image: e.target.value })}
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-white/15 text-white"
                 />
               </div>

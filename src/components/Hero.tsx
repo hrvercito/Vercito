@@ -39,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenApplication,
   onOpenStudentPortal,
 }) => {
-  const { language } = useTranslation();
+  const { t, language } = useTranslation();
   const { cmsData } = useCMS();
 
   // Instant Check card state (preserved strictly as requested)
@@ -50,35 +50,34 @@ export const Hero: React.FC<HeroProps> = ({
   const isBn = language === 'bn';
   const hero = cmsData.hero;
 
+  const topBadge = isBn ? hero.topBadgeBn : hero.topBadgeEn;
+  const title1 = isBn ? hero.title1Bn : hero.title1En;
+  const title2 = isBn ? hero.title2Bn : hero.title2En;
+  const subtitle = isBn ? hero.subtitleBn : hero.subtitleEn;
   const widgetBadge = isBn ? hero.widgetBadgeBn : hero.widgetBadgeEn;
   const widgetTitle = isBn ? hero.widgetTitleBn : hero.widgetTitleEn;
 
-  // 5 Statistics cards required by user
+  // Key statistics from CMS
   const statsList = [
     {
-      value: '98.8%',
-      label: 'Visa Success Rate',
+      value: (isBn ? hero.stat1ValBn : hero.stat1ValEn) || '98.8%',
+      label: (isBn ? hero.stat1LabelBn : hero.stat1LabelEn) || t('hero.visaSuccess'),
       icon: ShieldCheck,
     },
     {
-      value: '€7,000',
-      label: 'Max Annual Scholarship',
+      value: (isBn ? hero.stat2ValBn : hero.stat2ValEn) || '€7,000',
+      label: (isBn ? hero.stat2LabelBn : hero.stat2LabelEn) || t('hero.maxScholarship'),
       icon: Award,
     },
     {
-      value: '3,500+',
-      label: 'Successful Students',
+      value: (isBn ? hero.stat3ValBn : hero.stat3ValEn) || '3,500+',
+      label: (isBn ? hero.stat3LabelBn : hero.stat3LabelEn) || t('hero.studentsPlaced'),
       icon: Users,
     },
     {
-      value: '100+',
-      label: 'University Partners',
+      value: (isBn ? hero.stat4ValBn : hero.stat4ValEn) || '100%',
+      label: (isBn ? hero.stat4LabelBn : hero.stat4LabelEn) || t('hero.tuitionWaiver'),
       icon: Building2,
-    },
-    {
-      value: '24/7',
-      label: 'Student Support',
-      icon: Headphones,
     },
   ];
 
@@ -87,7 +86,7 @@ export const Hero: React.FC<HeroProps> = ({
       {/* 1. Background Image - London Sunset with Student */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroStudentLondon}
+          src={(hero as any)?.heroBgImage || heroStudentLondon}
           alt="VERCITO Student in London facing skyline sunset"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center scale-105 transform filter brightness-95 contrast-105"
@@ -132,24 +131,42 @@ export const Hero: React.FC<HeroProps> = ({
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 sm:py-1.5 rounded-full bg-slate-900/60 border border-[#D4AF37]/70 text-[#D4AF37] text-[11px] sm:text-xs font-semibold tracking-wide backdrop-blur-md shadow-md">
               <Plane className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Europe & USA Higher Education & Student Visa Specialist</span>
+              <span>
+                {isBn
+                  ? topBadge || 'ইউরোপ ও আমেরিকা উচ্চশিক্ষা এবং স্টুডেন্ট ভিসা স্পেশালিস্ট'
+                  : 'Europe & USA Higher Education & Student Visa Specialist'}
+              </span>
             </div>
 
             {/* Headline matching Reference Image */}
             <div className="space-y-0.5">
               <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-                Your Future, <br />
-                Our Guidance.
+                {isBn ? (
+                  title1 || 'আপনার ভবিষ্যৎ, আমাদের দিকনির্দেশনা।'
+                ) : (
+                  <>
+                    Your Future, <br />
+                    Our Guidance.
+                  </>
+                )}
               </h1>
               <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-[#D4AF37] leading-[1.1] pt-0.5 sm:pt-1">
-                Worldwide <br />
-                Opportunities.
+                {isBn ? (
+                  title2 || 'বিশ্বজুড়ে সুযোগ।'
+                ) : (
+                  <>
+                    Worldwide <br />
+                    Opportunities.
+                  </>
+                )}
               </h1>
             </div>
 
             {/* Description matching Reference Image */}
             <p className="text-slate-200 text-xs sm:text-sm md:text-base font-normal leading-relaxed max-w-xl">
-              We help students achieve their dreams of studying abroad and build a successful global career through expert admission guidance, scholarship assistance, university selection, visa processing, and continuous student support.
+              {isBn
+                ? subtitle || 'আমরা শিক্ষার্থীদের বিদেশে উচ্চশিক্ষার স্বপ্ন পূরণ এবং সফল আন্তর্জাতিক ক্যারিয়ার গড়ে তুলতে বিশেষজ্ঞ ভর্তি পরামর্শ, স্কলারশিপ সহায়তা, বিশ্ববিদ্যালয় নির্বাচন, ভিসা প্রসেসিং এবং ধারাবাহিক শিক্ষার্থী সহায়তা প্রদান করি।'
+                : 'We help students achieve their dreams of studying abroad and build a successful global career through expert admission guidance, scholarship assistance, university selection, visa processing, and continuous student support.'}
             </p>
 
             {/* CTA Buttons - Apply Now & View My Application */}
@@ -159,7 +176,7 @@ export const Hero: React.FC<HeroProps> = ({
                 onClick={onOpenApplication}
                 className="px-6 sm:px-8 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#041122] font-extrabold text-xs shadow-xl shadow-[#D4AF37]/25 hover:shadow-[#D4AF37]/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
               >
-                <span>🎓 APPLY NOW →</span>
+                <span>🎓 {t('hero.applyNow')} →</span>
               </button>
 
               {/* Secondary Button */}
@@ -167,7 +184,7 @@ export const Hero: React.FC<HeroProps> = ({
                 onClick={onOpenStudentPortal}
                 className="px-6 sm:px-7 py-3.5 rounded-xl bg-[#071B36]/80 hover:bg-[#0E2A4D] text-white font-bold text-xs border border-[#D4AF37] hover:border-[#f3cb4d] transition-all flex items-center justify-center gap-2 backdrop-blur-md uppercase tracking-wider shadow-lg cursor-pointer"
               >
-                <span>📁 VIEW MY APPLICATION</span>
+                <span>📁 {t('hero.viewMyApplication')}</span>
               </button>
             </div>
           </motion.div>
@@ -184,16 +201,16 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="p-5 sm:p-6 lg:p-6 rounded-2xl bg-[#091D38]/95 border border-slate-700/80 shadow-2xl backdrop-blur-xl relative">
               {/* Protruding Instant Check Badge on Top Right */}
               <div className="absolute -top-3 right-5 px-3 py-0.5 rounded-md bg-[#D4AF37] text-[#071B36] text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider shadow-md">
-                {widgetBadge || 'INSTANT CHECK'}
+                {widgetBadge || t('hero.instantCheck')}
               </div>
 
               <div className="space-y-3.5 pt-1">
                 <div>
                   <h3 className="font-serif text-lg sm:text-xl lg:text-2xl font-bold text-white leading-tight">
-                    {widgetTitle || 'Check Admission Eligibility'}
+                    {widgetTitle || t('hero.checkEligibility')}
                   </h3>
                   <p className="text-[11px] sm:text-xs text-slate-300 font-normal mt-0.5">
-                    Check immediate admission & scholarship eligibility in 1 minute.
+                    {isBn ? '১ মিনিটে আপনার ভর্তি ও স্কলারশিপ যোগ্যতা যাচাই করুন।' : 'Check immediate admission & scholarship eligibility in 1 minute.'}
                   </p>
                 </div>
 
@@ -201,27 +218,31 @@ export const Hero: React.FC<HeroProps> = ({
                 <CountrySelect
                   value={quickCountry}
                   onChange={setQuickCountry}
-                  label="Target Country"
+                  label={t('hero.targetCountry')}
                 />
 
                 {/* Degree Level Segmented Control */}
                 <div>
                   <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">
-                    Degree Level
+                    {t('hero.degreeLevel')}
                   </label>
                   <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#051329] rounded-xl border border-slate-800">
-                    {['Bachelors', 'Masters', 'PhD'].map((degree) => (
+                    {[
+                      { key: 'Bachelors', labelBn: 'ব্যাচেলরস', labelEn: 'Bachelors' },
+                      { key: 'Masters', labelBn: 'মাস্টার্স', labelEn: 'Masters' },
+                      { key: 'PhD', labelBn: 'পিএইচডি', labelEn: 'PhD' }
+                    ].map((degree) => (
                       <button
-                        key={degree}
+                        key={degree.key}
                         type="button"
-                        onClick={() => setQuickDegree(degree)}
+                        onClick={() => setQuickDegree(degree.key)}
                         className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
-                          quickDegree === degree
+                          quickDegree === degree.key
                             ? 'bg-[#D4AF37] text-[#071B36] shadow-md font-extrabold'
                             : 'text-slate-300 hover:text-white'
                         }`}
                       >
-                        {degree}
+                        {isBn ? degree.labelBn : degree.labelEn}
                       </button>
                     ))}
                   </div>
@@ -230,17 +251,17 @@ export const Hero: React.FC<HeroProps> = ({
                 {/* IELTS / English Score Select */}
                 <div>
                   <label className="block text-[11px] sm:text-xs font-semibold text-slate-300 mb-1">
-                    IELTS / English Score
+                    {t('hero.ieltsScore')}
                   </label>
                   <select
                     value={quickIelts}
                     onChange={(e) => setQuickIelts(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#051329] border border-slate-700 text-xs text-white focus:outline-none focus:border-[#D4AF37] transition-all font-medium"
                   >
-                    <option value="7.5">IELTS 7.0 - 8.0 (High Band Direct Admission)</option>
-                    <option value="6.5">IELTS 6.0 - 6.5 (Standard Direct Entry)</option>
-                    <option value="5.5">IELTS 5.5 / Duolingo English Test</option>
-                    <option value="MOI">MOI (Medium of Instruction Waiver)</option>
+                    <option value="7.5">{isBn ? 'আইইএলটিএস ৭.০ - ৮.০ (সরাসরি স্কলারশিপ ও এডমিশন)' : 'IELTS 7.0 - 8.0 (High Band Direct Admission)'}</option>
+                    <option value="6.5">{isBn ? 'আইইএলটিএস ৬.০ - ৬.৫ (স্ট্যান্ডার্ড এন্ট্রি)' : 'IELTS 6.0 - 6.5 (Standard Direct Entry)'}</option>
+                    <option value="5.5">{isBn ? 'আইইএলটিএস ৫.৫ / ডুওলিঙ্গো ইংলিশ টেস্ট' : 'IELTS 5.5 / Duolingo English Test'}</option>
+                    <option value="MOI">{isBn ? 'এমওআই (আইইএলটিএস মুক্ত ওয়েভার)' : 'MOI (Medium of Instruction Waiver)'}</option>
                   </select>
                 </div>
 
@@ -249,7 +270,7 @@ export const Hero: React.FC<HeroProps> = ({
                   onClick={() => onOpenAIEvaluator?.()}
                   className="w-full py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#e2bd44] text-[#071B36] font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#D4AF37]/20 uppercase tracking-wider mt-1 active:scale-98 cursor-pointer"
                 >
-                  <span>✈ ANALYZE MY ELIGIBILITY NOW</span>
+                  <span>✈ {t('hero.analyzeEligibility')}</span>
                 </button>
               </div>
             </div>
@@ -265,49 +286,20 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 items-center text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/10">
             
-            {/* Stat 1 */}
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Users className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
-              </div>
-              <div>
-                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">98.8%</p>
-                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Visa Success Rate</p>
-              </div>
-            </div>
-
-            {/* Stat 2 */}
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Landmark className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
-              </div>
-              <div>
-                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">€7,000</p>
-                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Max Annual DSU Grant</p>
-              </div>
-            </div>
-
-            {/* Stat 3 */}
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
-              </div>
-              <div>
-                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">3,500+</p>
-                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Successful Students</p>
-              </div>
-            </div>
-
-            {/* Stat 4 */}
-            <div className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
-                <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
-              </div>
-              <div>
-                <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">100%</p>
-                <p className="text-[11px] sm:text-xs text-slate-300 font-medium">Tuition Waiver Support</p>
-              </div>
-            </div>
+            {statsList.map((stat, idx) => {
+              const IconComp = stat.icon;
+              return (
+                <div key={idx} className="flex items-center justify-center md:justify-start gap-3 pt-2 md:pt-0 md:px-4">
+                  <div className="p-1.5 sm:p-2 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37]">
+                    <IconComp className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <p className="font-serif text-xl sm:text-2xl font-extrabold text-white">{stat.value}</p>
+                    <p className="text-[11px] sm:text-xs text-slate-300 font-medium">{stat.label}</p>
+                  </div>
+                </div>
+              );
+            })}
 
           </div>
         </div>

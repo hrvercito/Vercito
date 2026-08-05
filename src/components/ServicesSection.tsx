@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { SERVICES } from '../data/mockData';
+import { useTranslation } from '../i18n/LanguageContext';
 import {
   Compass,
   FileText,
@@ -28,6 +29,8 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onOpenAppointment,
   onOpenApplication,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const [activeService, setActiveService] = useState<string>(SERVICES[0].id);
 
   const getIcon = (iconName: string) => {
@@ -61,13 +64,13 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-3.5 h-3.5" />
-            <span>End-To-End Consultancy Precision</span>
+            <span>{t('services.tag')}</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
-            Comprehensive European Higher Education Services
+            {t('services.title')}
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-light leading-relaxed">
-            From your first profile audit in Gulshan or Chittagong to your departure flight for Milan, Munich, or Paris — our specialized team delivers elite academic and visa solutions.
+            {t('services.subtitle')}
           </p>
         </div>
 
@@ -151,7 +154,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 onClick={onOpenAppointment}
                 className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] font-bold text-xs shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2"
               >
-                <span>Book Service Counseling</span>
+                <span>{t('services.bookConsultation')}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -159,7 +162,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
                 onClick={onOpenApplication}
                 className="w-full py-3.5 px-5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs border border-white/15 transition-all text-center"
               >
-                Submit University Application
+                {t('services.startApplication')}
               </button>
             </div>
           </div>

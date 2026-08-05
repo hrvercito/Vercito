@@ -8,6 +8,7 @@ import { Building2, MapPin, Award, GraduationCap, ArrowRight, Star, ExternalLink
 import { motion } from 'motion/react';
 import { Currency, UniversityPartner } from '../types';
 import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface FeaturedUniversitiesHomepageProps {
   currency: Currency;
@@ -20,6 +21,8 @@ export const FeaturedUniversitiesHomepage: React.FC<FeaturedUniversitiesHomepage
   onViewAllUniversities,
   onSelectUniversityForApplication,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const { cmsData } = useCMS();
   const allUnis: UniversityPartner[] = cmsData.universities || [];
 
@@ -44,13 +47,13 @@ export const FeaturedUniversitiesHomepage: React.FC<FeaturedUniversitiesHomepage
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">
             <Building2 className="w-3.5 h-3.5" />
-            <span>Featured Universities</span>
+            <span>{isBn ? 'বিশেষায়িত বিশ্ববিদ্যালয়' : 'Featured Universities'}</span>
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-white">
-            Top Partner Institutions
+            {t('partners.title')}
           </h2>
           <p className="text-xs sm:text-sm text-slate-300 font-normal mt-1 max-w-xl">
-            Explore accredited public & private universities with tuition waiver & scholarship options.
+            {t('partners.subtitle')}
           </p>
         </div>
 
@@ -58,7 +61,7 @@ export const FeaturedUniversitiesHomepage: React.FC<FeaturedUniversitiesHomepage
           onClick={onViewAllUniversities}
           className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-[#D4AF37] text-white hover:text-[#0B1F3A] font-extrabold text-xs tracking-wider uppercase border border-white/20 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
-          <span>View All Universities</span>
+          <span>{isBn ? 'সকল বিশ্ববিদ্যালয় দেখুন' : 'View All Universities'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -115,12 +118,12 @@ export const FeaturedUniversitiesHomepage: React.FC<FeaturedUniversitiesHomepage
               {/* Quick Info Tags */}
               <div className="space-y-1.5 pt-2 border-t border-white/5 text-xs text-slate-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Tuition:</span>
+                  <span className="text-slate-400">{isBn ? 'টিউশন ফি:' : 'Tuition:'}</span>
                   <span className="font-bold text-[#D4AF37]">{formatMoney(uni.tuitionFeePerYearEUR)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-400">Grant / Aid:</span>
-                  <span className="font-bold text-emerald-400">{uni.scholarshipAmount || uni.scholarshipsOffered?.[0] || 'DSU Grant Eligible'}</span>
+                  <span className="text-slate-400">{isBn ? 'স্কলারশিপ:' : 'Grant / Aid:'}</span>
+                  <span className="font-bold text-emerald-400">{uni.scholarshipAmount || uni.scholarshipsOffered?.[0] || (isBn ? 'ডিএসইউ স্কলারশিপ যোগ্য' : 'DSU Grant Eligible')}</span>
                 </div>
               </div>
 
@@ -129,7 +132,7 @@ export const FeaturedUniversitiesHomepage: React.FC<FeaturedUniversitiesHomepage
                 onClick={() => onSelectUniversityForApplication(uni.name)}
                 className="w-full mt-2 py-2.5 rounded-xl bg-white/10 hover:bg-[#D4AF37] text-white hover:text-[#0B1F3A] font-extrabold text-xs transition-all uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Apply To University</span>
+                <span>{isBn ? 'আবেদন করুন' : 'Apply To University'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

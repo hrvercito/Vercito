@@ -6,28 +6,70 @@
 import { SupportedLanguage } from './languages';
 
 export interface Dictionary {
+  [key: string]: string;
+
   // Navigation
+  'nav.home': string;
+  'nav.about': string;
   'nav.destinations': string;
   'nav.services': string;
   'nav.scholarships': string;
   'nav.universities': string;
-  'nav.testimonials': string;
-  'nav.visaChecklist': string;
+  'nav.languagePrograms': string;
+  'nav.studentPortal': string;
+  'nav.payments': string;
   'nav.blog': string;
   'nav.faq': string;
   'nav.contact': string;
+  'nav.login': string;
   'nav.aiCheck': string;
   'nav.bookConsultation': string;
   'nav.applyOnline': string;
+  'nav.applyNow': string;
+  'nav.viewMyApplication': string;
   'nav.sitemap': string;
   'nav.tagline': string;
 
   // Hero Section
+  'hero.applyNow': string;
+  'HERO.APPLYNOW': string;
+  'hero.viewMyApplication': string;
+  'HERO.VIEWMYAPPLICATION': string;
+  'hero.targetCountry': string;
+  'hero.targetcountry': string;
+  'hero.degreeLevel': string;
+  'hero.degreelevel': string;
+  'hero.ieltsScore': string;
+  'hero.ieltsscore': string;
+  'hero.analyzeEligibility': string;
+  'HERO.ANALYZEELIGIBILITY': string;
+  'hero.instantCheck': string;
+  'HERO.INSTANTCHECK': string;
+  'hero.checkEligibility': string;
+  'hero.visaSuccess': string;
+  'hero.maxScholarship': string;
+  'hero.studentsPlaced': string;
+  'hero.tuitionWaiver': string;
   'hero.topBadge': string;
   'hero.title1': string;
   'hero.title2': string;
   'hero.subtitle': string;
   'hero.evaluateAi': string;
+  'hero.bookConsultation': string;
+  'hero.stat1Val': string;
+  'hero.stat1Label': string;
+  'hero.stat2Val': string;
+  'hero.stat2Label': string;
+  'hero.stat3Val': string;
+  'hero.stat3Label': string;
+  'hero.stat4Val': string;
+  'hero.stat4Label': string;
+  'hero.widgetBadge': string;
+  'hero.widgetTitle': string;
+  'hero.widgetCountryLabel': string;
+  'hero.widgetDegreeLabel': string;
+  'hero.widgetScoreLabel': string;
+  'hero.analyzeBtn': string;
   'hero.bookConsultation': string;
   'hero.stat1Val': string;
   'hero.stat1Label': string;
@@ -156,6 +198,9 @@ export interface Dictionary {
 
   // Footer
   'footer.tagline': string;
+  'footer.aboutText': string;
+  'footer.officeLocations': string;
+  'FOOTER.OFFICELOCATIONS': string;
   'footer.quickLinks': string;
   'footer.services': string;
   'footer.countries': string;
@@ -241,6 +286,8 @@ export interface Dictionary {
 export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
   bn: {
     // Navigation
+    'nav.home': 'হোম',
+    'nav.about': 'আমাদের সম্পর্কে',
     'nav.destinations': 'গন্তব্যসমূহ',
     'nav.services': 'সেবাসমূহ',
     'nav.scholarships': 'স্কলারশিপ',
@@ -250,13 +297,38 @@ export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
     'nav.blog': 'ব্লগ ও নির্দেশিকা',
     'nav.faq': 'প্রশ্নোত্তর',
     'nav.contact': 'যোগাযোগ',
+    'nav.languagePrograms': 'ভাষা প্রোগ্রাম',
+    'nav.studentPortal': 'স্টুডেন্ট পোর্টাল',
+    'nav.payments': 'পেমেন্ট গেটওয়ে',
+    'nav.login': 'এডমিন / স্টুডেন্ট লগইন',
     'nav.aiCheck': 'এআই যোগ্যতা পরীক্ষা',
     'nav.bookConsultation': 'পরামর্শ বুক করুন',
     'nav.applyOnline': 'অনলাইন আবেদন',
+    'nav.applyNow': 'অনলাইন আবেদন',
+    'nav.viewMyApplication': 'আমার আবেদন দেখুন',
     'nav.sitemap': 'সাইটম্যাপ',
     'nav.tagline': 'সীমানা ছাড়িয়ে আপনার ভবিষ্যৎ গঠন',
 
     // Hero Section (Used in Hero.tsx)
+    'hero.applyNow': 'এখনই আবেদন করুন',
+    'HERO.APPLYNOW': 'এখনই আবেদন করুন',
+    'hero.viewMyApplication': 'আমার আবেদন দেখুন',
+    'HERO.VIEWMYAPPLICATION': 'আমার আবেদন দেখুন',
+    'hero.targetCountry': 'লক্ষ্য দেশ',
+    'hero.targetcountry': 'লক্ষ্য দেশ',
+    'hero.degreeLevel': 'ডিগ্রির স্তর',
+    'hero.degreelevel': 'ডিগ্রির স্তর',
+    'hero.ieltsScore': 'আইইএলটিএস স্কোর',
+    'hero.ieltsscore': 'আইইএলটিএস স্কোর',
+    'hero.analyzeEligibility': 'যোগ্যতা যাচাই করুন',
+    'HERO.ANALYZEELIGIBILITY': 'যোগ্যতা যাচাই করুন',
+    'hero.instantCheck': 'তাত্ক্ষণিক অ্যাসেসমেন্ট',
+    'HERO.INSTANTCHECK': 'তাত্ক্ষণিক অ্যাসেসমেন্ট',
+    'hero.checkEligibility': 'ইউরোপ ও আমেরিকায় ভর্তির যোগ্যতা যাচাই',
+    'hero.visaSuccess': 'ভিসা সাফল্যের হার',
+    'hero.maxScholarship': 'বার্ষিক সর্বোচ্চ স্কলারশিপ',
+    'hero.studentsPlaced': 'সফল শিক্ষার্থী',
+    'hero.tuitionWaiver': 'টিউশন ফি ওয়েভার সুবিধা',
     'hero.topBadge': 'ইউরোপ ও আমেরিকা উচ্চশিক্ষা এবং সরকারি স্কলারশিপ স্পেশালিস্ট',
     'hero.title1': 'ইউরোপ ও আমেরিকার সেরা বিশ্ববিদ্যালয়ে',
     'hero.title2': 'আপনার উচ্চশিক্ষার স্বপ্ন পূরণ করুন',
@@ -390,6 +462,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
 
     // Footer
     'footer.tagline': 'সীমানা ছাড়িয়ে আপনার ভবিষ্যৎ গঠন',
+    'footer.aboutText': 'ভার্সিটো হলো বাংলাদেশের শীর্ষস্থানীয় উচ্চশিক্ষা পরামর্শক প্রতিষ্ঠান, যা ইউরোপ ও আমেরিকার বিশ্বখ্যাত বিশ্ববিদ্যালয়ে ভর্তি, ১০০% স্কলারশিপ, বিনা টিউশন ফি এবং বিশেষজ্ঞ ভিসা প্রসেসিং সেবা প্রদান করে।',
+    'footer.officeLocations': 'আমাদের অফিসের ঠিকানা',
+    'FOOTER.OFFICELOCATIONS': 'আমাদের অফিসের ঠিকানা',
     'footer.quickLinks': 'দ্রুত লিঙ্কসমূহ',
     'footer.services': 'সেবাসমূহ',
     'footer.countries': 'জনপ্রিয় দেশসমূহ',
@@ -474,6 +549,8 @@ export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
 
   en: {
     // Navigation
+    'nav.home': 'Home',
+    'nav.about': 'About Us',
     'nav.destinations': 'Destinations',
     'nav.services': 'Services',
     'nav.scholarships': 'Scholarships',
@@ -483,13 +560,38 @@ export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
     'nav.blog': 'Blog & Guides',
     'nav.faq': 'FAQ',
     'nav.contact': 'Contact',
+    'nav.languagePrograms': 'Language Programs',
+    'nav.studentPortal': 'Student Portal',
+    'nav.payments': 'Payment Gateway',
+    'nav.login': 'Login',
     'nav.aiCheck': 'AI Eligibility Check',
     'nav.bookConsultation': 'Book Consultation',
     'nav.applyOnline': 'Apply Online',
+    'nav.applyNow': 'Apply Online',
+    'nav.viewMyApplication': 'View My Application',
     'nav.sitemap': 'Sitemap',
     'nav.tagline': 'Shaping Futures Beyond Borders',
 
     // Hero Section (Used in Hero.tsx)
+    'hero.applyNow': 'Apply Now',
+    'HERO.APPLYNOW': 'Apply Now',
+    'hero.viewMyApplication': 'View My Application',
+    'HERO.VIEWMYAPPLICATION': 'View My Application',
+    'hero.targetCountry': 'Target Country',
+    'hero.targetcountry': 'Target Country',
+    'hero.degreeLevel': 'Degree Level',
+    'hero.degreelevel': 'Degree Level',
+    'hero.ieltsScore': 'IELTS / English Score',
+    'hero.ieltsscore': 'IELTS / English Score',
+    'hero.analyzeEligibility': 'Analyze My Eligibility',
+    'HERO.ANALYZEELIGIBILITY': 'Analyze My Eligibility',
+    'hero.instantCheck': 'Instant Check',
+    'HERO.INSTANTCHECK': 'Instant Check',
+    'hero.checkEligibility': 'Check Admission Eligibility',
+    'hero.visaSuccess': 'Visa Success Rate',
+    'hero.maxScholarship': 'Max Annual Scholarship',
+    'hero.studentsPlaced': 'Successful Students',
+    'hero.tuitionWaiver': 'Tuition Waiver Support',
     'hero.topBadge': 'Europe & USA Higher Education & Student Visa Specialist',
     'hero.title1': 'Shape Your Global Future In',
     'hero.title2': 'Europe & America\'s Top Universities',
@@ -623,6 +725,9 @@ export const TRANSLATIONS: Record<SupportedLanguage, Dictionary> = {
 
     // Footer
     'footer.tagline': 'Shaping Futures Beyond Borders',
+    'footer.aboutText': 'VERCITO is a premier higher education consultancy in Bangladesh specializing in European and American university admissions, 100% scholarship assistance, tuition-free public universities, and expert visa guidance.',
+    'footer.officeLocations': 'OUR OFFICE LOCATIONS',
+    'FOOTER.OFFICELOCATIONS': 'OUR OFFICE LOCATIONS',
     'footer.quickLinks': 'Quick Links',
     'footer.services': 'Services',
     'footer.countries': 'Top Destinations',

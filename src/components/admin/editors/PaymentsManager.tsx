@@ -18,6 +18,7 @@ import {
   FileText
 } from 'lucide-react';
 import { downloadPaymentReceipt, PaymentReceiptData } from '../../../lib/pdfReceiptGenerator';
+import { OfficialReceiptModal } from '../../OfficialReceiptModal';
 
 interface PaymentItem {
   id: string;
@@ -49,6 +50,7 @@ export const PaymentsManager: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [verifyingId, setVerifyingId] = useState<string | null>(null);
   const [selectedVerificationModal, setSelectedVerificationModal] = useState<any | null>(null);
+  const [previewReceiptModal, setPreviewReceiptModal] = useState<PaymentReceiptData | null>(null);
 
   const adminToken = "vercito_admin_session_token_2026_verified";
 
@@ -302,15 +304,26 @@ export const PaymentsManager: React.FC = () => {
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {pay.status === 'SUCCESS' && (
-                          <button
-                            onClick={() => handleDownloadReceipt(pay)}
-                            disabled={downloadingId === pay.tran_id}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold text-[11px] flex items-center gap-1 border border-emerald-500/30 transition-all shrink-0"
-                            title="Download Official PDF Receipt"
-                          >
-                            <Download className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>{downloadingId === pay.tran_id ? 'Rendering...' : 'Receipt PDF'}</span>
-                          </button>
+                          <>
+                            <button
+                              onClick={() => setPreviewReceiptModal(pay)}
+                              className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20 font-bold text-[11px] flex items-center gap-1 border border-[#D4AF37]/30 transition-all shrink-0"
+                              title="View Official Receipt"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
+                              <span>View Receipt</span>
+                            </button>
+
+                            <button
+                              onClick={() => handleDownloadReceipt(pay)}
+                              disabled={downloadingId === pay.tran_id}
+                              className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 font-bold text-[11px] flex items-center gap-1 border border-emerald-500/30 transition-all shrink-0"
+                              title="Download Official PDF Receipt"
+                            >
+                              <Download className="w-3.5 h-3.5 text-emerald-400" />
+                              <span>{downloadingId === pay.tran_id ? 'Rendering...' : 'Receipt PDF'}</span>
+                            </button>
+                          </>
                         )}
 
                         <button
@@ -398,6 +411,14 @@ export const PaymentsManager: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Official Receipt Preview Modal */}
+      {previewReceiptModal && (
+        <OfficialReceiptModal
+          receipt={previewReceiptModal}
+          onClose={() => setPreviewReceiptModal(null)}
+        />
       )}
     </div>
   );

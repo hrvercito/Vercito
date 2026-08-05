@@ -144,7 +144,7 @@ export const VisaProcessSteps: React.FC<VisaProcessStepsProps> = ({ onOpenAppoin
               onClick={onOpenAppointment}
               className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#0B1F3A] text-white dark:bg-white dark:text-[#0B1F3A] font-extrabold text-xs shadow-lg hover:scale-[1.02] active:scale-95 transition-all"
             >
-              <span>{isBn ? 'আপনার ভি্স ফাইল তৈরি শুরু করুন' : 'Start Your Visa File Preparation'}</span>
+              <span>{isBn ? 'আপনার ভিসা ফাইল প্রস্তুত শুরু করুন' : 'Start Your Visa File Preparation'}</span>
               <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
             </button>
           </div>

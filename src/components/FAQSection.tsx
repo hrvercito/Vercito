@@ -11,14 +11,22 @@ import { useTranslation } from '../i18n/LanguageContext';
 
 export const FAQSection: React.FC = () => {
   const { cmsData } = useCMS();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const FAQS = cmsData.faqs;
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [search, setSearch] = useState<string>('');
   // Requirement 9: Collapsed by default (openFaqId = null)
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
-  const categories = ['All', 'Admissions', 'Scholarships', 'Visa & Embassy', 'Finances', 'General'];
+  const categories = [
+    { id: 'All', bn: 'সবপ্রশ্ন', en: 'All' },
+    { id: 'Admissions', bn: 'ভর্তি প্রক্রিয়া', en: 'Admissions' },
+    { id: 'Scholarships', bn: 'স্কলারশিপ', en: 'Scholarships' },
+    { id: 'Visa & Embassy', bn: 'ভিসা ও এম্বাসি', en: 'Visa & Embassy' },
+    { id: 'Finances', bn: 'আর্থিক স্বচ্ছলতা', en: 'Finances' },
+    { id: 'General', bn: 'সাধারণ তথ্য', en: 'General' },
+  ];
 
   const filteredFaqs = FAQS.filter((faq) => {
     const matchesCategory = activeCategory === 'All' || faq.category === activeCategory;
@@ -51,7 +59,11 @@ export const FAQSection: React.FC = () => {
             <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search FAQ keywords (e.g. IELTS, DSU grant, Blocked account, MOFA, Bank balance)..."
+              placeholder={
+                isBn
+                  ? 'প্রশ্ন খুঁজুন (যেমনঃ আইইএলটিএস, ডিএসইউ গ্রান্ট, ব্লকড একাউন্ট, পররাষ্ট্রমন্ত্রণালয়, ব্যাংক ব্যালেন্স)...'
+                  : 'Search FAQ keywords (e.g. IELTS, DSU grant, Blocked account, MOFA, Bank balance)...'
+              }
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-xs sm:text-sm bg-white dark:bg-[#0B1F3A] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37] shadow-sm"
@@ -61,15 +73,15 @@ export const FAQSection: React.FC = () => {
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             {categories.map((c) => (
               <button
-                key={c}
-                onClick={() => setActiveCategory(c)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                  activeCategory === c
+                key={c.id}
+                onClick={() => setActiveCategory(c.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                  activeCategory === c.id
                     ? 'bg-gradient-to-r from-[#D4AF37] to-[#C5A028] text-[#0B1F3A] shadow-md font-extrabold'
                     : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-[#D4AF37]'
                 }`}
               >
-                {c}
+                {isBn ? c.bn : c.en}
               </button>
             ))}
           </div>

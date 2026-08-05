@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { ContactInfo, OfficeLocation } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { PhoneCall, Save, MapPin, Mail, Globe, MessageCircle, Plus, Trash2 } from 'lucide-react';
 
 export const ContactInfoEditor: React.FC = () => {
@@ -312,13 +313,14 @@ export const ContactInfoEditor: React.FC = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block font-semibold mb-1">Cover Image URL</label>
-                    <input
-                      type="text"
-                      value={office.image}
-                      onChange={(e) => handleUpdateOffice(idx, { ...office, image: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-white/15 text-white"
+                  <div className="sm:col-span-2 md:col-span-3">
+                    <ImageUploadField
+                      label="Office Building / Interior Photo"
+                      value={office.image || ''}
+                      onChange={(url) => handleUpdateOffice(idx, { ...office, image: url })}
+                      aspectRatio="16:9"
+                      category="general"
+                      defaultImage="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1000"
                     />
                   </div>
                 </div>

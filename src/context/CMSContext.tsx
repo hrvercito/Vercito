@@ -19,6 +19,7 @@ import {
   BlogPost,
   FounderProfile,
   ContactInfo,
+  MediaItem,
 } from '../types';
 import {
   auth,
@@ -57,6 +58,9 @@ interface CMSContextType {
   updateBlogs: (blogs: BlogPost[]) => Promise<boolean>;
   updateFounderProfile: (profile: FounderProfile) => Promise<boolean>;
   updateContactInfo: (contactInfo: ContactInfo) => Promise<boolean>;
+  updateMediaLibrary: (mediaItems: MediaItem[]) => Promise<boolean>;
+  addMediaItem: (item: MediaItem) => Promise<boolean>;
+  deleteMediaItem: (id: string) => Promise<boolean>;
   resetToDefaultCMS: () => Promise<boolean>;
 }
 
@@ -317,6 +321,26 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return saveToFirestoreAndLocal(updated);
   };
 
+  const updateMediaLibrary = (mediaLibrary: MediaItem[]) => {
+    const updated = { ...cmsData, mediaLibrary };
+    return saveToFirestoreAndLocal(updated);
+  };
+
+  const addMediaItem = (item: MediaItem) => {
+    const existing = cmsData.mediaLibrary || [];
+    // avoid duplicates by url or id
+    const filtered = existing.filter((m) => m.id !== item.id && m.url !== item.url);
+    const updated = { ...cmsData, mediaLibrary: [item, ...filtered] };
+    return saveToFirestoreAndLocal(updated);
+  };
+
+  const deleteMediaItem = (id: string) => {
+    const existing = cmsData.mediaLibrary || [];
+    const updatedList = existing.filter((m) => m.id !== id);
+    const updated = { ...cmsData, mediaLibrary: updatedList };
+    return saveToFirestoreAndLocal(updated);
+  };
+
   const resetToDefaultCMS = () => {
     return saveToFirestoreAndLocal(DEFAULT_CMS_DATA);
   };
@@ -345,6 +369,9 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateBlogs,
         updateFounderProfile,
         updateContactInfo,
+        updateMediaLibrary,
+        addMediaItem,
+        deleteMediaItem,
         resetToDefaultCMS,
       }}
     >

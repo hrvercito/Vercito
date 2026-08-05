@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { CountryDestination, Currency } from '../types';
 import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 import {
   Globe2,
   Euro,
@@ -32,6 +33,8 @@ export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
   onSelectCountryForApplication,
   onOpenAIEvaluator,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const { cmsData } = useCMS();
   const COUNTRY_DESTINATIONS = cmsData.destinations;
   const [selectedCountry, setSelectedCountry] = useState<CountryDestination | null>(null);
@@ -69,13 +72,13 @@ export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-4 mb-14">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
             <Globe2 className="w-3.5 h-3.5" />
-            <span>Top European Study Hubs</span>
+            <span>{t('destinations.tag')}</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
-            Destinations Shaping Your Academic Destiny
+            {t('destinations.title')}
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-light leading-relaxed">
-            Choose from 10 elite European study destinations offering English-taught degrees, affordable or zero tuition fees, generous government scholarships, and post-study work permits.
+            {t('destinations.subtitle')}
           </p>
         </div>
 
@@ -86,7 +89,7 @@ export const StudyDestinations: React.FC<StudyDestinationsProps> = ({
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search country, capital, or major..."
+              placeholder={isBn ? "দেশ, রাজধানী বা বিষয় খুঁজুন..." : "Search country, capital, or major..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37]"

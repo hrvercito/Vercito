@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { FounderProfile } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { UserCheck, Save, Award, Mail, Phone, Linkedin, MessageCircle, Quote } from 'lucide-react';
 
 export const FounderProfileEditor: React.FC = () => {
@@ -99,13 +100,13 @@ export const FounderProfileEditor: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block font-semibold mb-1">Photo Image URL *</label>
-              <input
-                type="text"
-                required
+              <ImageUploadField
+                label="Founder Executive Portrait Photo"
                 value={profile.photo}
-                onChange={(e) => setProfile({ ...profile, photo: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-white/15 text-white"
+                onChange={(url) => setProfile({ ...profile, photo: url })}
+                aspectRatio="1:1"
+                category="profile"
+                defaultImage="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800"
               />
             </div>
 

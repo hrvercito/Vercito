@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { CountryDestination, UniversityPartner } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { Globe, Plus, Trash2, Edit2, Save, Check, Building2, ShieldAlert, Image, ArrowUp, ArrowDown } from 'lucide-react';
 
 export const DestinationsEditor: React.FC = () => {
@@ -236,14 +237,14 @@ export const DestinationsEditor: React.FC = () => {
               />
             </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-slate-300 mb-1 font-semibold">Cover Image URL</label>
-              <input
-                type="text"
-                required
+            <div className="md:col-span-3">
+              <ImageUploadField
+                label="Country / Destination Banner Image"
                 value={editingCountry.image}
-                onChange={(e) => setEditingCountry({ ...editingCountry, image: e.target.value })}
-                className="w-full p-2.5 rounded-xl bg-slate-800 border border-white/15 text-white focus:outline-none focus:border-[#D4AF37]"
+                onChange={(url) => setEditingCountry({ ...editingCountry, image: url })}
+                aspectRatio="16:9"
+                category="destination"
+                defaultImage="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&q=80&w=800"
               />
             </div>
             <div>

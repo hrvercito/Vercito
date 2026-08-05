@@ -12,6 +12,7 @@ import {
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
+  AlertCircle,
   Facebook,
   Instagram,
   Linkedin,
@@ -20,19 +21,85 @@ import {
   FileCode2
 } from 'lucide-react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { useCMS } from '../context/CMSContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { VercitoLogo } from './VercitoLogo';
 
 export const Footer: React.FC = () => {
-  const { t, openSitemap } = useTranslation();
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
+  const { t, openSitemap, language } = useTranslation();
+  const isBn = language === 'bn';
+  const { cmsData } = useCMS();
+  const contact = cmsData.contactInfo;
+  const dhakaOffice = contact?.offices?.find((o) => o.id === 'dhaka');
+  const ctgOffice = contact?.offices?.find((o) => o.id === 'chattogram');
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subStatus, setSubStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [subMessage, setSubMessage] = useState<string | null>(null);
+
+  // Fallback guards to guarantee no raw translation keys leak
+  const rawAboutText = t('footer.aboutText');
+  const aboutText =
+    rawAboutText && !rawAboutText.startsWith('footer.') && !rawAboutText.startsWith('FOOTER.')
+      ? rawAboutText
+      : isBn
+      ? 'ভার্সিটো হলো বাংলাদেশের শীর্ষস্থানীয় উচ্চশিক্ষা পরামর্শক প্রতিষ্ঠান, যা ইউরোপ ও আমেরিকার বিশ্বখ্যাত বিশ্ববিদ্যালয়ে ভর্তি, ১০০% স্কলারশিপ, বিনা টিউশন ফি এবং বিশেষজ্ঞ ভিসা প্রসেসিং সেবা প্রদান করে।'
+      : 'VERCITO is a premier higher education consultancy in Bangladesh specializing in European and American university admissions, 100% scholarship assistance, tuition-free public universities, and expert visa guidance.';
+
+  const rawOfficeLocations = t('footer.officeLocations') || t('FOOTER.OFFICELOCATIONS');
+  const officeLocationsHeading =
+    rawOfficeLocations &&
+    !rawOfficeLocations.startsWith('footer.') &&
+    !rawOfficeLocations.startsWith('FOOTER.')
+      ? rawOfficeLocations
+      : isBn
+      ? 'আমাদের অফিসের ঠিকানা'
+      : 'OUR OFFICE LOCATIONS';
+
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newsletterEmail) {
-      setSubscribed(true);
-      setNewsletterEmail('');
+    const trimmed = newsletterEmail.trim();
+
+    // 1. Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!trimmed || !emailRegex.test(trimmed)) {
+      setSubStatus('error');
+      setSubMessage('Please enter a valid email address.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubStatus('idle');
+    setSubMessage(null);
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: trimmed }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setSubStatus('success');
+        setSubMessage(data.message || 'Subscription successful! Please check your email.');
+        setNewsletterEmail('');
+      } else {
+        setSubStatus('error');
+        setSubMessage(
+          data.message || 'Unable to complete your subscription right now. Please try again later.'
+        );
+      }
+    } catch (err) {
+      console.error('Subscription error:', err);
+      setSubStatus('error');
+      setSubMessage('Unable to complete your subscription right now. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -48,7 +115,7 @@ export const Footer: React.FC = () => {
             <VercitoLogo variant="horizontal" size="md" isDarkBg={true} />
 
             <p className="text-xs text-slate-300 leading-relaxed font-light">
-              {t('footer.aboutText')}
+              {aboutText}
             </p>
 
             {/* Language Switcher in Footer */}
@@ -86,44 +153,44 @@ export const Footer: React.FC = () => {
           {/* Office Locations (Col 8-10) */}
           <div className="lg:col-span-3 space-y-4">
             <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider">
-              {t('footer.officeLocations')}
+              {officeLocationsHeading}
             </h4>
             <div className="space-y-3 text-xs text-slate-300">
               <div className="space-y-1">
                 <p className="font-bold text-white flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  Dhaka Head Office:
+                  {dhakaOffice?.name || 'Dhaka Head Office'}:
                 </p>
                 <p className="pl-5 text-slate-400">
-                  Level 7, VERCITO Tower, Road 11, Block D, Gulshan 2, Dhaka-1212
+                  {dhakaOffice?.address || 'Level 7, VERCITO Tower, Road 11, Block D, Gulshan 2, Dhaka-1212'}
                 </p>
               </div>
 
               <div className="space-y-1">
                 <p className="font-bold text-white flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  Chittagong Branch:
+                  {ctgOffice?.name || 'Chittagong Branch'}:
                 </p>
                 <p className="pl-5 text-slate-400">
-                  Suite 4A, Equity Central, GEC Circle, Chittagong
+                  {ctgOffice?.address || 'Suite 4A, Equity Central, GEC Circle, Chittagong'}
                 </p>
               </div>
 
               <div className="space-y-1 pt-1 border-t border-white/5">
                 <p className="flex items-center gap-2 text-slate-300">
                   <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>+880 1700 000000 / +880 1800 000000</span>
+                  <span>{contact?.hotline || '+880 1711 000000'}</span>
                 </p>
                 <p className="flex items-center gap-2 text-slate-300">
                   <Mail className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>hr.vercito@gmail.com</span>
+                  <span>{contact?.email || 'info@vercito.com'}</span>
                 </p>
               </div>
             </div>
           </div>
 
           {/* Newsletter (Col 11-12) */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 overflow-hidden">
             <h4 className="font-serif text-sm font-bold text-[#D4AF37] uppercase tracking-wider">
               European Intake Alert
             </h4>
@@ -131,28 +198,58 @@ export const Footer: React.FC = () => {
               Subscribe for upcoming deadline alerts, DSU scholarship updates, and VFS appointment slots.
             </p>
 
-            {subscribed ? (
-              <div className="p-3 rounded-xl bg-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>Subscribed! You will receive intake updates.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="space-y-2">
+            <form onSubmit={handleSubscribe} className="space-y-2.5 w-full max-w-full">
+              <div className="flex flex-col gap-2 w-full">
                 <input
                   type="email"
                   required
+                  disabled={isSubmitting}
                   placeholder="Your email address..."
                   value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/15 text-xs text-white focus:outline-none focus:border-[#D4AF37]"
+                  onChange={(e) => {
+                    setNewsletterEmail(e.target.value);
+                    if (subStatus !== 'idle') {
+                      setSubStatus('idle');
+                      setSubMessage(null);
+                    }
+                  }}
+                  className="w-full min-w-0 px-3.5 py-2.5 rounded-xl bg-white/5 border border-white/15 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-[#D4AF37] transition-all disabled:opacity-50"
                 />
                 <button
                   type="submit"
-                  className="w-full py-2 px-3 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs hover:brightness-110 transition-all"
+                  disabled={isSubmitting}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#D4AF37] text-[#0B1F3A] font-bold text-xs hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Subscribe
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-[#0B1F3A] border-t-transparent rounded-full animate-spin shrink-0" />
+                      <span>Subscribing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5 shrink-0" />
+                      <span>Subscribe</span>
+                    </>
+                  )}
                 </button>
-              </form>
+              </div>
+            </form>
+
+            {subMessage && (
+              <div
+                className={`p-3 rounded-xl text-xs font-semibold flex items-start gap-2 ${
+                  subStatus === 'success'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    : 'bg-red-500/20 text-red-300 border border-red-500/30'
+                }`}
+              >
+                {subStatus === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                )}
+                <span className="leading-snug">{subMessage}</span>
+              </div>
             )}
 
             {/* Sitemap & Admin CMS Buttons */}

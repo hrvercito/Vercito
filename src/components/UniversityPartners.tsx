@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Currency, UniversityPartner } from '../types';
 import { useCMS } from '../context/CMSContext';
+import { useTranslation } from '../i18n/LanguageContext';
 import { UniversityDetailModal } from './UniversityDetailModal';
 import { UniversityCompareDrawer } from './UniversityCompareDrawer';
 import { UniversityGuideModal } from './UniversityGuideModal';
@@ -39,6 +40,8 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
   currency,
   onSelectUniversityForApplication,
 }) => {
+  const { t, language } = useTranslation();
+  const isBn = language === 'bn';
   const { cmsData } = useCMS();
   const UNIVERSITY_PARTNERS = cmsData.universities || [];
 
@@ -186,13 +189,13 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
             <Building2 className="w-3.5 h-3.5" />
-            <span>100+ Global University Database</span>
+            <span>{t('partners.tag')}</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B1F3A] dark:text-white tracking-tight">
-            Explore Universities Worldwide
+            {t('partners.title')}
           </h2>
           <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base font-light leading-relaxed">
-            Search top public and private universities across the USA, UK, Canada, Europe, Asia, and Australia. Filter by tuition fee, English waiver, QS ranking, and available scholarships.
+            {t('partners.subtitle')}
           </p>
         </div>
 
@@ -205,7 +208,7 @@ export const UniversityPartners: React.FC<UniversityPartnersProps> = ({
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search by university name, city, or program..."
+                placeholder={isBn ? "বিশ্ববিদ্যালয়ের নাম, শহর বা বিষয় দিয়ে খুঁজুন..." : "Search by university name, city, or program..."}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 rounded-2xl text-xs bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:border-[#D4AF37] transition-all"

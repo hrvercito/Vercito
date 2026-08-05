@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { useCMS } from '../../../context/CMSContext';
 import { SuccessStory } from '../../../types';
+import { ImageUploadField } from '../media/ImageUploadField';
 import { Quote, Plus, Trash2, Edit2, Star, MapPin } from 'lucide-react';
 
 export const TestimonialsEditor: React.FC = () => {
@@ -184,13 +185,14 @@ export const TestimonialsEditor: React.FC = () => {
                 className="w-full p-2.5 rounded-xl bg-slate-800 border border-white/15 text-white focus:outline-none focus:border-[#D4AF37]"
               />
             </div>
-            <div>
-              <label className="block text-slate-300 mb-1 font-semibold">Photo Image URL</label>
-              <input
-                type="text"
+            <div className="md:col-span-3">
+              <ImageUploadField
+                label="Student Photo"
                 value={editingStory.photo}
-                onChange={(e) => setEditingStory({ ...editingStory, photo: e.target.value })}
-                className="w-full p-2.5 rounded-xl bg-slate-800 border border-white/15 text-white focus:outline-none focus:border-[#D4AF37]"
+                onChange={(url) => setEditingStory({ ...editingStory, photo: url })}
+                aspectRatio="1:1"
+                category="profile"
+                defaultImage="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=600"
               />
             </div>
 
